@@ -1,10 +1,25 @@
-# COMANDO: python server.py --port 8888
-
 import subprocess
 from mitmproxy import http, ctx
 import argparse
 
+def escreverEmArquivo(texto, caminho_arquivo, modo):
+    with open(caminho_arquivo, modo) as arquivo:
+        arquivo.write(texto + "\n")
+
 def request(flow: http.HTTPFlow) -> None:
+    if flow.request.url == "ntfy.sh" or flow.request.url.startswith("https://rating.ewoq.google.com"):
+        # Exibir a URL no console 1
+        texto = " ".join(["URL:", flow.request.url])
+        escreverEmArquivo(texto, "LOG.txt", "a")
+
+        texto = " ".join(["METODO:", flow.request.method])
+        escreverEmArquivo(texto, "LOG.txt", "a")
+
+        texto = " ".join(["HEADERS:", str(flow.request.headers)])
+        escreverEmArquivo(texto, "LOG.txt", "a")
+
+        escreverEmArquivo(flow.request.get_text(), "LOG.txt", "a")        
+
     # Verificar se a requisição possui um corpo
     if flow.request.method != "GET" and flow.request.content:
         # Decodificar o corpo da requisição
@@ -20,10 +35,10 @@ def request(flow: http.HTTPFlow) -> None:
             
             # Registrar a substituição
             ctx.log.info("Palavra 'CASA' substituída por 'AAAAAA' na requisição.")
-            
+
 def response(flow: http.HTTPFlow) -> None:
     # Log da resposta recebida do servidor
-    ctx.log.info("Resposta recebida: %s" % flow.response.status_code)
+    ctx.log.info("R")
 
 def main(port):
     # Chamar o script enableProxy.py passando o número da porta como argumento

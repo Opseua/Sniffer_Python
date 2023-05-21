@@ -4,6 +4,7 @@ import argparse
 import fnmatch
 import json
 
+
 # Definir os URLs que devem ser interceptados
 urls_interceptadas = [
     "https://ntfy.sh/",

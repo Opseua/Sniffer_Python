@@ -9,6 +9,7 @@ import json
 urls_interceptadas = [
     "https://ntfy.sh/",
     "https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks",
+    "https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback",
     "*.alguma.com/*"
 ]
 

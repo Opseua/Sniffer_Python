@@ -32,13 +32,13 @@ async def enviar_para_todos(mensagem):
 
 # Função principal para iniciar o servidor WebSocket
 async def main():
-    servidor = await websockets.serve(handler, 'localhost', 8887)
+    servidor = await websockets.serve(handler, 'localhost', 8000)
 
     print("RODANDO NA PORTA: 8887")
 
     # Enviar uma mensagem de teste após 5 segundos
     await asyncio.sleep(20)
-    await enviar_para_todos("Mensagem de teste")
+    await enviar_para_todos("Python: mensagem de teste ")
 
     await servidor.wait_closed()
 

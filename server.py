@@ -4,7 +4,6 @@ import argparse
 import fnmatch
 import json
 
-
 # Definir os URLs que devem ser interceptados
 urls_interceptadas = [
     "https://ntfy.sh/",
@@ -22,7 +21,10 @@ def request(flow: http.HTTPFlow) -> None:
     for url in urls_interceptadas:
         if fnmatch.fnmatch(flow.request.url, url):
             # Converter os headers para o formato JSON
-            headers_json = {name: value for name, value in flow.request.headers.items()}
+            headers_json = {
+                name: value
+                for name, value in flow.request.headers.items()
+            }
             headers_str = json.dumps(headers_json)
 
             # Substituir "CASA" por "AAAAAA" no corpo do request
@@ -37,7 +39,8 @@ def request(flow: http.HTTPFlow) -> None:
                 flow.request.set_text(modified_body)
 
                 # Registrar a substituição
-                ctx.log.info("Palavra 'CASA' substituída por 'AAAAAA' na requisição.")
+                ctx.log.info(
+                    "Palavra 'CASA' substituída por 'AAAAAA' na requisição.")
 
             # LOG REQUEST
             texto = "############ REQUEST ############\n"
@@ -53,7 +56,10 @@ def response(flow: http.HTTPFlow) -> None:
     for url in urls_interceptadas:
         if fnmatch.fnmatch(flow.request.url, url):
             # Converter os headers para o formato JSON
-            headers_json = {name: value for name, value in flow.response.headers.items()}
+            headers_json = {
+                name: value
+                for name, value in flow.response.headers.items()
+            }
             headers_str = json.dumps(headers_json)
 
             # Verificar se a resposta possui um corpo
@@ -93,7 +99,11 @@ def main(port):
 if __name__ == '__main__':
     # Configurar o parser de argumentos
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--port', type=int, default=8881, help='Número da porta do mitmproxy')
+    parser.add_argument('-p',
+                        '--port',
+                        type=int,
+                        default=8881,
+                        help='Número da porta do mitmproxy')
     args = parser.parse_args()
 
     # Executar o servidor mitmproxy

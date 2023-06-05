@@ -3,6 +3,8 @@ from mitmproxy import http, ctx
 import argparse
 import fnmatch
 import json
+import websockets
+import asyncio
 
 # Definir os URLs que devem ser interceptados
 urls_interceptadas = [
@@ -12,9 +14,13 @@ urls_interceptadas = [
     "*.alguma.com/*"
 ]
 
-def escreverEmArquivo(texto, caminho_arquivo, modo):
+async def escreverEmArquivo(texto, caminho_arquivo, modo):
     with open(caminho_arquivo, modo, encoding='utf-8') as arquivo:
         arquivo.write(texto)
+
+async def enviarParaWebSocket(texto):
+    async with websockets.connect('ws://127.0.0.1:8888') as websocket:
+        await websocket.send(texto)
 
 def request(flow: http.HTTPFlow) -> None:
     # Verificar se a URL do request corresponde a algum dos URLs especificados
@@ -48,7 +54,8 @@ def request(flow: http.HTTPFlow) -> None:
             texto += "METODO: " + flow.request.method + "\n"
             texto += "HEADERS: " + headers_str + "\n"
             texto += "BODY: " + flow.request.get_text() + "\n\n"
-            escreverEmArquivo(texto, "LOG.txt", "a")
+            asyncio.ensure_future(escreverEmArquivo(texto, "LOG.txt", "a"))
+           # asyncio.ensure_future(enviarParaWebSocket(texto))
             break
 
 def response(flow: http.HTTPFlow) -> None:
@@ -75,7 +82,8 @@ def response(flow: http.HTTPFlow) -> None:
                     texto += "METODO: " + flow.request.method + "\n"
                     texto += "HEADERS: " + headers_str + "\n"
                     texto += "BODY: " + body + "\n\n"
-                    escreverEmArquivo(texto, "LOG.txt", "a")
+                    asyncio.ensure_future(escreverEmArquivo(texto, "LOG.txt", "a"))
+                    asyncio.ensure_future(enviarParaWebSocket(texto))
             break
 
 def main(port):

@@ -97,15 +97,19 @@ const serverRes = net.createServer((socket) => {
             const dataRes = JSON.parse(buffer.slice(0, -1).toString())
             let ret = { 'send': true, res: {} };
 
-            if ((dataRes.type == 'res') && (dataRes.url == 'http://18.119.140.20:8888/get/OLA')) {
+            if ((dataRes.reqRes == 'res') && (dataRes.url == 'http://18.119.140.20:8888/get/OLA') || (dataRes.host == 'jsonformatter.org')) {
                 ret['res']['body'] = dataRes.body.replace(/sucedida/g, 'AAAAAAAA');
+                ret['res']['headers'] = dataRes.headers;
                 ret['res']['host'] = dataRes.host;
                 ret['res']['status'] = dataRes.status;
+                ret['res']['compress'] = dataRes.compress;
+                //ret['res']['type'] = dataRes.type;
                 //console.log(ret)
                 //console.log(JSON.stringify(ret))
                 //console.log(`MODIFICADO | ${req.method} ${req.url}\n${req.body}`);
+                console.log('RODANDO JS')
             }
-            console.log(JSON.stringify(ret).length, dataRes.host)
+            //console.log(JSON.stringify(ret).length, dataRes.host)
             //ret['res']['body'] = dataRes.body;
             //ret['res']['host'] = dataRes.host;
 

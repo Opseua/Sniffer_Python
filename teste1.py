@@ -114,11 +114,14 @@ def request(flow: http.HTTPFlow) -> None:
 def response(flow: http.HTTPFlow) -> None:
     content = None
     if not flow.response.content:
-        resBody, typeOk, compress = 'null', 'utf-8', 'null'
+        resBody, typeOk, compress = 'NULL', 'utf-8', 'NULL'
     else:
         type1 = flow.response.headers.get("Content-Type")
         if type1 and ";" in type1:
-            typeOk = type1.split("; ")[1].split("=")[1]
+            try:
+                typeOk = type1.split("; ")[1].split("=")[1]
+            except Exception as e:
+                typeOk = 'utf-8'
         else:
             typeOk = 'utf-8'
         compress = flow.response.headers.get('content-encoding', '').lower()
@@ -128,7 +131,7 @@ def response(flow: http.HTTPFlow) -> None:
                 decompressed_content = gzip.GzipFile(
                     fileobj=gzipped_content).read()
                 resBody = decompressed_content.decode(typeOk)
-            except (UnicodeDecodeError, OSError, gzip.BadGzipFile):
+            except Exception as e:
                 resBody = flow.response.content.decode(
                     'utf-8', errors='ignore')
         elif 'deflate' in compress:
@@ -147,7 +150,7 @@ def response(flow: http.HTTPFlow) -> None:
                 resBody = flow.response.content.decode(
                     'utf-8', errors='ignore')
         else:
-            compress = 'null'
+            compress = 'NULL'
             try:
                 resBody = flow.response.content.decode(typeOk, errors='ignore')
             except Exception as e:
@@ -155,7 +158,7 @@ def response(flow: http.HTTPFlow) -> None:
                     'utf-8', errors='ignore')
 
     data_response = {
-        'type': 'res',
+        'reqRes': 'res',
         'method': flow.request.method,
         'host': urlparse(flow.request.url).hostname,
         'url': flow.request.url,
@@ -166,10 +169,10 @@ def response(flow: http.HTTPFlow) -> None:
         'status': flow.response.status_code
     }
 
-    if not data_response['host'] == '18.119.140.20':
-        print('ANTES→', data_response['body'])
-        print('ANTES→ compress:', data_response['compress'], 'status:',
-              data_response['status'], 'type:', data_response['type'], '|', data_response['host'])
+    if data_response['host'] == '18.119.140.20' or data_response['host'] == 'jsonformatter.org':
+        # print('ANTES→', data_response['body'])
+        print('ANTES→ compress:', data_response['compress'], '| status:',
+              data_response['status'], '| type:', data_response['type'], '|', data_response['host'])
 
     try:
         jsonRes = json.dumps(data_response)
@@ -190,40 +193,37 @@ def response(flow: http.HTTPFlow) -> None:
                     if retResponse.get('send', True):
                         if len(retResponse['res']) > 0:
                             new_response = {
-                                'type': retResponse.get('res', {}).get('type'),
+                                # EDITAVEL: NAO
+                                'reqRes': retResponse.get('res', {}).get('reqRes'),
                                 'method': retResponse.get('res', {}).get('method'),
                                 'host': retResponse.get('res', {}).get('host'),
                                 'url': retResponse.get('res', {}).get('url'),
+                                # EDITAVEL: SIM
                                 'headers': retResponse.get('res', {}).get('headers'),
                                 'body': retResponse.get('res', {}).get('body'),
-                                'status': retResponse.get('res', {}).get('status')
+                                'status': retResponse.get('res', {}).get('status'),
+                                # EDITAVEL: SIM (pelo header)
+                                'compress': retResponse.get('res', {}).get('compress'),
+                                'type': retResponse.get('res', {}).get('type'),
                             }
-                            print('ok')
-                            print('DEPOIS→', new_response.get('body'))
+                            print('DEPOIS→ compress:', new_response.get('compress'), '| status:',
+                                  new_response['status'], '| type:', new_response['type'], '|', new_response['host'])
+                            # print('DEPOIS→ compress:',new_response.get('headers'))
 
-                            # if retResponse['host'] == '18.119.140.20':
-                            #     print('ANTES→', retResponse['body'])
-                            #     print('ANTES→', retResponse['status'], '|', retResponse['host'])
-                        # new_response = {
-                        #     "body": retResponse.get('res', {}).get('body'),
-                        #     "status": retResponse.get('res', {}).get("status", data_response['status']),
-                        #     "headers": retResponse.get('res', {}).get("headers", data_response['headers'])
-                        # }
-                        # # print('aaaa')
+                            if new_response['headers']:
+                                for key in new_response['headers']:
+                                    flow.response.headers[key] = new_response['headers'][key]
 
-                        # flow.response.status_code = new_response['status']
-                        # for key in new_response['headers']:
-                        #     flow.response.headers[key] = new_response['headers'][key]
-                        # if retResponse.get('body'):
-                        #     flow.response.content = str.encode(
-                        #         new_response['body'])
-                        #     print(new_response['body'])
-                        # print(
-                        #     "##################### RES ALTERADA #####################")
+                            if new_response['body']:
+                                flow.response.content = str.encode(
+                                    new_response['body'])
 
+                            if new_response['status']:
+                                flow.response.status_code = new_response['status']
+
+                            print("########### RES ALTERADA ###########")
                     else:
-                        print(
-                            "##################### RES CANCELADA #####################")
+                        print("########### RES CANCELADA ###########")
                         flow.kill()
                 except json.JSONDecodeError as e:
                     print(f"ERR PY [2]")  # ERRO JSON

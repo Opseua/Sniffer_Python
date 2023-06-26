@@ -3,7 +3,7 @@ import net from 'net'; const port = 3000;
 import { exec } from 'child_process'
 console.clear();
 
-console.log('SERVER JS RODANDO','\n');
+console.log('SERVER JS RODANDO', '\n');
 const sockPri = net.createServer();
 sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) }); sockPri.listen(port, () => { });
 
@@ -16,63 +16,12 @@ exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; 
 
 const sendPri = {
     'buffer': 1024,
-    'host': [
-        '18.119.140.20',
-    ],
-    'url': [
-        'https://jsonformatter.org/json-parser',
-        'https://ntfy.sh/',
-    ]
+    'host': ['18.119.140.20',],
+    'url': ['https://jsonformatter.org/json-parser', 'https://ntfy.sh/',]
 };
 
-// ################################################## REQUEST
-const sockReq = net.createServer((socket) => {
-    let getSockReq = '';
-    socket.on('data', async (chunk) => {
-        getSockReq += chunk.toString();
-        if (getSockReq.endsWith('#fim#')) {
-            // ################################### SOCKET: RECEBIDO ###################################
-            getSockReq = Buffer.from(getSockReq.split("#fim#")[0], 'base64').toString('utf-8');
-            const dataReq = JSON.parse(getSockReq); const ret = { 'send': true, res: {} };
-            // ################################### SOCKET: ENVIADO ###################################
-            const retReqRes = await reqRes(dataReq)
-            if ((dataReq.reqRes == 'req') && (retReqRes.res.reqRes == 'req')) {
-                const sendB64Req = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
-                for (let i = 0; i < sendB64Req.length; i += sendPri.buffer) {
-                    const part = sendB64Req.slice(i, i + sendPri.buffer);
-                    socket.write(part);
-                }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
-            }; getSockReq = ''; // LIMPAR BUFFER
-        }
-    });
-});
-sockReq.listen((port + 1), () => { });
-
-// ################################################## RESPONSE
-const sockRes = net.createServer((socket) => {
-    let getSockRes = '';
-    socket.on('data', async (chunk) => {
-        getSockRes += chunk.toString();
-        if (getSockRes.endsWith('#fim#')) {
-            // ################################### SOCKET: RECEBIDO ###################################
-            getSockRes = Buffer.from(getSockRes.split("#fim#")[0], 'base64').toString('utf-8');
-            const dataRes = JSON.parse(getSockRes); const ret = { 'send': true, res: {} };
-            // ################################### SOCKET: ENVIADO ###################################
-            const retReqRes = await reqRes(dataRes)
-            if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
-                const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
-                for (let i = 0; i < sendB64Res.length; i += sendPri.buffer) {
-                    const part = sendB64Res.slice(i, i + sendPri.buffer);
-                    socket.write(part);
-                }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
-            }; getSockRes = ''; // LIMPAR BUFFER
-        }
-    });
-});
-sockRes.listen((port + 2), () => { });
-
-
 // -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 async function reqRes(inf) {
     const ret = { 'send': true, res: {} }; ret['res']['reqRes'] = inf.reqRes;
     // ######################################################################
@@ -95,3 +44,59 @@ async function reqRes(inf) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+// ################################################## REQUEST
+const sockReq = net.createServer((socket) => {
+    let getSockReq = '';
+    socket.on('data', async (chunk) => {
+        getSockReq += chunk.toString();
+        if (getSockReq.endsWith('#fim#')) {
+            // #################### SOCKET: RECEBIDO ####################
+            getSockReq = Buffer.from(getSockReq.split("#fim#")[0], 'base64').toString('utf-8');
+            const dataReq = JSON.parse(getSockReq); const ret = { 'send': true, res: {} };
+            // #################### SOCKET: ENVIADO ####################
+            const retReqRes = await reqRes(dataReq)
+            if ((dataReq.reqRes == 'req') && (retReqRes.res.reqRes == 'req')) {
+                const sendB64Req = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
+                for (let i = 0; i < sendB64Req.length; i += sendPri.buffer) {
+                    const part = sendB64Req.slice(i, i + sendPri.buffer);
+                    socket.write(part);
+                }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
+            }; getSockReq = ''; // LIMPAR BUFFER
+        }
+    });
+});
+sockReq.listen((port + 1), () => { });
+
+// ################################################## RESPONSE
+const sockRes = net.createServer((socket) => {
+    let getSockRes = '';
+    socket.on('data', async (chunk) => {
+        getSockRes += chunk.toString();
+        if (getSockRes.endsWith('#fim#')) {
+            // #################### SOCKET: RECEBIDO ####################
+            getSockRes = Buffer.from(getSockRes.split("#fim#")[0], 'base64').toString('utf-8');
+            const dataRes = JSON.parse(getSockRes); const ret = { 'send': true, res: {} };
+            // #################### SOCKET: ENVIADO ####################
+            const retReqRes = await reqRes(dataRes)
+            if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
+                const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
+                for (let i = 0; i < sendB64Res.length; i += sendPri.buffer) {
+                    const part = sendB64Res.slice(i, i + sendPri.buffer);
+                    socket.write(part);
+                }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
+            }; getSockRes = ''; // LIMPAR BUFFER
+        }
+    });
+});
+sockRes.listen((port + 2), () => { });

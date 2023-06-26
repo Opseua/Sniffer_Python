@@ -8,18 +8,39 @@ import io
 import gzip
 import brotli
 import zlib
+import os
+
+
+def console(*args):
+    msg = ' '.join(str(arg) for arg in args)
+    print(msg)
+    if (console.counter + 1) % 100 == 0:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print('CONSOLE LIMPO!')
+    console.counter += 1
+
+
+console.counter = 0
 
 port = 3000
-
+sockPri = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockRes = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-try:  # CONECTA AO JS
-    sockReq.connect(('127.0.0.1', port))
-    sockRes.connect(('127.0.0.1', (port+1)))
+try:
+    sockPri.connect(('127.0.0.1', port))
+    # sockReq.connect(('127.0.0.1', (port+1)))
+    sockRes.connect(('127.0.0.1', (port+2)))
+    send_data = b''
+    sockPri.sendall(send_data)
+    dataPri = sockPri.recv(1024).decode('utf-8')
+    sockPri.close()
 except Exception as e:
-    print('ERRO AO SE CONECTAR NO SOCKET JS 1')
-
+    console('ERRO AO SE CONECTAR NO SOCKET JS 1')
+infPri = json.loads(dataPri)
+arrHost = infPri['host']
+arrUrl = infPri['url']
+buffer = infPri['buffer']
 
 def request(flow: http.HTTPFlow) -> None:
     pass
@@ -30,7 +51,7 @@ def request(flow: http.HTTPFlow) -> None:
     #         reqBody = flow.request.content.decode('utf-8')
     #     except UnicodeDecodeError:
     #         reqBody = 'undefined'
-    #         print(f"ERR PY [1]") # ERRO utf-8
+    #         console(f"ERR PY [1]") # ERRO utf-8
     # data_request = {
     #     'type':'req',
     #     'method': flow.request.method,
@@ -69,14 +90,14 @@ def request(flow: http.HTTPFlow) -> None:
     #                     flow.request.content=str.encode(new_request['body'])
     #                     for key in new_request['headers']:
     #                             flow.request.headers[key]=new_request['headers'][key]
-    #                     print("##################### REQ ALTERADA #####################")
+    #                     console("##################### REQ ALTERADA #####################")
     #              else:
-    #                   print("##################### REQ CANCELADA #####################")
+    #                   console("##################### REQ CANCELADA #####################")
     #                   flow.kill()
     #          except json.JSONDecodeError as e:
-    #               print(f"ERR PY [2]") # ERRO JSON
+    #               console(f"ERR PY [2]") # ERRO JSON
     # except Exception as e:
-    #      print(f'ERRO AO ENVIAR DADOS PARA O SOCKET JS 1')
+    #      console(f'ERRO AO ENVIAR DADOS PARA O SOCKET JS 1')
     #      flow.kill()  # CANCELA A REQ
 
 
@@ -88,8 +109,8 @@ def request(flow: http.HTTPFlow) -> None:
 #             resBody=flow.response.content.decode("utf-8")
 #         except UnicodeDecodeError as e:
 #             resBody="undefined"
-#             print(f"ERR PY [3]")
-#     data_response={
+#             console(f"ERR PY [3]")
+#     objRes={
 #         "type":"req",
 #         "status":flow.response.status_code,
 #         "headers":dict(flow.response.headers),
@@ -97,9 +118,9 @@ def request(flow: http.HTTPFlow) -> None:
 #         "url":flow.request.url,
 #         "body":resBody
 #     }
-#     if not isinstance(data_response.get("body"), str):
-#          data_response["body"] ="undefined"
-#     json_data = json.dumps(data_response)
+#     if not isinstance(objRes.get("body"), str):
+#          objRes["body"] ="undefined"
+#     json_data = json.dumps(objRes)
 #     max_size = 1024 * 1024 #2KB
 #     for i in range(0, len(json_data), max_size):
 #              part=json_data[i:i+max_size]
@@ -111,126 +132,250 @@ def request(flow: http.HTTPFlow) -> None:
 #              sockRes.sendall(part.encode())
 
 
+# def response(flow: http.HTTPFlow) -> None:
+#     if not flow.response.content:
+#         resBody, typeOk, compress = 'NULL', 'utf-8', 'NULL'
+#     else:
+#         type1 = flow.response.headers.get("Content-Type")
+#         if type1 and ";" in type1:
+#             typeOk = type1.split("; ")[1].split("=")[1]
+#         else:
+#             typeOk = 'utf-8'
+
+#         compress = flow.response.headers.get('content-encoding', '').lower()
+#         content = flow.response.content
+
+#         if 'gzip' in compress:
+#             try:
+#                 gzipped_content = io.BytesIO(content)
+#                 decompressed_content = gzip.GzipFile(fileobj=gzipped_content).read()
+#                 resBody = decompressed_content.decode(typeOk)
+#             except:
+#                 resBody = content.decode('utf-8', errors='ignore')
+#         elif 'deflate' in compress:
+#             try:
+#                 decompressed_content = zlib.decompress(content, wbits=zlib.MAX_WBITS | 16)
+#                 resBody = decompressed_content.decode(typeOk)
+#             except:
+#                 resBody = content.decode('utf-8', errors='ignore')
+#         elif 'br' in compress:
+#             try:
+#                 decoded_data = brotli.decompress(content)
+#                 resBody = decoded_data.decode(typeOk)
+#             except:
+#                 resBody = content.decode('utf-8', errors='ignore')
+#         else:
+#             compress = 'NULL'
+#             try:
+#                 resBody = content.decode(typeOk, errors='ignore')
+#             except:
+#                 resBody = content.decode('utf-8', errors='ignore')
+
+#     objRes = {
+#         'reqRes': 'res',
+#         'method': flow.request.method,
+#         'host': urlparse(flow.request.url).hostname,
+#         'url': flow.request.url,
+#         'headers': dict(flow.response.headers),
+#         'body': resBody,
+#         'compress': compress,
+#         'type': typeOk,
+#         'status': flow.response.status_code
+#     }
+
+#     if objRes['host'] != '18.119.140.20' and objRes['host'] != 'jsonformatter.org':
+#         console('ANTES→ compress:', objRes['compress'], '| status:', objRes['status'], '| type:', objRes['type'], '|', objRes['host'])
+
+#     try:
+#         jsonRes = json.dumps(objRes)
+#         maxRes = 1024 * 1024  # 1024KB
+#         partsRes = [jsonRes[i:i + maxRes] for i in range(0, len(jsonRes), maxRes)]
+
+#         for partRes in partsRes:
+#             if partsRes[-1] == partRes:
+#                 partRes += '\n'
+#                 lastRes = True
+#             else:
+#                 lastRes = False
+#             sockRes.sendall(partRes.encode())
+
+#         dataRes = sockRes.recv(1024)
+
+#         if dataRes:
+#             retRes = None
+#             try:
+#                 retRes = json.loads(dataRes.decode())
+
+#                 if retRes.get('send', True):
+#                     if len(retRes['res']) > 0:
+#                         newRes = {
+#                             'reqRes': retRes.get('res', {}).get('reqRes'),
+#                             'method': retRes.get('res', {}).get('method'),
+#                             'host': retRes.get('res', {}).get('host'),
+#                             'url': retRes.get('res', {}).get('url'),
+#                             'headers': retRes.get('res', {}).get('headers'),
+#                             'body': retRes.get('res', {}).get('body'),
+#                             'status': retRes.get('res', {}).get('status'),
+#                             'compress': retRes.get('res', {}).get('compress'),
+#                             'type': retRes.get('res', {}).get('type'),
+#                         }
+
+#                         console('DEPOIS→ compress:', newRes.get('compress'), '| status:', newRes['status'], '| type:', newRes['type'], '|', newRes['host'])
+
+#                         if newRes['headers']:
+#                             for key in newRes['headers']:
+#                                 flow.response.headers[key] = newRes['headers'][key]
+
+#                         if newRes['body']:
+#                             flow.response.content = str.encode(newRes['body'])
+
+#                         if newRes['status']:
+#                             flow.response.status_code = newRes['status']
+
+#                         console("########### RES ALTERADA ###########")
+#                     else:
+#                         console("########### RES CANCELADA ###########")
+#                         flow.kill()
+#             except:
+#                 console(f"ERR PY [2]")  # ERRO JSON
+#     except:
+#         console(f'ERRO AO ENVIAR DADOS PARA O SOCKET JS 1')
+#         flow.kill()
+
+
+# os.system('cls' if os.name == 'nt' else 'clear')
+# console("MITMPROXY PORTA:", port)
+
+
 def response(flow: http.HTTPFlow) -> None:
-    content = None
-    if not flow.response.content:
-        resBody, typeOk, compress = 'NULL', 'utf-8', 'NULL'
-    else:
-        type1 = flow.response.headers.get("Content-Type")
-        if type1 and ";" in type1:
-            try:
-                typeOk = type1.split("; ")[1].split("=")[1]
-            except Exception as e:
-                typeOk = 'utf-8'
+    if urlparse(flow.request.url).hostname in arrHost or flow.request.url in arrUrl:
+        content = None
+        objRes = None
+        if not flow.response.content:
+            resBody, typeOk, compress = 'NULL', 'utf-8', 'NULL'
         else:
-            typeOk = 'utf-8'
-        compress = flow.response.headers.get('content-encoding', '').lower()
-        if 'gzip' in compress:
-            try:
-                gzipped_content = io.BytesIO(flow.response.content)
-                decompressed_content = gzip.GzipFile(
-                    fileobj=gzipped_content).read()
-                resBody = decompressed_content.decode(typeOk)
-            except Exception as e:
-                resBody = flow.response.content.decode(
-                    'utf-8', errors='ignore')
-        elif 'deflate' in compress:
-            try:
-                decompressed_content = zlib.decompress(
-                    flow.response.content, wbits=zlib.MAX_WBITS | 16)
-                resBody = decompressed_content.decode(typeOk)
-            except Exception as e:
-                resBody = flow.response.content.decode(
-                    'utf-8', errors='ignore')
-        elif 'br' in compress:
-            try:
-                decoded_data = brotli.decompress(flow.response.content)
-                resBody = decoded_data.decode(typeOk)
-            except Exception as e:
-                resBody = flow.response.content.decode(
-                    'utf-8', errors='ignore')
-        else:
-            compress = 'NULL'
-            try:
-                resBody = flow.response.content.decode(typeOk, errors='ignore')
-            except Exception as e:
-                resBody = flow.response.content.decode(
-                    'utf-8', errors='ignore')
-
-    data_response = {
-        'reqRes': 'res',
-        'method': flow.request.method,
-        'host': urlparse(flow.request.url).hostname,
-        'url': flow.request.url,
-        'headers': dict(flow.response.headers),
-        'body': resBody,
-        'compress': compress,
-        'type': typeOk,
-        'status': flow.response.status_code
-    }
-
-    if data_response['host'] == '18.119.140.20' or data_response['host'] == 'jsonformatter.org':
-        # print('ANTES→', data_response['body'])
-        print('ANTES→ compress:', data_response['compress'], '| status:',
-              data_response['status'], '| type:', data_response['type'], '|', data_response['host'])
-
-    try:
-        jsonRes = json.dumps(data_response)
-        maxRes = 1024 * 1024  # 1024KB
-        for i in range(0, len(jsonRes), maxRes):
-            partRes = jsonRes[i:i + maxRes]
-            if i + len(partRes) >= len(jsonRes):
-                partRes += '\n'
-                lastRes = True
-            else:
-                lastRes = False
-            sockRes.sendall(partRes.encode())
-            dataRes = sockRes.recv(999999)
-            if dataRes:
-                retResponse = None
+            type1 = flow.response.headers.get("Content-Type")
+            if type1 and ";" in type1:
                 try:
-                    retResponse = json.loads(dataRes.decode())
-                    if retResponse.get('send', True):
-                        if len(retResponse['res']) > 0:
-                            new_response = {
+                    typeOk = type1.split("; ")[1].split("=")[1]
+                except Exception as e:
+                    typeOk = 'utf-8'
+            else:
+                typeOk = 'utf-8'
+            compress = flow.response.headers.get(
+                'content-encoding', '').lower()
+            if 'gzip' in compress:
+                try:
+                    gzipped_content = io.BytesIO(flow.response.content)
+                    decompressed_content = gzip.GzipFile(
+                        fileobj=gzipped_content).read()
+                    resBody = decompressed_content.decode(typeOk)
+                except Exception as e:
+                    resBody = flow.response.content.decode(
+                        'utf-8', errors='ignore')
+            elif 'deflate' in compress:
+                try:
+                    decompressed_content = zlib.decompress(
+                        flow.response.content, wbits=zlib.MAX_WBITS | 16)
+                    resBody = decompressed_content.decode(typeOk)
+                except Exception as e:
+                    resBody = flow.response.content.decode(
+                        'utf-8', errors='ignore')
+            elif 'br' in compress:
+                try:
+                    decoded_data = brotli.decompress(flow.response.content)
+                    resBody = decoded_data.decode(typeOk)
+                except Exception as e:
+                    resBody = flow.response.content.decode(
+                        'utf-8', errors='ignore')
+            else:
+                compress = 'NULL'
+                try:
+                    resBody = flow.response.content.decode(
+                        typeOk, errors='ignore')
+                except Exception as e:
+                    resBody = flow.response.content.decode(
+                        'utf-8', errors='ignore')
+        objRes = {
+            'reqRes': 'res',
+            'method': flow.request.method,
+            'host': urlparse(flow.request.url).hostname,
+            'url': flow.request.url,
+            'headers': dict(flow.response.headers),
+            'body': resBody,
+            'compress': compress,
+            'type': typeOk,
+            'status': flow.response.status_code
+        }
+        # SOCKET RES [SEND]
+        try:
+            sendSockRes = json.dumps(objRes)
+            sendB64Res = base64.b64encode(sendSockRes.encode('utf-8'))
+            for i in range(0, len(sendB64Res), buffer):
+                part = sendB64Res[i:i+buffer]
+                sent = sockRes.send(part)
+            sockRes.send('#fim#'.encode('utf-8'))
+            #console('SOCKET RES [SEND]: OK')
+        except Exception as e:
+            #console('SOCKET RES [SEND]: ERRO',e)
+            pass
+        # SOCKET RES [GET]
+        try:
+            getSockRes = ''
+            while True:
+                chunk = sockRes.recv(buffer)
+                getSockRes += chunk.decode()
+                if '#fim#' in getSockRes:
+                    getSockRes = getSockRes.split('#fim#')[0].rstrip()
+                    break
+            #console('SOCKET RES [GET]: OK')
+            dataRes = json.loads(base64.b64decode(getSockRes).decode('utf-8')) 
+            if dataRes:
+                retRes = None
+                try:
+                    retRes = dataRes
+                    if retRes.get('send', True):
+                        if len(retRes['res']) > 0:
+                            newRes = {
                                 # EDITAVEL: NAO
-                                'reqRes': retResponse.get('res', {}).get('reqRes'),
-                                'method': retResponse.get('res', {}).get('method'),
-                                'host': retResponse.get('res', {}).get('host'),
-                                'url': retResponse.get('res', {}).get('url'),
+                                'reqRes': retRes.get('res', {}).get('reqRes'),
+                                'method': retRes.get('res', {}).get('method'),
+                                'host': retRes.get('res', {}).get('host'),
+                                'url': retRes.get('res', {}).get('url'),
                                 # EDITAVEL: SIM
-                                'headers': retResponse.get('res', {}).get('headers'),
-                                'body': retResponse.get('res', {}).get('body'),
-                                'status': retResponse.get('res', {}).get('status'),
+                                'headers': retRes.get('res', {}).get('headers'),
+                                'body': retRes.get('res', {}).get('body'),
+                                'status': retRes.get('res', {}).get('status'),
                                 # EDITAVEL: SIM (pelo header)
-                                'compress': retResponse.get('res', {}).get('compress'),
-                                'type': retResponse.get('res', {}).get('type'),
+                                'compress': retRes.get('res', {}).get('compress'),
+                                'type': retRes.get('res', {}).get('type'),
                             }
-                            print('DEPOIS→ compress:', new_response.get('compress'), '| status:',
-                                  new_response['status'], '| type:', new_response['type'], '|', new_response['host'])
-                            # print('DEPOIS→ compress:',new_response.get('headers'))
 
-                            if new_response['headers']:
-                                for key in new_response['headers']:
-                                    flow.response.headers[key] = new_response['headers'][key]
+                            if newRes['headers']:
+                                for key in newRes['headers']:
+                                    flow.response.headers[key] = newRes['headers'][key]
 
-                            if new_response['body']:
+                            if newRes['body']:
                                 flow.response.content = str.encode(
-                                    new_response['body'])
+                                    newRes['body'])
 
-                            if new_response['status']:
-                                flow.response.status_code = new_response['status']
+                            if newRes['status']:
+                                flow.response.status_code = newRes['status']
 
-                            print("########### RES ALTERADA ###########")
+                            console("########### RES ALTERADA ###########")
                     else:
-                        print("########### RES CANCELADA ###########")
+                        console("########### RES CANCELADA ###########")
                         flow.kill()
-                except json.JSONDecodeError as e:
-                    print(f"ERR PY [2]")  # ERRO JSON
+                except Exception as e:
+                    console('ALTERAR/CANCELAR REQUISICAO: ERRO',e)
+                    flow.kill()
+        except Exception as e:
+            console('SOCKET RES [GET]: ERRO',e)
+            flow.kill()
+    else:
+        # console('OUTRO HOST/URL |', urlparse(flow.request.url).hostname)
+        pass
 
-    except Exception as e:
-        print(f'ERRO AO ENVIAR DADOS PARA O SOCKET JS 1')
-        flow.kill()
 
-
-print("MITMPROXY PORTA:", port)
+# os.system('cls' if os.name == 'nt' else 'clear')
+console('\n','MITMPROXY PORTA:', port,'\n')

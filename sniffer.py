@@ -30,12 +30,12 @@ sockReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockRes = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-    sockPri.connect(('127.0.0.1', port))
+    sockPri.connect(('127.0.0.1', (port)))
     sockReq.connect(('127.0.0.1', (port+1)))
     sockRes.connect(('127.0.0.1', (port+2)))
     send_data = b''
     sockPri.sendall(send_data)
-    dataPri = sockPri.recv(1024).decode('utf-8')
+    dataPri = sockPri.recv(99999).decode('utf-8')
     sockPri.close()
 except Exception as e:
     console('ERRO AO SE CONECTAR NO SOCKET JS 1')
@@ -106,7 +106,7 @@ def request(flow: http.HTTPFlow) -> None:
             'compress': compress,
             'type': typeOk
         }
-        # SOCKET REQ [SEND]
+        # SOCKET REQUISICAO [SEND]
         try:
             sendSockReq = json.dumps(objReq)
             sendB64Req = base64.b64encode(sendSockReq.encode('utf-8'))
@@ -114,11 +114,11 @@ def request(flow: http.HTTPFlow) -> None:
                 part = sendB64Req[i:i+buffer]
                 sent = sockReq.send(part)
             sockReq.send('#fim#'.encode('utf-8'))
-            # console('SOCKET REQ [SEND]: OK')
+            # console('SOCKET REQUISICAO [SEND]: OK')
         except Exception as e:
-            console('SOCKET REQ [SEND]: ERRO', e)
+            console('SOCKET REQUISICAO [SEND]: ERRO', e)
             pass
-        # SOCKET REQ [GET]
+        # SOCKET REQUISICAO [GET]
         try:
             getSockReq = ''
             while True:
@@ -127,7 +127,7 @@ def request(flow: http.HTTPFlow) -> None:
                 if '#fim#' in getSockReq:
                     getSockReq = getSockReq.split('#fim#')[0].rstrip()
                     break
-            # console('SOCKET RES [GET]: OK')
+            # console('SOCKET RESPONSE [GET]: OK')
             dataReq = json.loads(base64.b64decode(getSockReq).decode('utf-8'))
             if dataReq:
                 retReq = None
@@ -157,15 +157,15 @@ def request(flow: http.HTTPFlow) -> None:
                                 flow.request.content = str.encode(
                                     newReq['body'])
 
-                            console("########### REQ ALTERADA ###########")
+                            console("########### REQUISICAO ALTERADA ###########")
                     else:
-                        console("########### REQ CANCELADA ###########")
+                        console("########### REQUISICAO CANCELADA ###########")
                         flow.kill()
                 except Exception as e:
                     console('ALTERAR/CANCELAR REQUISICAO: ERRO', e)
                     flow.kill()
         except Exception as e:
-            console('SOCKET REQ [GET]: ERRO', e)
+            console('SOCKET REQUISICAO [GET]: ERRO', e)
             flow.kill()
     else:
         # console('OUTRO HOST/URL |', urlparse(flow.request.url).hostname)
@@ -233,7 +233,7 @@ def response(flow: http.HTTPFlow) -> None:
             'type': typeOk,
             'status': flow.response.status_code
         }
-        # SOCKET RES [SEND]
+        # SOCKET RESPONSE [SEND]
         try:
             sendSockRes = json.dumps(objRes)
             sendB64Res = base64.b64encode(sendSockRes.encode('utf-8'))
@@ -241,11 +241,11 @@ def response(flow: http.HTTPFlow) -> None:
                 part = sendB64Res[i:i+buffer]
                 sent = sockRes.send(part)
             sockRes.send('#fim#'.encode('utf-8'))
-            # console('SOCKET RES [SEND]: OK')
+            # console('SOCKET RESPONSE [SEND]: OK')
         except Exception as e:
-            console('SOCKET RES [SEND]: ERRO', e)
+            console('SOCKET RESPONSE [SEND]: ERRO', e)
             pass
-        # SOCKET RES [GET]
+        # SOCKET RESPONSE [GET]
         try:
             getSockRes = ''
             while True:
@@ -254,7 +254,7 @@ def response(flow: http.HTTPFlow) -> None:
                 if '#fim#' in getSockRes:
                     getSockRes = getSockRes.split('#fim#')[0].rstrip()
                     break
-            # console('SOCKET RES [GET]: OK')
+            # console('SOCKET RESPONSE [GET]: OK')
             dataRes = json.loads(base64.b64decode(getSockRes).decode('utf-8'))
             if dataRes:
                 retRes = None
@@ -288,15 +288,15 @@ def response(flow: http.HTTPFlow) -> None:
                             if newRes['status']:
                                 flow.response.status_code = newRes['status']
 
-                            console("########### RES ALTERADA ###########")
+                            console("########### RESPONSE ALTERADO ###########")
                     else:
-                        console("########### RES CANCELADA ###########")
+                        console("########### RESPONSE CANCELADO ###########")
                         flow.kill()
                 except Exception as e:
                     console('ALTERAR/CANCELAR RESPONSE: ERRO', e)
                     flow.kill()
         except Exception as e:
-            console('SOCKET RES [GET]: ERRO', e)
+            console('SOCKET RESPONSE [GET]: ERRO', e)
             flow.kill()
     else:
         # console('OUTRO HOST/URL |', urlparse(flow.request.url).hostname)
@@ -304,6 +304,6 @@ def response(flow: http.HTTPFlow) -> None:
 
 
 # ##################################################
-#os.system('cls' if os.name == 'nt' else 'clear')
+os.system('cls' if os.name == 'nt' else 'clear')
 time.sleep(0.3)
-console('MITMPROXY PORTA:', port, '\n')
+console('MITMPROXY RODANDO')

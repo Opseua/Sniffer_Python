@@ -377,5 +377,6 @@ def response(flow: http.HTTPFlow) -> None:
         pass
 
 
-# os.system('cls' if os.name == 'nt' else 'clear')
+os.system('cls' if os.name == 'nt' else 'clear')
 console('\n','MITMPROXY PORTA:', port,'\n')
+

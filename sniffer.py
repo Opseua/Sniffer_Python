@@ -12,6 +12,7 @@ import os
 import sys
 import psutil
 import time
+import re
 
 def console(*args):
     msg = ' '.join(str(arg) for arg in args)
@@ -23,6 +24,13 @@ def console(*args):
 
 
 console.counter = 0
+
+
+def filterBy(inf):
+    pattern = '^' + inf.replace('*', '.*') + '$'
+    regex = re.compile(pattern)
+    return any(regex.match(a) for a in arrUrl)
+
 
 port = 3000
 sockPri = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,15 +48,15 @@ try:
 except Exception as e:
     console('ERRO AO SE CONECTAR NO SOCKET JS 1')
 infPri = json.loads(dataPri)
-arrHost = infPri['host']
-arrUrl = infPri['url']
 buffer = infPri['buffer']
+arrUrl = infPri['arrUrl']
 
 # ################################################## REQUEST
 
 
 def request(flow: http.HTTPFlow) -> None:
-    if urlparse(flow.request.url).hostname in arrHost or flow.request.url in arrUrl:
+    if filterBy(re.escape(flow.request.url).replace('\\*', '.*')):
+    #if urlparse(flow.request.url).hostname in arrUrl or flow.request.url in arrUrl:
         content = None
         objReq = None
         if not flow.request.content:
@@ -157,7 +165,8 @@ def request(flow: http.HTTPFlow) -> None:
                                 flow.request.content = str.encode(
                                     newReq['body'])
 
-                            console("########### REQUISICAO ALTERADA ###########")
+                            console(
+                                "########### REQUISICAO ALTERADA ###########")
                     else:
                         console("########### REQUISICAO CANCELADA ###########")
                         flow.kill()
@@ -174,7 +183,7 @@ def request(flow: http.HTTPFlow) -> None:
 
 # ################################################## RESPONSE
 def response(flow: http.HTTPFlow) -> None:
-    if urlparse(flow.request.url).hostname in arrHost or flow.request.url in arrUrl:
+    if filterBy(re.escape(flow.request.url).replace('\\*', '.*')):
         content = None
         objRes = None
         if not flow.response.content:

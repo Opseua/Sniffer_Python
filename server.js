@@ -15,32 +15,35 @@ const retFunction = await fileInf(new URL(import.meta.url).pathname);
 const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFunction.res.pathCurrent2}/start.py`
 exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
 
+const filterBy = str => sendPri.arrUrl.some(a => new RegExp('^' + str.replace(/\*/g, '.*') + '$').test(a));
 const sendPri = {
     'buffer': 1024,
-    'host': ['18.119.140.20',],
-    'url': ['https://jsonformatter.org/json-parser', 'https://ntfy.sh/',]
+    'arrUrl': ['18.119.140.20', 'https://jsonformatter.org/json-parser', 'https://ntfy.sh/']
 };
 
 // -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 async function reqRes(inf) {
     const ret = { 'send': true, res: {} }; ret['res']['reqRes'] = inf.reqRes;
-    // ######################################################################
+    if (filterBy(inf.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\(?=\*)/g, ''))) {
+        // ######################################################################
 
 
-    if ((inf.reqRes == 'req') && (inf.url == 'https://ntfy.sh/')) {
-        ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
-        globalObject.inf = {
-            'alert': false, 'function': 'updateRange', 'res': ret.res.body
-        };
+        if ((inf.reqRes == 'req') && (inf.url == 'https://ntfy.sh/')) {
+            ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
+            globalObject.inf = {
+                'alert': false, 'function': 'updateRange', 'res': ret.res.body
+            };
+        }
+
+        if ((inf.reqRes == 'res') && (inf.host == '18.119.140.20') || (inf.url == 'https://jsonformatter.org/json-parser')) {
+            ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
+        }
+
+
+        // ######################################################################
     }
 
-    if ((inf.reqRes == 'res') && (inf.host == '18.119.140.20') || (inf.url == 'https://jsonformatter.org/json-parser')) {
-        ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
-    }
-
-
-    // ######################################################################
     return ret
 }
 

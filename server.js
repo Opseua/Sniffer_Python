@@ -1,7 +1,7 @@
 const { addListener, globalObject } = await import('../Chrome_Extension/src/resources/globalObject.js');
 await import('../Microsoft_Graph_API/src/services/excel/updateRange.js')
 
-await import('./clearConsole.js');
+await import('../Chrome_Extension/src/clearConsole.js');
 import net from 'net'; const port = 3000;
 import { exec } from 'child_process'
 console.clear();
@@ -30,7 +30,9 @@ async function reqRes(inf) {
 
     if ((inf.reqRes == 'req') && (inf.url == 'https://ntfy.sh/')) {
         ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
-        globalObject.inf = { 'function': 'updateRange', 'res': ret.res.body };
+        globalObject.inf = {
+            'alert': false, 'function': 'updateRange', 'res': ret.res.body
+        };
     }
 
     if ((inf.reqRes == 'res') && (inf.host == '18.119.140.20') || (inf.url == 'https://jsonformatter.org/json-parser')) {

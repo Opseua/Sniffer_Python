@@ -48,8 +48,13 @@ async function reqRes(inf) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
         }
         // ********
-
-        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks') || rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
+        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
+            const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
+            let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
+            console.log(tsk)
+            globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': tsk }
+        }
+        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks')) {
             globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': inf.body }
         }
 

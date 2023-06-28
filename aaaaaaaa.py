@@ -17,15 +17,19 @@
 
 import re
 
-arrIgual = ['www.bing.com', 'https://www.google.com/search?q=casa&oq=']
-str = 'https://ww*.google.com/search?q=casa&*'
+rgx = ['htww.google.com/search?q=casa&oq=*', 'https://www.google.com/search?q=casa&oq=']
+url = 'https://www.google.com/search?q=casa&oq='
 
-def filterBy(str):
-    pattern = '^' + str.replace('*', '.*') + '$'
-    regex = re.compile(pattern)
-    return any(regex.match(a) for a in arrIgual)
+regex = ''
+try:
+    rgx = [re.escape(p).replace(r'\*', '.*') for p in rgx]
+    regex = any(re.match(f"^{r}$", url) for r in rgx)
+except Exception as error:
+    regex = 'ERRO'
 
-if filterBy(re.escape(str).replace('\\*', '.*')):
+if regex is True:
     print('SIM')
-else:
+elif regex is False:
     print('NAO')
+else:
+    print('ERRO')

@@ -18,8 +18,9 @@ const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.
 const sendPri = {
     'buffer': 1024,
     'arrUrl': [
-        'http://18.119.140.20:8888*', 'https://jsonformatter.org/json-parser',
-        'https://ntfy.sh/'
+        'http://18.119.140.20*', 'https://ntfy.sh/', 'https://jsonformatter.org/json-parser',
+        'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks',
+        'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate'
     ]
 };
 
@@ -39,14 +40,17 @@ async function reqRes(inf) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
             globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
         }
-
         if ((inf.reqRes == 'res') && rgxMat(inf.url, '*18.119.140.20*')) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
             globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
         }
-
         if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://jsonformatter.org/json-parser')) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
+        }
+        // ********
+
+        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks') || rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
+            globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': inf.body }
         }
 
         // ######################################################################

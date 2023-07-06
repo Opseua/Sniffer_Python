@@ -12,8 +12,8 @@ const sockPri = net.createServer();
 sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) }); sockPri.listen(port, () => { });
 
 import { fileInf } from '../Chrome_Extension/src/resources/fileInf.js';
-const retFunction = await fileInf(new URL(import.meta.url).pathname);
-const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFunction.res.pathCurrent2}/start.py`
+const retFileInf = await fileInf(new URL(import.meta.url).pathname);
+const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFileInf.res.pathCurrent2}/start.py`
 //exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
 
 const sendPri = {

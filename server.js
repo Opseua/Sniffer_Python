@@ -1,6 +1,7 @@
 const { addListener, globalObject } = await import('../Chrome_Extension/src/resources/globalObject.js');
 await import('../Microsoft_Graph_API/src/services/excel/updateRange.js')
 const { api } = await import('../Microsoft_Graph_API/src/resources/api.js');
+const { dateHour } = await import('../Chrome_Extension/src/resources/dateHour.js');
 
 await import('../Chrome_Extension/src/clearConsole.js');
 import net from 'net'; const port = 3000;

@@ -1,6 +1,7 @@
 node_modules
 *.z_tempCodeRunner*
 config.json
-/__pycache__
+*__pycache__*
 .vscode
 *LOG*
+

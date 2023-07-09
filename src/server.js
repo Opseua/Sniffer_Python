@@ -167,19 +167,11 @@ sockRes.listen((port + 2), () => { });
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-async function websocket(inf) {
-    const RetDH = dateHour()
-    const infFileWrite = {
-        'file': `LOG/[${RetDH.res.mon}-${RetDH.res.day}] [${RetDH.res.hou}-00_${RetDH.res.hou}-59]/arquivo.txt`,
-        'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
-        'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} |${inf}`
-    }; fileWrite(infFileWrite);
-}
 
 async function log(inf) {
     const RetDH = dateHour()
     const infFileWrite = {
-        'file': `LOG/[${RetDH.res.mon}-${RetDH.res.day}] [00-00_00-59]/arquivo.txt`,
+        'file': `LOG/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
         'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
         'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} |${inf}`
     }; fileWrite(infFileWrite);

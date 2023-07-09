@@ -42,23 +42,27 @@ async function reqRes(inf) {
         if ((inf.reqRes == 'req') && (rgxMat(inf.url, 'https://ntfy.sh/'))) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
-
             log(`############## REQ: ##############\n${ret.res.body}\n\n`)
+        }
 
-        }
         if ((inf.reqRes == 'res') && rgxMat(inf.url, '*18.119.140.20*')) {
-            ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
-            globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
+            let search = 'JSON Full Form';
+            if (inf.body.includes(search)) {
+                ret['res']['body'] = inf.body.replace(new RegExp(search, 'g'), 'AAAAAAAA');
+                //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
+            }
         }
+
         if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://jsonformatter.org/json-parser')) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
         }
-        // ********
+
+
         if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
             const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
-
             log(` 🔵 REQ | ${inf.url}\n${tsk}\n\n`)
+            ws2.send(tsk)
 
             // console.log(tsk)
             // const infApi = {
@@ -74,11 +78,10 @@ async function reqRes(inf) {
             // const res = JSON.parse(retApi.res);
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': tsk }
         }
+
         if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks')) {
-           
-        log(` 🟡 RES | ${inf.url}\n${inf.body}\n\n`)
-        
-        // let excelOnline = JSON.stringify(inf.body).replace(/"/g, '\\"')
+            log(` 🟡 RES | ${inf.url}\n${inf.body}\n\n`)
+            // let excelOnline = JSON.stringify(inf.body).replace(/"/g, '\\"')
             // const infApi = {
             //     url: `https://excel.officeapps.live.com/x/_vti_bin/EwaInternalWebService.json/SetRichTextCell?waccluster=BR2')`,
             //     method: 'PATCH',
@@ -161,11 +164,10 @@ const sockRes = net.createServer((socket) => {
 sockRes.listen((port + 2), () => { });
 
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-
-
-async function log(inf) {
+async function websocket(inf) {
     const RetDH = dateHour()
     const infFileWrite = {
         'file': `LOG/[${RetDH.res.mon}-${RetDH.res.day}] [${RetDH.res.hou}-00_${RetDH.res.hou}-59]/arquivo.txt`,
@@ -173,3 +175,43 @@ async function log(inf) {
         'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} |${inf}`
     }; fileWrite(infFileWrite);
 }
+
+async function log(inf) {
+    const RetDH = dateHour()
+    const infFileWrite = {
+        'file': `LOG/[${RetDH.res.mon}-${RetDH.res.day}] [00-00_00-59]/arquivo.txt`,
+        'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
+        'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} |${inf}`
+    }; fileWrite(infFileWrite);
+}
+
+let WebS;
+if (typeof window === 'undefined') { // NODEJS
+    const { default: WebSocket } = await import('isomorphic-ws');
+    WebS = WebSocket;
+} else { // CHROME
+    WebS = window.WebSocket;
+}
+const portWS = 8888;
+let ws2;
+async function web2() {
+    ws2 = new WebS(`ws://18.119.140.20:${portWS}`);
+    ws2.addEventListener('open', async function (event) { // CONEXAO: ONLINE - WS2
+        console.log(`BACKGROUND: CONEXAO ESTABELECIDA - WS2`)
+        setTimeout(function () {
+            ws2.send('Chrome: mensagem de teste');
+        }, 6000);
+    });
+    ws2.addEventListener('message', async function (event) { // CONEXAO: NOVA MENSAGEM - WS2
+        console.log('→ ' + event.data);
+    });
+    ws2.addEventListener('close', async function (event) { // CONEXAO: OFFLINE, TENTAR NOVAMENTE - WS2
+        console.log(`BACKGROUND: RECONEXAO EM 10 SEGUNDOS - WS2`)
+        setTimeout(web2, 10000);
+    });
+    ws2.addEventListener('error', async function (error) { // CONEXAO: ERRO - WS2
+        console.error(`BACKGROUND: ERRO W2`);
+    });
+}
+web2();
+

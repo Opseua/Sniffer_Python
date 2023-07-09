@@ -1,7 +1,8 @@
 const { addListener, globalObject } = await import('../Chrome_Extension/src/resources/globalObject.js');
 await import('../Microsoft_Graph_API/src/services/excel/updateRange.js')
-const { api } = await import('../Microsoft_Graph_API/src/resources/api.js');
+const { api } = await import('../Chrome_Extension/src/resources/api.js');
 const { dateHour } = await import('../Chrome_Extension/src/resources/dateHour.js');
+const { fileWrite } = await import('../Chrome_Extension/src/resources/fileWrite.js');
 
 await import('../Chrome_Extension/src/clearConsole.js');
 import net from 'net'; const port = 3000;
@@ -15,7 +16,7 @@ sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) });
 import { fileInf } from '../Chrome_Extension/src/resources/fileInf.js';
 const retFileInf = await fileInf(new URL(import.meta.url).pathname);
 const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFileInf.res.pathCurrent2}/start.py`
-//exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
+exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
 
 const sendPri = {
     'buffer': 1024,
@@ -40,7 +41,17 @@ async function reqRes(inf) {
 
         if ((inf.reqRes == 'req') && (rgxMat(inf.url, 'https://ntfy.sh/'))) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
-            globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
+            //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
+
+
+            const infDateHour = dateHour()
+            const infFileWrite = {
+                'file': `LOG/${infDateHour.res.mon}-${infDateHour.res.day} ${infDateHour.res.hou}_00/arquivo.txt`,
+                'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
+                'text': 'LINHA 1\nLINHA 2\nLINHA 3\n'
+            }; fileWrite(infFileWrite);
+
+
         }
         if ((inf.reqRes == 'res') && rgxMat(inf.url, '*18.119.140.20*')) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');

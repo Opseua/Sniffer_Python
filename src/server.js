@@ -1,10 +1,10 @@
-const { addListener, globalObject } = await import('../Chrome_Extension/src/resources/globalObject.js');
-await import('../Microsoft_Graph_API/src/services/excel/updateRange.js')
-const { api } = await import('../Chrome_Extension/src/resources/api.js');
-const { dateHour } = await import('../Chrome_Extension/src/resources/dateHour.js');
-const { fileWrite } = await import('../Chrome_Extension/src/resources/fileWrite.js');
+const { addListener, globalObject } = await import('../../Chrome_Extension/src/resources/globalObject.js');
+await import('../../Microsoft_Graph_API/src/services/excel/updateRange.js')
+const { api } = await import('../../Chrome_Extension/src/resources/api.js');
+const { dateHour } = await import('../../Chrome_Extension/src/resources/dateHour.js');
+const { fileWrite } = await import('../../Chrome_Extension/src/resources/fileWrite.js');
 
-await import('../Chrome_Extension/src/clearConsole.js');
+await import('../../Chrome_Extension/src/clearConsole.js');
 import net from 'net'; const port = 3000;
 import { exec } from 'child_process'
 console.clear();
@@ -13,7 +13,7 @@ console.log('SERVER JS RODANDO', '\n');
 const sockPri = net.createServer();
 sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) }); sockPri.listen(port, () => { });
 
-import { fileInf } from '../Chrome_Extension/src/resources/fileInf.js';
+import { fileInf } from '../../Chrome_Extension/src/resources/fileInf.js';
 const retFileInf = await fileInf(new URL(import.meta.url).pathname);
 const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFileInf.res.pathCurrent2}/start.py`
 exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
@@ -37,8 +37,8 @@ async function reqRes(inf) {
     }
     const regex = sendPri.arrUrl.find(m => rgxMat(inf.url, m));
     if (!!regex) {
+        let search
         // ######################################################################
-
         if ((inf.reqRes == 'req') && (rgxMat(inf.url, 'https://ntfy.sh/'))) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
@@ -46,7 +46,7 @@ async function reqRes(inf) {
         }
 
         if ((inf.reqRes == 'res') && rgxMat(inf.url, '*18.119.140.20*')) {
-            let search = 'JSON Full Form';
+            search = 'JSON Full Form';
             if (inf.body.includes(search)) {
                 ret['res']['body'] = inf.body.replace(new RegExp(search, 'g'), 'AAAAAAAA');
                 //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
@@ -61,7 +61,7 @@ async function reqRes(inf) {
         if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
             const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
-            log(` 🔵 REQ | ${inf.url}\n${tsk}\n\n`)
+            log(` 🟡 RES | ${inf.url}\n${tsk}\n\n`)
             ws2.send(tsk)
 
             // console.log(tsk)
@@ -198,12 +198,12 @@ async function web2() {
     ws2 = new WebS(`ws://18.119.140.20:${portWS}`);
     ws2.addEventListener('open', async function (event) { // CONEXAO: ONLINE - WS2
         console.log(`BACKGROUND: CONEXAO ESTABELECIDA - WS2`)
-        setTimeout(function () {
-            ws2.send('Chrome: mensagem de teste');
-        }, 6000);
+        // setTimeout(function () {
+        //     ws2.send('Chrome: mensagem de teste');
+        // }, 6000);
     });
     ws2.addEventListener('message', async function (event) { // CONEXAO: NOVA MENSAGEM - WS2
-        console.log('→ ' + event.data);
+        //console.log('→ ' + event.data);
     });
     ws2.addEventListener('close', async function (event) { // CONEXAO: OFFLINE, TENTAR NOVAMENTE - WS2
         console.log(`BACKGROUND: RECONEXAO EM 10 SEGUNDOS - WS2`)

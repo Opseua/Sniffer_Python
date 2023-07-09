@@ -2,10 +2,5 @@ node_modules
 *.z_tempCodeRunner*
 config.json
 /__pycache__
-LOG*.txt
-console.log
 .vscode
-*.har
-*EWOQ*
-*ewoq*
 *LOG*

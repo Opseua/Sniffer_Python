@@ -30,13 +30,12 @@ const sendPri = {
 // -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 async function reqRes(inf) {
-    const ret = { 'send': true, res: {} }; ret['res']['reqRes'] = inf.reqRes;
+    let ret = { 'send': true, res: {} }; ret['res']['reqRes'] = inf.reqRes;
     function rgxMat(a, b) {
         const c = b.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
         return new RegExp(`^${c}$`).test(a);
     }
-    const regex = sendPri.arrUrl.find(m => rgxMat(inf.url, m));
-    if (!!regex) {
+    if (!!sendPri.arrUrl.find(m => rgxMat(inf.url, m))) {
         let search
         // ######################################################################
         if ((inf.reqRes == 'req') && (rgxMat(inf.url, 'https://ntfy.sh/'))) {
@@ -75,7 +74,7 @@ async function reqRes(inf) {
             //     body: `{"context":{"WorkbookMetadataParameter":{"WorkbookMetadataState":{"MetadataVersion":0,"ServerEventVersion":0}},"ClientRequestId":"89d9c7ba-d0be-4e8a-a897-5f385e41a244","InstantaneousType":1,"MakeInstantaneousChange":true,"SessionId":"15.CP1PEPF000032451.A108.1.U36.ffa16c33-76f0-41f5-94ca-f5c63057650014.5.pt-BR5.pt-BR16.e3f16b7a20292bbb1.S24.rpWzmEfvpE2yEnsuWGuWQg==16.16.0.16625.4230514.5.pt-BR5.pt-BR1.M1.N0.1.S","TransientEditSessionToken":"9qN4uMBZ6UqUU0TSEj9eLw==","PermissionFlags":786431,"Configurations":1573648,"CompleteResponseTimeout":0,"IsWindowHidden":false,"IsWindowVisible":true,"CollaborationParameter":{"CollaborationState":{"UserListVersion":9,"CollabStateId":25}},"MachineCluster":"BR2","AjaxOptions":0,"ReturnSheetProcessedData":false,"ActiveItemId":"Sheet18","ViewportStateChange":{"SheetViewportStateChanges":[{"SheetName":"YVIE","SelectedRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":86,"FirstColumn":0,"LastRow":86,"LastColumn":0}]},"ActiveCell":"A87"}]},"HasAnyNonOcsCoauthor":false,"MergeCount":{"Current":26,"Pending":26,"SuspensionStartTimestamp":null},"ClientRevisions":{"Min":25,"Max":25,"MaxFromBlockCache":25},"PaneType":1,"CellHtml":"","CellIfmt":0,"OriginalIfmt":0},"ewaControlId":"m_excelWebRenderer_ewaCtl_m_ewa","currentObject":"YVIE","isNamedItem":false,"revision":25,"activeCell":{"SheetName":"YVIE","NamedObjectName":"","FirstRow":85,"FirstColumn":0},"formattedText":{"Text":"${tsk}","Fonts":null,"TextRuns":null},"row":85,"column":0,"rowCount":1,"columnCount":30,"setCellRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":85,"FirstColumn":0,"LastRow":85,"LastColumn":0}]},"comboKey":0,"allowedSetCellModes":127,"renderingOptions":0,"richValueParameter":{"ParameterType":5},"colorScheme":null}`
             // };
             // const retApi = await api(infApi);
-            // const res = JSON.parse(retApi.res);
+            // const res = JSON.parse(retApi.res.body);
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': tsk }
         }
 
@@ -92,7 +91,7 @@ async function reqRes(inf) {
             //     body: `{"context":{"WorkbookMetadataParameter":{"WorkbookMetadataState":{"MetadataVersion":0,"ServerEventVersion":0}},"ClientRequestId":"89d9c7ba-d0be-4e8a-a897-5f385e41a244","InstantaneousType":1,"MakeInstantaneousChange":true,"SessionId":"15.CP1PEPF000032451.A108.1.U36.ffa16c33-76f0-41f5-94ca-f5c63057650014.5.pt-BR5.pt-BR16.e3f16b7a20292bbb1.S24.rpWzmEfvpE2yEnsuWGuWQg==16.16.0.16625.4230514.5.pt-BR5.pt-BR1.M1.N0.1.S","TransientEditSessionToken":"9qN4uMBZ6UqUU0TSEj9eLw==","PermissionFlags":786431,"Configurations":1573648,"CompleteResponseTimeout":0,"IsWindowHidden":false,"IsWindowVisible":true,"CollaborationParameter":{"CollaborationState":{"UserListVersion":9,"CollabStateId":25}},"MachineCluster":"BR2","AjaxOptions":0,"ReturnSheetProcessedData":false,"ActiveItemId":"Sheet18","ViewportStateChange":{"SheetViewportStateChanges":[{"SheetName":"YVIE","SelectedRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":86,"FirstColumn":0,"LastRow":86,"LastColumn":0}]},"ActiveCell":"A87"}]},"HasAnyNonOcsCoauthor":false,"MergeCount":{"Current":26,"Pending":26,"SuspensionStartTimestamp":null},"ClientRevisions":{"Min":25,"Max":25,"MaxFromBlockCache":25},"PaneType":1,"CellHtml":"","CellIfmt":0,"OriginalIfmt":0},"ewaControlId":"m_excelWebRenderer_ewaCtl_m_ewa","currentObject":"YVIE","isNamedItem":false,"revision":25,"activeCell":{"SheetName":"YVIE","NamedObjectName":"","FirstRow":85,"FirstColumn":0},"formattedText":{"Text":"${excelOnline}","Fonts":null,"TextRuns":null},"row":85,"column":0,"rowCount":1,"columnCount":30,"setCellRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":85,"FirstColumn":0,"LastRow":85,"LastColumn":0}]},"comboKey":0,"allowedSetCellModes":127,"renderingOptions":0,"richValueParameter":{"ParameterType":5},"colorScheme":null}`
             // };
             // const retApi = await api(infApi);
-            // const res = JSON.parse(retApi.res);
+            // const res = JSON.parse(retApi.res.body);
             // globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': inf.body }
         }
 
@@ -125,7 +124,7 @@ const sockReq = net.createServer((socket) => {
         if (getSockReq.endsWith('#fim#')) {
             // SOCKET: RECEBIDO
             getSockReq = Buffer.from(getSockReq.split("#fim#")[0], 'base64').toString('utf-8');
-            const dataReq = JSON.parse(getSockReq); const ret = { 'send': true, res: {} };
+            const dataReq = JSON.parse(getSockReq); let ret = { 'send': true, res: {} };
             // SOCKET: ENVIADO
             const retReqRes = await reqRes(dataReq)
             if ((dataReq.reqRes == 'req') && (retReqRes.res.reqRes == 'req')) {
@@ -148,7 +147,7 @@ const sockRes = net.createServer((socket) => {
         if (getSockRes.endsWith('#fim#')) {
             // SOCKET: RECEBIDO
             getSockRes = Buffer.from(getSockRes.split("#fim#")[0], 'base64').toString('utf-8');
-            const dataRes = JSON.parse(getSockRes); const ret = { 'send': true, res: {} };
+            const dataRes = JSON.parse(getSockRes); let ret = { 'send': true, res: {} };
             // SOCKET: ENVIADO
             const retReqRes = await reqRes(dataRes)
             if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {

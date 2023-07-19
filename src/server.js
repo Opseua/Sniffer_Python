@@ -31,20 +31,20 @@ const sendPri = {
 
 async function reqRes(inf) {
     let ret = { 'send': true, res: {} }; ret['res']['reqRes'] = inf.reqRes;
-    function rgxMat(a, b) {
+    function regex(a, b) {
         const c = b.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
         return new RegExp(`^${c}$`).test(a);
     }
-    if (!!sendPri.arrUrl.find(m => rgxMat(inf.url, m))) {
+    if (!!sendPri.arrUrl.find(m => regex(inf.url, m))) {
         let search
         // ######################################################################
-        if ((inf.reqRes == 'req') && (rgxMat(inf.url, 'https://ntfy.sh/'))) {
+        if ((inf.reqRes == 'req') && (regex(inf.url, 'https://ntfy.sh/'))) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
             log(`############## REQ: ##############\n${ret.res.body}\n\n`)
         }
 
-        if ((inf.reqRes == 'res') && rgxMat(inf.url, '*18.119.140.20*')) {
+        if ((inf.reqRes == 'res') && regex(inf.url, '*18.119.140.20*')) {
             search = 'JSON Full Form';
             if (inf.body.includes(search)) {
                 ret['res']['body'] = inf.body.replace(new RegExp(search, 'g'), 'AAAAAAAA');
@@ -52,12 +52,12 @@ async function reqRes(inf) {
             }
         }
 
-        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://jsonformatter.org/json-parser')) {
+        if ((inf.reqRes == 'res') && regex(inf.url, 'https://jsonformatter.org/json-parser')) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
         }
 
 
-        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
+        if ((inf.reqRes == 'res') && regex(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
             const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
             log(` 🟡 RES | ${inf.url}\n${tsk}\n\n`)
@@ -78,7 +78,7 @@ async function reqRes(inf) {
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': tsk }
         }
 
-        if ((inf.reqRes == 'res') && rgxMat(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks')) {
+        if ((inf.reqRes == 'res') && regex(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks')) {
             log(` 🟡 RES | ${inf.url}\n${inf.body}\n\n`)
             // let excelOnline = JSON.stringify(inf.body).replace(/"/g, '\\"')
             // const infApi = {

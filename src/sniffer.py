@@ -27,7 +27,7 @@ def console(*args):
 console.counter = 0
 
 
-def rgxMat(a, b):
+def regex(a, b):
     c = re.escape(b).replace(r'\*', '.*')
     return re.match(f"^{c}$", a) is not None
 
@@ -53,7 +53,7 @@ arrUrl = infPri['arrUrl']
 
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
-    regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
+    regex = next((m for m in arrUrl if regex(flow.request.url, m)), None)
     if regex is not None:
         content = None
         objReq = None
@@ -184,7 +184,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
 
 
 def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
-    regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
+    regex = next((m for m in arrUrl if regex(flow.request.url, m)), None)
     if regex is not None:
         content = None
         objRes = None

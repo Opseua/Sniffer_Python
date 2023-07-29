@@ -590,7 +590,7 @@ async function globalChanged(i) { if (i.alert !== false) { console.log('globalOb
 
 export { api, nodeOrBrowser, fileInf, fileWrite, fileRead, configStorage, dateHour, regex, random, globalObject, addListener };
 
-if (typeof window !== 'undefined') { // CHOME
+if (typeof window !== 'undefined') { // CHROME
     window['api'] = api;
     window['nodeOrBrowser'] = nodeOrBrowser;
     window['fileWrite'] = fileWrite;

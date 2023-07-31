@@ -22,12 +22,12 @@ for proc in psutil.process_iter(['name', 'cmdline']):
         proc.terminate()
         print('Processo encerrado')
         os.system(command)
-        #print('Processo iniciado')
+        # print('Processo iniciado')
         os.system('exit')
         break
     else:
         os.system(command)
-        #print('Processo iniciado')
+        # print('Processo iniciado')
         os.system('exit')
         break
 

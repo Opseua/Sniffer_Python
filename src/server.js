@@ -1,20 +1,15 @@
-const { addListener, globalObject } = await import('../../Chrome_Extension/src/resources/globalObject.js');
-await import('../../Microsoft_Graph_API/src/services/excel/updateRange.js')
-const { api } = await import('../../Chrome_Extension/src/resources/api.js');
-const { dateHour } = await import('../../Chrome_Extension/src/resources/dateHour.js');
-const { fileWrite } = await import('../../Chrome_Extension/src/resources/fileWrite.js');
+await import('./clearConsole.js');
+console.clear();
+console.log('SERVER JS RODANDO', '\n');
 
-await import('../../Chrome_Extension/src/clearConsole.js');
+await import('../../Chrome_Extension/src/resources/functions.js');
 import net from 'net'; const port = 3000;
 import { exec } from 'child_process'
-console.clear();
 
-console.log('SERVER JS RODANDO', '\n');
 const sockPri = net.createServer();
 sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) }); sockPri.listen(port, () => { });
 
-const { fileInf } = await import('../../../../Chrome_Extension/src/resources/fileInf.js');
-const retFileInf = await fileInf(new URL(import.meta.url).pathname);
+const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
 const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFileInf.res.pathCurrent2}/start.py`
 exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
 
@@ -30,21 +25,18 @@ const sendPri = {
 // -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 async function reqRes(inf) {
-    let ret = { 'send': true, res: {} }; ret['res']['reqRes'] = inf.reqRes;
-    function regex(a, b) {
-        const c = b.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
-        return new RegExp(`^${c}$`).test(a);
-    }
-    if (!!sendPri.arrUrl.find(m => regex(inf.url, m))) {
+    let ret = { 'send': true, res: {} };
+    ret['res']['reqRes'] = inf.reqRes;
+    if (!!sendPri.arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
         let search
         // ######################################################################
-        if ((inf.reqRes == 'req') && (regex(inf.url, 'https://ntfy.sh/'))) {
+        if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://ntfy.sh/', 'text': inf.url })) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
-            log(`############## REQ: ##############\n${ret.res.body}\n\n`)
+            //log(`############## REQ: ##############\n${ret.res.body}\n\n`)
         }
 
-        if ((inf.reqRes == 'res') && regex(inf.url, '*18.119.140.20*')) {
+        if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': '*18.119.140.20*', 'text': inf.url })) {
             search = 'JSON Full Form';
             if (inf.body.includes(search)) {
                 ret['res']['body'] = inf.body.replace(new RegExp(search, 'g'), 'AAAAAAAA');
@@ -52,50 +44,25 @@ async function reqRes(inf) {
             }
         }
 
-        if ((inf.reqRes == 'res') && regex(inf.url, 'https://jsonformatter.org/json-parser')) {
+        if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://jsonformatter.org/json-parser', 'text': inf.url })) {
             ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
         }
 
-
-        if ((inf.reqRes == 'res') && regex(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate')) {
+        if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'text': inf.url })) {
             const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
-            log(` 🟡 RES | ${inf.url}\n${tsk}\n\n`)
+            //log(` 🟡 RES | ${inf.url}\n${tsk}\n\n`)
             ws2.send(tsk)
-
-            // console.log(tsk)
-            // const infApi = {
-            //     url: `https://excel.officeapps.live.com/x/_vti_bin/EwaInternalWebService.json/SetRichTextCell?waccluster=BR2')`,
-            //     method: 'PATCH',
-            //     headers: {
-            //         'content-type': 'application/json; charset=UTF-8',
-            //         'x-accesstoken': `4waD5_iPRNjZKeSOl-6SgGrdCKUZpRcLtRBa2-QmK1Qjw-6QAG7upz7A9SHeVbZxkquZelMRb-XZ8m_rTklhiRoKRrOg8ezhfvoY1u7oZ1RuX-p9K09XsK-yMnCcVhLYRrRfE7KLNFlUgMhiFK0HDyjGNH8tDSTmj8DyionwB2LGH0E21SePCeGNaVkokHpJDhuQJvtXHUdJNo-XB2MWPewefmbjAgfHBNuHvn7wnPeB8jhHgCEyKQ_xhgWClzKuBfFyi6HVFzrpVHtRe3AnxDpCffoLbr_RiIQ44oYjPgRF4Gf4n5wGt2MVSMQgYXCKwsSdujTku5dAdhsuikRrppn7O7u027Zw8jRdNPVh79ypLIkgxC_ZHNufroXF7flcBcpECl_UU1v9iSuKY42NgaA-L3nl8-h8EMCEebuCMLPPrXQc7qD6JdQlMitEqmh_m-oZ0_c2G8CBtyXhXS7_SceXCYz6YGG0gUEIpwpRFYYOPRobNFMt1DZ1t5UNzInimpto04X_8mDM25pcgWkQewx7M90yaRMtvcejVkbyzyMlM`
-            //     },
-            //     body: `{"context":{"WorkbookMetadataParameter":{"WorkbookMetadataState":{"MetadataVersion":0,"ServerEventVersion":0}},"ClientRequestId":"89d9c7ba-d0be-4e8a-a897-5f385e41a244","InstantaneousType":1,"MakeInstantaneousChange":true,"SessionId":"15.CP1PEPF000032451.A108.1.U36.ffa16c33-76f0-41f5-94ca-f5c63057650014.5.pt-BR5.pt-BR16.e3f16b7a20292bbb1.S24.rpWzmEfvpE2yEnsuWGuWQg==16.16.0.16625.4230514.5.pt-BR5.pt-BR1.M1.N0.1.S","TransientEditSessionToken":"9qN4uMBZ6UqUU0TSEj9eLw==","PermissionFlags":786431,"Configurations":1573648,"CompleteResponseTimeout":0,"IsWindowHidden":false,"IsWindowVisible":true,"CollaborationParameter":{"CollaborationState":{"UserListVersion":9,"CollabStateId":25}},"MachineCluster":"BR2","AjaxOptions":0,"ReturnSheetProcessedData":false,"ActiveItemId":"Sheet18","ViewportStateChange":{"SheetViewportStateChanges":[{"SheetName":"YVIE","SelectedRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":86,"FirstColumn":0,"LastRow":86,"LastColumn":0}]},"ActiveCell":"A87"}]},"HasAnyNonOcsCoauthor":false,"MergeCount":{"Current":26,"Pending":26,"SuspensionStartTimestamp":null},"ClientRevisions":{"Min":25,"Max":25,"MaxFromBlockCache":25},"PaneType":1,"CellHtml":"","CellIfmt":0,"OriginalIfmt":0},"ewaControlId":"m_excelWebRenderer_ewaCtl_m_ewa","currentObject":"YVIE","isNamedItem":false,"revision":25,"activeCell":{"SheetName":"YVIE","NamedObjectName":"","FirstRow":85,"FirstColumn":0},"formattedText":{"Text":"${tsk}","Fonts":null,"TextRuns":null},"row":85,"column":0,"rowCount":1,"columnCount":30,"setCellRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":85,"FirstColumn":0,"LastRow":85,"LastColumn":0}]},"comboKey":0,"allowedSetCellModes":127,"renderingOptions":0,"richValueParameter":{"ParameterType":5},"colorScheme":null}`
-            // };
-            // const retApi = await api(infApi);
-            // const res = JSON.parse(retApi.res.body);
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': tsk }
         }
 
-        if ((inf.reqRes == 'res') && regex(inf.url, 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks')) {
-            log(` 🟡 RES | ${inf.url}\n${inf.body}\n\n`)
-            // let excelOnline = JSON.stringify(inf.body).replace(/"/g, '\\"')
-            // const infApi = {
-            //     url: `https://excel.officeapps.live.com/x/_vti_bin/EwaInternalWebService.json/SetRichTextCell?waccluster=BR2')`,
-            //     method: 'PATCH',
-            //     headers: {
-            //         'content-type': 'application/json; charset=UTF-8',
-            //         'x-accesstoken': `4waD5_iPRNjZKeSOl-6SgGrdCKUZpRcLtRBa2-QmK1Qjw-6QAG7upz7A9SHeVbZxkquZelMRb-XZ8m_rTklhiRoKRrOg8ezhfvoY1u7oZ1RuX-p9K09XsK-yMnCcVhLYRrRfE7KLNFlUgMhiFK0HDyjGNH8tDSTmj8DyionwB2LGH0E21SePCeGNaVkokHpJDhuQJvtXHUdJNo-XB2MWPewefmbjAgfHBNuHvn7wnPeB8jhHgCEyKQ_xhgWClzKuBfFyi6HVFzrpVHtRe3AnxDpCffoLbr_RiIQ44oYjPgRF4Gf4n5wGt2MVSMQgYXCKwsSdujTku5dAdhsuikRrppn7O7u027Zw8jRdNPVh79ypLIkgxC_ZHNufroXF7flcBcpECl_UU1v9iSuKY42NgaA-L3nl8-h8EMCEebuCMLPPrXQc7qD6JdQlMitEqmh_m-oZ0_c2G8CBtyXhXS7_SceXCYz6YGG0gUEIpwpRFYYOPRobNFMt1DZ1t5UNzInimpto04X_8mDM25pcgWkQewx7M90yaRMtvcejVkbyzyMlM`
-            //     },
-            //     body: `{"context":{"WorkbookMetadataParameter":{"WorkbookMetadataState":{"MetadataVersion":0,"ServerEventVersion":0}},"ClientRequestId":"89d9c7ba-d0be-4e8a-a897-5f385e41a244","InstantaneousType":1,"MakeInstantaneousChange":true,"SessionId":"15.CP1PEPF000032451.A108.1.U36.ffa16c33-76f0-41f5-94ca-f5c63057650014.5.pt-BR5.pt-BR16.e3f16b7a20292bbb1.S24.rpWzmEfvpE2yEnsuWGuWQg==16.16.0.16625.4230514.5.pt-BR5.pt-BR1.M1.N0.1.S","TransientEditSessionToken":"9qN4uMBZ6UqUU0TSEj9eLw==","PermissionFlags":786431,"Configurations":1573648,"CompleteResponseTimeout":0,"IsWindowHidden":false,"IsWindowVisible":true,"CollaborationParameter":{"CollaborationState":{"UserListVersion":9,"CollabStateId":25}},"MachineCluster":"BR2","AjaxOptions":0,"ReturnSheetProcessedData":false,"ActiveItemId":"Sheet18","ViewportStateChange":{"SheetViewportStateChanges":[{"SheetName":"YVIE","SelectedRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":86,"FirstColumn":0,"LastRow":86,"LastColumn":0}]},"ActiveCell":"A87"}]},"HasAnyNonOcsCoauthor":false,"MergeCount":{"Current":26,"Pending":26,"SuspensionStartTimestamp":null},"ClientRevisions":{"Min":25,"Max":25,"MaxFromBlockCache":25},"PaneType":1,"CellHtml":"","CellIfmt":0,"OriginalIfmt":0},"ewaControlId":"m_excelWebRenderer_ewaCtl_m_ewa","currentObject":"YVIE","isNamedItem":false,"revision":25,"activeCell":{"SheetName":"YVIE","NamedObjectName":"","FirstRow":85,"FirstColumn":0},"formattedText":{"Text":"${excelOnline}","Fonts":null,"TextRuns":null},"row":85,"column":0,"rowCount":1,"columnCount":30,"setCellRanges":{"SheetName":"YVIE","NamedObjectName":"","Ranges":[{"FirstRow":85,"FirstColumn":0,"LastRow":85,"LastColumn":0}]},"comboKey":0,"allowedSetCellModes":127,"renderingOptions":0,"richValueParameter":{"ParameterType":5},"colorScheme":null}`
-            // };
-            // const retApi = await api(infApi);
-            // const res = JSON.parse(retApi.res.body);
+        if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'text': inf.url })) {
+            //log(` 🟡 RES | ${inf.url}\n${inf.body}\n\n`)
             // globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': inf.body }
         }
 
         // ######################################################################
+        if (!ret.send) { console.log('REQUISIAO CANcELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('REQUISIAO ALtERADA') }
     } else { console.log('OUTRO URL |', inf.url) }
 
     return ret
@@ -150,6 +117,7 @@ const sockRes = net.createServer((socket) => {
             const dataRes = JSON.parse(getSockRes); let ret = { 'send': true, res: {} };
             // SOCKET: ENVIADO
             const retReqRes = await reqRes(dataRes)
+            console.log(2)
             if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
                 const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
                 for (let i = 0; i < sendB64Res.length; i += sendPri.buffer) {
@@ -176,33 +144,33 @@ async function log(inf) {
     }; fileWrite(infFileWrite);
 }
 
-let WebS;
-if (typeof window === 'undefined') { // NODEJS
-    const { default: WebSocket } = await import('isomorphic-ws');
-    WebS = WebSocket;
-} else { // CHROME
-    WebS = window.WebSocket;
-}
-const portWS = 8888;
-let ws2;
-async function web2() {
-    ws2 = new WebS(`ws://18.119.140.20:${portWS}`);
-    ws2.addEventListener('open', async function (event) { // CONEXAO: ONLINE - WS2
-        console.log(`BACKGROUND: CONEXAO ESTABELECIDA - WS2`)
-        // setTimeout(function () {
-        //     ws2.send('Chrome: mensagem de teste');
-        // }, 6000);
-    });
-    ws2.addEventListener('message', async function (event) { // CONEXAO: NOVA MENSAGEM - WS2
-        //console.log('→ ' + event.data);
-    });
-    ws2.addEventListener('close', async function (event) { // CONEXAO: OFFLINE, TENTAR NOVAMENTE - WS2
-        console.log(`BACKGROUND: RECONEXAO EM 10 SEGUNDOS - WS2`)
-        setTimeout(web2, 10000);
-    });
-    ws2.addEventListener('error', async function (error) { // CONEXAO: ERRO - WS2
-        console.error(`BACKGROUND: ERRO W2`);
-    });
-}
-web2();
+// let WebS;
+// if (typeof window === 'undefined') { // NODEJS
+//     const { default: WebSocket } = await import('isomorphic-ws');
+//     WebS = WebSocket;
+// } else { // CHROME
+//     WebS = window.WebSocket;
+// }
+// const portWS = 8888;
+// let ws2;
+// async function web2() {
+//     ws2 = new WebS(`ws://18.119.140.20:${portWS}`);
+//     ws2.addEventListener('open', async function (event) { // CONEXAO: ONLINE - WS2
+//         console.log(`BACKGROUND: CONEXAO ESTABELECIDA - WS2`)
+//         // setTimeout(function () {
+//         //     ws2.send('Chrome: mensagem de teste');
+//         // }, 6000);
+//     });
+//     ws2.addEventListener('message', async function (event) { // CONEXAO: NOVA MENSAGEM - WS2
+//         //console.log('→ ' + event.data);
+//     });
+//     ws2.addEventListener('close', async function (event) { // CONEXAO: OFFLINE, TENTAR NOVAMENTE - WS2
+//         console.log(`BACKGROUND: RECONEXAO EM 10 SEGUNDOS - WS2`)
+//         setTimeout(web2, 10000);
+//     });
+//     ws2.addEventListener('error', async function (error) { // CONEXAO: ERRO - WS2
+//         console.error(`BACKGROUND: ERRO W2`);
+//     });
+// }
+// web2();
 

@@ -2,7 +2,7 @@ await import('./clearConsole.js');
 console.clear();
 console.log('SERVER JS RODANDO', '\n');
 
-await import('../../Chrome_Extension/src/resources/functions.js');
+await import('./resources/functions.js');
 import net from 'net'; const port = 3000;
 import { exec } from 'child_process'
 
@@ -24,16 +24,32 @@ const sendPri = {
 
 // -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
+const { default: WebSocket } = await import('isomorphic-ws');
+let WebS = WebSocket;
+const infConfigStorage = { 'path': '/src/config.json', 'action': 'get', 'key': 'websocket' }
+const retConfigStorage = await configStorage(infConfigStorage)
+let wsRet = new WebS(`${retConfigStorage.res.ws2}:${retConfigStorage.res.port}/${retConfigStorage.res.device1}`);
+// wsRet.addEventListener('open', async function (event) {
+//     wsRet.send(JSON.stringify({ 'inf': data.funRet.inf, 'retWs': retWs }))
+//     wsRet.close();
+// });
+// wsRet.addEventListener('error', async function (error) {
+//     console.error(`BACKGROUND: ERRO WSRET`);
+// });
+
 async function reqRes(inf) {
     let ret = { 'send': true, res: {} };
     ret['res']['reqRes'] = inf.reqRes;
     if (!!sendPri.arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
         let search
         // ######################################################################
+        wsRet.send(JSON.stringify({ 'inf': 'inf', 'retWs': 'ola' }))
         if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://ntfy.sh/', 'text': inf.url })) {
             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
             //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
             //log(`############## REQ: ##############\n${ret.res.body}\n\n`)
+            // wsRet.send(JSON.stringify({ 'inf': data.funRet.inf, 'retWs': retWs }))
+            // wsRet.close();
         }
 
         if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': '*18.119.140.20*', 'text': inf.url })) {

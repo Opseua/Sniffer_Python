@@ -43,7 +43,7 @@ async function reqRes(inf) {
             let search
             // ######################################################################
             const sendWeb = {
-                "securityPass": "securityPass",
+                "securityPass": securityPass,
                 "funRet": {
                     "ret": true,
                     "url": device1Ret,
@@ -53,9 +53,9 @@ async function reqRes(inf) {
                     "name": "excel",
                     "par": {
                         "action": "set",
-                        "tab": "KQRE",
+                        "tab": "CQPT",
                         "col": "A",
-                        "text": `${inf.body}\n\n`
+                        "value": `${inf.body}`
                     }
                 }
             }

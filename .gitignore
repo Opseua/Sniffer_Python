@@ -1,7 +1,6 @@
-node_modules
-*.z_tempCodeRunner*
-config.json
+*node_modules*
 *__pycache__*
-.vscode
+*.vscode*
+*.z_tempCodeRunner*
+*config.json*
 *log*
-

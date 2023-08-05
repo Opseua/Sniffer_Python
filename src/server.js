@@ -1,8 +1,8 @@
 await import('./clearConsole.js');
 console.clear();
-console.log('SERVER JS RODANDO', '\n');
+console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
-await import('./resources/functions.js');
+await import('../../Chrome_Extension/src/resources/functions.js');
 import net from 'net'; const portSocket = 3000;
 import { exec } from 'child_process'
 
@@ -11,14 +11,15 @@ sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) });
 
 const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
 const command = `D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe ${retFileInf.res.pathCurrent2}/start.py`
-exec(command, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
+exec(command, { maxBuffer: 1024 * 5000 }, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
 
 const sendPri = {
     'buffer': 1024,
     'arrUrl': [
         'https://ntfy.sh/',
         'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks',
-        'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate'
+        'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate',
+        'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback'
     ]
 };
 
@@ -42,55 +43,41 @@ async function reqRes(inf) {
         if (!!sendPri.arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
             let search
             // ######################################################################
-            const sendWeb = {
-                "securityPass": securityPass,
-                "funRet": {
-                    "ret": true,
-                    "url": device1Ret,
-                    "inf": "ID DO RETORNO"
-                },
-                "funRun": {
-                    "name": "excel",
-                    "par": {
-                        "action": "set",
-                        "tab": "CQPT",
-                        "col": "A",
-                        "value": `${inf.body}`
-                    }
-                }
-            }
-            wsRet.send(JSON.stringify(sendWeb))
             if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://ntfy.sh/', 'text': inf.url })) {
                 ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
-                //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
-                //log(`############## REQ: ##############\n${ret.res.body}\n\n`)
-                // wsRet.send(JSON.stringify({ 'inf': data.funRet.inf, 'retWs': retWs }))
-                // wsRet.close();
-            }
-
-            if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': '*18.119.140.20*', 'text': inf.url })) {
-                search = 'JSON Full Form';
-                if (inf.body.includes(search)) {
-                    ret['res']['body'] = inf.body.replace(new RegExp(search, 'g'), 'AAAAAAAA');
-                    //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': ret.res.body };
-                }
-            }
-
-            if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://jsonformatter.org/json-parser', 'text': inf.url })) {
-                ret['res']['body'] = inf.body.replace(/JSON Full Form/g, 'AAAAAAAA');
+                const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
+                log(infLog)
             }
 
             if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'text': inf.url })) {
                 const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
                 let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
-                //log(` 🟡 RES | ${inf.url}\n${tsk}\n\n`)
-                ws2.send(tsk)
-                //globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': tsk }
+                const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': tsk }
+                log(infLog)
             }
 
             if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'text': inf.url })) {
-                //log(` 🟡 RES | ${inf.url}\n${inf.body}\n\n`)
-                // globalObject.inf = { 'alert': false, 'function': 'updateRange', 'res': inf.body }
+                let infLog
+                const ewoq = JSON.parse(inf.body)
+                if (ewoq['1']) {
+                    const id = ewoq['1'][0]['1']['1']
+                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'id': id } }
+                } else {
+                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
+                }
+                log(infLog)
+            }
+
+            if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'text': inf.url })) {
+                let infLog
+                const ewoq = JSON.parse(inf.body)
+                if (ewoq['6']) {
+                    const id = ewoq['6']['1'].replace(/=/g, '\\u003d')
+                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'id': id } }
+                } else {
+                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
+                }
+                log(infLog)
             }
 
             // ######################################################################
@@ -158,7 +145,6 @@ const sockRes = net.createServer((socket) => {
                 const dataRes = JSON.parse(getSockRes); let ret = { 'send': true, res: {} };
                 // SOCKET: ENVIADO
                 const retReqRes = await reqRes(dataRes)
-                console.log(2)
                 if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
                     const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
                     for (let i = 0; i < sendB64Res.length; i += sendPri.buffer) {
@@ -180,9 +166,30 @@ sockRes.listen((portSocket + 2), () => { });
 
 async function log(inf) {
     const RetDH = dateHour()
+    const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
     const infFileWrite = {
-        'file': `LOG/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
+        'file': `log/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
         'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
-        'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} |${inf}`
+        'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
     }; fileWrite(infFileWrite);
+
+    const sendWeb = {
+        "securityPass": securityPass,
+        "funRet": {
+            "ret": false,
+            "url": device1Ret,
+            "inf": "ID DO RETORNO"
+        },
+        "funRun": {
+            "name": "excel",
+            "par": {
+                "action": "set",
+                "tab": "YARE",
+                "col": "A",
+                "value": `${inf.value}`,
+                "inf": JSON.stringify(inf.inf)
+            }
+        }
+    }
+    wsRet.send(JSON.stringify(sendWeb))
 }

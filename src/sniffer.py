@@ -184,7 +184,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
 
 
 def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
-    regex = next((m for m in arrUrl if regex(flow.request.url, m)), None)
+    regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
     if regex is not None:
         content = None
         objRes = None

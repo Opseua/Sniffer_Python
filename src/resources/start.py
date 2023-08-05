@@ -8,7 +8,7 @@ import subprocess
 proxyPort = 8088
 arg = sys.argv[1] if len(sys.argv) > 1 else None
 path = os.getcwd().replace("\\", "/")
-command = f'mitmdump --anticache -s {path}/src/sniffer.py --mode regular@{proxyPort} --quiet'
+command = f'mitmdump --anticache -s {path}/src/resources/sniffer.py --mode regular@{proxyPort} --quiet'
 
 key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                      "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)

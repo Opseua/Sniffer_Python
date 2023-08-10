@@ -174,20 +174,22 @@ async function log(inf) {
     }; fileWrite(infFileWrite);
 
     const sendWeb = {
-        "securityPass": securityPass,
-        "funRet": {
-            "ret": false,
-            "url": device1Ret,
-            "inf": "ID DO RETORNO"
-        },
-        "funRun": {
-            "name": "excel",
-            "par": {
-                "action": "set",
-                "tab": "YARE",
-                "col": "A",
-                "value": `${inf.value}`,
-                "inf": JSON.stringify(inf.inf)
+        "fun": {
+            "securityPass": securityPass,
+            "funRet": {
+                "ret": false,
+                "url": device1Ret,
+                "inf": "ID DO RETORNO"
+            },
+            "funRun": {
+                "name": "excel",
+                "par": {
+                    "action": "set",
+                    "tab": "YARE",
+                    "col": "A",
+                    "value": `${inf.value}`,
+                    "inf": JSON.stringify(inf.inf)
+                }
             }
         }
     }

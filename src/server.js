@@ -167,46 +167,72 @@ sockRes.listen((portSocket + 2), () => { });
 
 
 async function log(inf) {
+    let sendWeb
     const RetDH = dateHour()
     const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
     const infFileWrite = {
-        'file': `log/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
+        'file': `D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
         'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
         'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
-    }; fileWrite(infFileWrite);
+    };
+    const retFileInf = await fileWrite(infFileWrite);
 
-    const sendWeb = {
-        "fun": {
-            "securityPass": securityPass,
-            "funRet": {
-                "ret": true,
-                "url": `${wsHost}/${device2}`,
-                "inf": "ID DO RETORNO 1",
-                "fun": {
-                    "securityPass": "Password@2023Websocket",
-                    "funRet": {
-                        "ret": false,
-                        "url": `${wsHost}/${device2Ret}`,
-                        "inf": "ID DO RETORNO 2"
-                    },
-                    "funRun": {
-                        "name": "fileWrite",
-                        "par": {
-                            "file": "D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt",
-                            "rewrite": true,
-                            "text": "########"
-                        }
+    if (inf.url == 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate') {
+        sendWeb = {
+            "fun": {
+                "securityPass": securityPass,
+                "funRet": {
+                    "ret": false,
+                    "url": `${wsHost}/${device1}`,
+                    "inf": "ID DO RETORNO 1"
+                },
+                "funRun": {
+                    "name": "notification",
+                    "par": {
+                        "duration": 2,
+                        "type": "basic",
+                        "title": `WELOCALIZE`,
+                        "message": inf.value,
+                        "iconUrl": null,
+                        "buttons": [],
                     }
                 }
-            },
-            "funRun": {
-                "name": "excel",
-                "par": {
-                    "action": "set",
-                    "tab": "YARE",
-                    "col": "A",
-                    "value": inf.value,
-                    "inf": JSON.stringify(inf.inf)
+            }
+        }
+    } else {
+        sendWeb = {
+            "fun": {
+                "securityPass": securityPass,
+                "funRet": {
+                    "ret": true,
+                    "url": `${wsHost}/${device2}`,
+                    "inf": "ID DO RETORNO 1",
+                    "fun": {
+                        "securityPass": "Password@2023Websocket",
+                        "funRet": {
+                            "ret": false,
+                            "url": `${wsHost}/${device2Ret}`,
+                            "inf": "ID DO RETORNO 2"
+                        },
+                        "funRun": {
+                            "name": "fileWrite",
+                            "par": {
+                                "file": "D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt",
+                                "rewrite": true,
+                                "text": "########"
+                            }
+                        }
+                    }
+                },
+                "funRun": {
+                    "name": "excel",
+                    "par": {
+                        "action": "set",
+                        "tab": "YARE",
+                        "col": "A",
+                        "value": inf.value,
+                        "inf": JSON.stringify(inf.inf)
+                    }
                 }
             }
         }

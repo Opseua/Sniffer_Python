@@ -29,11 +29,13 @@ const { default: WebSocket } = await import('isomorphic-ws');
 let WebS = WebSocket;
 const infConfigStorage = { 'path': '/src/config.json', 'action': 'get', 'key': 'websocket' }
 const retConfigStorage = await configStorage(infConfigStorage)
-const port = retConfigStorage.res.port;
-const device1 = retConfigStorage.res.device1.name
-const device1Ret = `${retConfigStorage.res.ws2}:${port}/${retConfigStorage.res.device1.ret}`
+const wsHost = `${retConfigStorage.res.ws2}:${retConfigStorage.res.port}`
 const securityPass = retConfigStorage.res.securityPass
-let wsRet = new WebS(`${retConfigStorage.res.ws2}:${port}/${device1}`);
+const device1 = retConfigStorage.res.device1.name
+const device1Ret = retConfigStorage.res.device1.ret
+const device2 = retConfigStorage.res.device2.name
+const device2Ret = retConfigStorage.res.device2.ret
+let wsRet = new WebS(`${wsHost}/${device1}`);
 wsRet.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET INTERROMPIDO`); }
 
 async function reqRes(inf) {
@@ -52,7 +54,7 @@ async function reqRes(inf) {
             if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'text': inf.url })) {
                 const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
                 let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
-                const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': tsk }
+                const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': tsk, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'tsk': tsk } }
                 log(infLog)
             }
 
@@ -61,7 +63,7 @@ async function reqRes(inf) {
                 const ewoq = JSON.parse(inf.body)
                 if (ewoq['1']) {
                     const id = ewoq['1'][0]['1']['1']
-                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'id': id } }
+                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'id': id } }
                 } else {
                     infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
                 }
@@ -72,8 +74,8 @@ async function reqRes(inf) {
                 let infLog
                 const ewoq = JSON.parse(inf.body)
                 if (ewoq['6']) {
-                    const id = ewoq['6']['1'].replace(/=/g, '\\u003d')
-                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'id': id } }
+                    const id = ewoq['6']['1']
+                    infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'id': id } }
                 } else {
                     infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
                 }
@@ -177,9 +179,25 @@ async function log(inf) {
         "fun": {
             "securityPass": securityPass,
             "funRet": {
-                "ret": false,
-                "url": device1Ret,
-                "inf": "ID DO RETORNO"
+                "ret": true,
+                "url": `${wsHost}/${device2}`,
+                "inf": "ID DO RETORNO 1",
+                "fun": {
+                    "securityPass": "Password@2023Websocket",
+                    "funRet": {
+                        "ret": false,
+                        "url": `${wsHost}/${device2Ret}`,
+                        "inf": "ID DO RETORNO 2"
+                    },
+                    "funRun": {
+                        "name": "fileWrite",
+                        "par": {
+                            "file": "D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt",
+                            "rewrite": true,
+                            "text": "########"
+                        }
+                    }
+                }
             },
             "funRun": {
                 "name": "excel",
@@ -187,7 +205,7 @@ async function log(inf) {
                     "action": "set",
                     "tab": "YARE",
                     "col": "A",
-                    "value": `${inf.value}`,
+                    "value": inf.value,
                     "inf": JSON.stringify(inf.inf)
                 }
             }

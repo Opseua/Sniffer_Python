@@ -2,7 +2,7 @@ await import('./resources/clearConsole.js');
 console.clear();
 console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
-await import('../../Chrome_Extension/src/resources/functions.js');
+await import('../../Chrome_Extension/src/resources/@functions.js');
 import net from 'net'; const portSocket = 3000;
 import { exec } from 'child_process'
 
@@ -173,7 +173,7 @@ async function log(inf) {
     const infFile = {
         'action': 'write',
         'file': `D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
-        'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
+        'rewrite': true, // 'true' adiciona, 'false' limpa
         'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
     };
     const retFile = await file(infFile);

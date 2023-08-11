@@ -170,12 +170,13 @@ async function log(inf) {
     let sendWeb
     const RetDH = dateHour()
     const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
-    const infFileWrite = {
+    const infFile = {
+        'action': 'write',
         'file': `D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
         'rewrite': true, // 'true' adiciona no MESMO arquivo, 'false' cria outro em branco
         'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
     };
-    const retFileInf = await fileWrite(infFileWrite);
+    const retFile = await file(infFile);
 
     if (inf.url == 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate') {
         sendWeb = {
@@ -215,8 +216,9 @@ async function log(inf) {
                             "inf": "ID DO RETORNO 2"
                         },
                         "funRun": {
-                            "name": "fileWrite",
+                            "name": "file",
                             "par": {
+                                "action": "write",
                                 "file": "D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt",
                                 "rewrite": true,
                                 "text": "########"

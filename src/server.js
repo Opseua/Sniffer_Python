@@ -17,6 +17,8 @@ const sendPri = {
     'buffer': 1024,
     'arrUrl': [
         'https://ntfy.sh/',
+        'https://desk.oneforma.com/scribo_apps/MTPE_new_process/postediting.php*',
+        'https://www.tryrating.com/api/survey',
         'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks',
         'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate',
         'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback'
@@ -45,12 +47,15 @@ async function reqRes(inf) {
         if (!!sendPri.arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
             let search
             // ######################################################################
+
+            // #### NTFY
             if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://ntfy.sh/', 'text': inf.url })) {
                 ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
                 const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
                 log(infLog)
             }
 
+            // #### EWOQ | template
             if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'text': inf.url })) {
                 const nameTask = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
                 let tsk; if (nameTask) { tsk = nameTask[1]; } else { tsk = 'NAO ENCONTRADO'; }
@@ -58,6 +63,7 @@ async function reqRes(inf) {
                 log(infLog)
             }
 
+            // #### EWOQ | new task
             if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'text': inf.url })) {
                 let infLog
                 const ewoq = JSON.parse(inf.body)
@@ -70,6 +76,7 @@ async function reqRes(inf) {
                 log(infLog)
             }
 
+            // #### EWOQ | submit
             if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'text': inf.url })) {
                 let infLog
                 const ewoq = JSON.parse(inf.body)
@@ -80,6 +87,41 @@ async function reqRes(inf) {
                     infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
                 }
                 log(infLog)
+            }
+
+            // #### Peroptyx | survey
+            if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://www.tryrating.com/api/survey', 'text': inf.url })) {
+                let nameTask
+                let sendWebBolean = false
+                if (regex({ 'simple': true, 'text': JSON.stringify(inf.body), 'pattern': '*Search 2.0*' })) {
+                    // Search 2.0 
+                    sendWebBolean = true
+                    nameTask = 'peroptyxSearch2_0'
+                } else if (regex({ 'simple': true, 'text': JSON.stringify(inf.body), 'pattern': '*Query Image Deserving Classification*' })) {
+                    // Query Image Deserving Classification
+                    sendWebBolean = true
+                    nameTask = 'peroptyxQIDC'
+                }
+                if (sendWebBolean) {
+                    const sendWeb = {
+                        "fun": {
+                            "securityPass": securityPass,
+                            "funRet": {
+                                "ret": false,
+                                "url": "aaaa",
+                                "inf": "ID DO RETORNO 1"
+                            },
+                            "funRun": {
+                                "name": nameTask,
+                                "par": {
+                                    "server": true,
+                                    "sniffer": inf.body
+                                }
+                            }
+                        }
+                    }
+                    wsRet.send(JSON.stringify(sendWeb))
+                }
             }
 
             // ######################################################################

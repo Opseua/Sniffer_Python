@@ -30,7 +30,7 @@ if (retCommandLine.ret) {
 
         const { default: WebSocket } = await import('isomorphic-ws');
         let WebS = WebSocket;
-        const infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'websocket' }
+        const infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocketRet' }
         const retConfigStorage = await configStorage(infConfigStorage)
         const wsHost = `${retConfigStorage.res.ws1}:${retConfigStorage.res.port}`
         const securityPass = retConfigStorage.res.securityPass
@@ -252,7 +252,7 @@ if (retCommandLine.ret) {
                             "url": `${wsHost}/${device2}`,
                             "inf": "ID DO RETORNO 1",
                             "fun": {
-                                "securityPass": "Password@2023Websocket",
+                                "securityPass": "Password@2023WebSocket",
                                 "funRet": {
                                     "ret": false,
                                     "url": `${wsHost}/${device2Ret}`,

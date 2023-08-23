@@ -1,9 +1,8 @@
-await import('./resources/clearConsole.js');
 console.clear();
-console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
-
+await import('../../Chrome_Extension/src/resources/clearConsole.js');
 await import('../../Chrome_Extension/src/resources/@functions.js');
 import net from 'net'; const portSocket = 3000;
+console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
 const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
 let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`

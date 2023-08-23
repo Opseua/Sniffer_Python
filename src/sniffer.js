@@ -32,7 +32,7 @@ if (retCommandLine.ret) {
         let WebS = WebSocket;
         const infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocketRet' }
         const retConfigStorage = await configStorage(infConfigStorage)
-        const wsHost = `${retConfigStorage.res.ws1}:${retConfigStorage.res.port}`
+        const wsHost = `ws://${retConfigStorage.res.ws1}:${retConfigStorage.res.port}`
         const securityPass = retConfigStorage.res.securityPass
         const device1 = retConfigStorage.res.device1.name
         const device1Ret = retConfigStorage.res.device1.ret

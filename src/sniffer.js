@@ -4,9 +4,20 @@ await import('../../Chrome_Extension/src/resources/@functions.js');
 import net from 'net'; const portSocket = 3000;
 console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
+const sendPri = {
+    'buffer': 500000,
+    'arrUrl': [
+        'https://ntfy.sh/',
+        'https://desk.oneforma.com/scribo_apps/MTPE_new_process/postediting.php*',
+        'https://www.tryrating.com/api/survey',
+        'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks',
+        'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate',
+        'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback'
+    ]
+};
 const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
 let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
-command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent2}/resources/start.py"`
+command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent2}/resources/start.py" "${sendPri.buffer}"`
 // let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
 // command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent2}/resources/start.py"`
 // exec(command, { maxBuffer: 1024 * 5000 }, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
@@ -14,17 +25,6 @@ const infCommandLine = { 'background': false, 'command': command }
 const retCommandLine = await commandLine(infCommandLine)
 if (retCommandLine.ret) {
     try {
-        const sendPri = {
-            'buffer': 1024,
-            'arrUrl': [
-                'https://ntfy.sh/',
-                'https://desk.oneforma.com/scribo_apps/MTPE_new_process/postediting.php*',
-                'https://www.tryrating.com/api/survey',
-                'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks',
-                'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate',
-                'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback'
-            ]
-        };
         const sockPri = net.createServer();
         sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) }); sockPri.listen(portSocket, () => { });
 

@@ -9,12 +9,12 @@ import subprocess
 import json
 import requests
 proxyPort = 8088
-arg = sys.argv[1] if len(sys.argv) > 1 else None
+arg1 = sys.argv[1] if len(sys.argv) > 0 else None
 script_dir = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.abspath(os.path.join(script_dir, ''))
 
 path = os.getcwd().replace("\\", "/")
-command = f'mitmdump --anticache -s {full_path}/sniffer.py --mode regular@{proxyPort} --quiet'
+command = f'mitmdump --anticache --mode regular@{proxyPort} --quiet -s {full_path}/sniffer.py "{arg1}"'
 os.system('cls' if os.name == 'nt' else 'clear')
 
 def api(inf1):

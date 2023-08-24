@@ -43,7 +43,12 @@ try:
     sockRes.connect(('127.0.0.1', (port+2)))
     send_data = b''
     sockPri.sendall(send_data)
-    dataPri = sockPri.recv(99999).decode('utf-8')
+    bufferSockPri = 99999
+    if len(sys.argv) == 8 and sys.argv[7].isdigit():
+        bufferSockPri = int(sys.argv[7])
+    dataPri = sockPri.recv(bufferSockPri).decode('utf-8')
+    with open('parametros.txt', 'w') as arquivo:
+        arquivo.write(str(bufferSockPri))
     sockPri.close()
 except Exception as e:
     console('ERRO AO SE CONECTAR NO SOCKET JS 1')

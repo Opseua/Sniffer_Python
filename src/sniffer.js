@@ -126,7 +126,7 @@ if (retCommandLine.ret) {
                     }
 
                     // ######################################################################
-                    if (!ret.send) { console.log('REQUISIAO CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('REQUISIAO ALtERADA') }
+                    if (!ret.send) { console.log('REQUISIAO CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('REQUISIAO ALTERADA') }
                 } else { console.log('OUTRO URL |', inf.url) }
 
             } catch (e) {
@@ -252,7 +252,7 @@ if (retCommandLine.ret) {
                             "url": `${wsHost}/${device2}`,
                             "inf": "ID DO RETORNO 1",
                             "fun": {
-                                "securityPass": "Password@2023WebSocket",
+                                "securityPass": securityPass,
                                 "funRet": {
                                     "ret": false,
                                     "url": `${wsHost}/${device2Ret}`,

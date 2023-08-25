@@ -1,5 +1,3 @@
-console.clear();
-await import('../../Chrome_Extension/src/resources/clearConsole.js');
 await import('../../Chrome_Extension/src/resources/@functions.js');
 import net from 'net';
 console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
@@ -9,22 +7,13 @@ try {
         let infConfigStorage, retConfigStorage
         infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
         retConfigStorage = await configStorage(infConfigStorage)
-        if (!retConfigStorage.ret) { return ret }
+        if (!retConfigStorage.ret) { return }
         const portSocket = retConfigStorage.res.portSocket
         const bufferSocket = retConfigStorage.res.bufferSocket
         const arrUrl = retConfigStorage.res.arrUrl
-        const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
-        if (!retFileInf.ret) { return ret }
-        let command = `"D:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\4_BACKGROUND.exe"`
-        command = `${command} "D:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe" "${retFileInf.res.pathCurrent1}/resources/start.py"`
-        const infCommandLine = { 'background': false, 'command': command }
-        const retCommandLine = await commandLine(infCommandLine)
-        if (!retCommandLine.ret) { return ret }
-        const { default: WebSocket } = await import('isomorphic-ws');
-        let WebS = WebSocket;
         infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
         retConfigStorage = await configStorage(infConfigStorage)
-        if (!retConfigStorage.ret) { return ret }
+        if (!retConfigStorage.ret) { return }
         const wsHost = retConfigStorage.res.ws1
         const portWebSocket = retConfigStorage.res.portWebSocket;
         const securityPass = retConfigStorage.res.securityPass
@@ -32,6 +21,31 @@ try {
         const device1Ret = retConfigStorage.res.device1.ret
         const device2 = retConfigStorage.res.device2.name
         const device2Ret = retConfigStorage.res.device2.ret
+        const infFile = { 'action': 'read', 'file': `D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt` };
+        const retFile = await file(infFile);
+        if (retFile.ret) {
+            const infApi = {
+                url: `http://${wsHost}:${portWebSocket}/${device2}`,
+                method: 'POST', headers: { 'accept-language': 'application/json' },
+                body: {
+                    "fun": {
+                        "securityPass": securityPass, "funRet": { "ret": false, },
+                        "funRun": { "name": "commandLine", "par": { "background": false, "command": 'taskkill /IM "nodeSniffer.exe" /F' } }
+                    }
+                }
+            };
+            const retApi = await api(infApi);
+            return
+        }
+        const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
+        if (!retFileInf.ret) { return }
+        let command = `"D:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\4_BACKGROUND.exe"`
+        command = `${command} "D:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe" "${retFileInf.res.pathCurrent1}/resources/start.py"`
+        const infCommandLine = { 'background': false, 'command': command }
+        const retCommandLine = await commandLine(infCommandLine)
+        if (!retCommandLine.ret) { return }
+        const { default: WebSocket } = await import('isomorphic-ws');
+        let WebS = WebSocket;
         let wsRet = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`);
         wsRet.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET INTERROMPIDO`); }
 

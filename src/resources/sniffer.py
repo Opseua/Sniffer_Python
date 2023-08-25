@@ -1,19 +1,27 @@
-from mitmproxy import http
+# 'start.py' e 'sniffer.py'
 from urllib.parse import urlparse
 import json
+import os
+import time
+import re
+# 'sniffer.py'
+from mitmproxy import http
 import socket
 import base64
-from datetime import datetime
 import io
 import gzip
 import brotli
 import zlib
-import os
-import sys
-import psutil
-import time
-import re
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+full_path = os.path.abspath(os.path.join(script_dir, ''))
+full_pathJson = os.path.abspath(os.path.join(script_dir, '../../../Chrome_Extension/src/config.json'))
+config = ''
+with open(full_pathJson, 'r') as file:
+    config = json.load(file)
+portSocket = config['sniffer']['portSocket'] 
+bufferSocket = config['sniffer']['bufferSocket']
+arrUrl = config['sniffer']['arrUrl']
 
 def console(*args):
     msg = ' '.join(str(arg) for arg in args)
@@ -22,40 +30,21 @@ def console(*args):
         os.system('cls' if os.name == 'nt' else 'clear')
         print('CONSOLE LIMPO!')
     console.counter += 1
-
-
 console.counter = 0
-
 
 def rgxMat(a, b):
     c = re.escape(b).replace(r'\*', '.*')
     return re.match(f"^{c}$", a) is not None
 
-
-port = 3000
-sockPri = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockRes = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
-    sockPri.connect(('127.0.0.1', (port)))
-    sockReq.connect(('127.0.0.1', (port+1)))
-    sockRes.connect(('127.0.0.1', (port+2)))
+    sockReq.connect(('127.0.0.1', (portSocket)))
+    sockRes.connect(('127.0.0.1', (portSocket+1)))
     send_data = b''
-    sockPri.sendall(send_data)
-    bufferSockPri = 99999
-    if len(sys.argv) == 8 and sys.argv[7].isdigit():
-        bufferSockPri = int(sys.argv[7])
-    dataPri = sockPri.recv(bufferSockPri).decode('utf-8')
-    with open('parametros.txt', 'w') as arquivo:
-        arquivo.write(str(bufferSockPri))
-    sockPri.close()
 except Exception as e:
     console('ERRO AO SE CONECTAR NO SOCKET JS 1')
-infPri = json.loads(dataPri)
-buffer = infPri['buffer']
-arrUrl = infPri['arrUrl']
-
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
@@ -121,8 +110,8 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
         try:
             sendSockReq = json.dumps(objReq)
             sendB64Req = base64.b64encode(sendSockReq.encode('utf-8'))
-            for i in range(0, len(sendB64Req), buffer):
-                part = sendB64Req[i:i+buffer]
+            for i in range(0, len(sendB64Req), bufferSocket):
+                part = sendB64Req[i:i+bufferSocket]
                 sent = sockReq.send(part)
             sockReq.send('#fim#'.encode('utf-8'))
             # console('SOCKET REQUISICAO [SEND]: OK')
@@ -133,7 +122,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
         try:
             getSockReq = ''
             while True:
-                chunk = sockReq.recv(buffer)
+                chunk = sockReq.recv(bufferSocket)
                 getSockReq += chunk.decode()
                 if '#fim#' in getSockReq:
                     getSockReq = getSockReq.split('#fim#')[0].rstrip()
@@ -160,15 +149,12 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                                 'compress': retReq.get('res', {}).get('compress'),
                                 'type': retReq.get('res', {}).get('type'),
                             }
-
                             if newReq['headers']:
                                 for key in newReq['headers']:
                                     flow.request.headers[key] = newReq['headers'][key]
-
                             if newReq['body']:
                                 flow.request.content = str.encode(
                                     newReq['body'])
-
                             console(
                                 "########### REQ ALTERADA ###########")
                     else:
@@ -186,7 +172,6 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
     else:
         # console('OUTRO URL REQ |', urlparse(flow.request.url).hostname)
         pass
-
 
 def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
@@ -253,8 +238,8 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
         try:
             sendSockRes = json.dumps(objRes)
             sendB64Res = base64.b64encode(sendSockRes.encode('utf-8'))
-            for i in range(0, len(sendB64Res), buffer):
-                part = sendB64Res[i:i+buffer]
+            for i in range(0, len(sendB64Res), bufferSocket):
+                part = sendB64Res[i:i+bufferSocket]
                 sent = sockRes.send(part)
             sockRes.send('#fim#'.encode('utf-8'))
             # console('SOCKET RESPONSE [SEND]: OK')
@@ -265,7 +250,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
         try:
             getSockRes = ''
             while True:
-                chunk = sockRes.recv(buffer)
+                chunk = sockRes.recv(bufferSocket)
                 getSockRes += chunk.decode()
                 if '#fim#' in getSockRes:
                     getSockRes = getSockRes.split('#fim#')[0].rstrip()
@@ -315,7 +300,6 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
     else:
         # console('OUTRO URL RES |', urlparse(flow.request.url).hostname)
         pass
-
 
 # ##################################################
 os.system('cls' if os.name == 'nt' else 'clear')

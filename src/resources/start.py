@@ -1,45 +1,56 @@
-import sys
-import psutil
-import os
-import winreg
-import argparse
-import subprocess
-import time
-import subprocess
+# with open("D:/parametros.txt", "w") as file: # 'a' adiciona, 'w' limpa
+#     file.write(f"AAA")
+#     print('OK')
+
+# 'start.py' e 'sniffer.py'
+from urllib.parse import urlparse
 import json
+import os
+import time
+import re
+# 'start.py'
+import psutil
+import winreg
+import subprocess
 import requests
-proxyPort = 8088
-arg1 = sys.argv[1] if len(sys.argv) > 0 else None
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.abspath(os.path.join(script_dir, ''))
-
-path = os.getcwd().replace("\\", "/")
-command = f'mitmdump --anticache --mode regular@{proxyPort} --quiet -s {full_path}/sniffer.py "{arg1}"'
+full_pathJson = os.path.abspath(os.path.join(script_dir, '../../../Chrome_Extension/src/config.json'))
+config = ''
+with open(full_pathJson, 'r') as file:
+    config = json.load(file)
+portMitm = config['sniffer']['portMitm'] 
+arrUrl = config['sniffer']['arrUrl']
+arrHost = [urlparse(url).hostname for url in arrUrl if urlparse(url).scheme in ('http', 'https')]
+arrHost = ' '.join([f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))])
+command = f'mitmdump --quiet --anticache -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
 os.system('cls' if os.name == 'nt' else 'clear')
 
 def api(inf1):
-    full_pathJson = os.path.abspath(os.path.join(script_dir, '../../../Chrome_Extension/src/config.json'))
-    with open(full_pathJson, 'r') as file:
-        config = json.load(file)
-        url = "http://" + str(config['webSocketRet']['ws1']) + ":" + str(config['webSocketRet']['port']) + "/" + str(config['webSocketRet']['device1']['name'])
-        payload = {
-        "fun": {
-            "securityPass": config['webSocketRet']['securityPass'],
-            "funRet": {
-                "ret": False,
-                "url": "ws://xx.xxx.xxx.xx:xx/######_RET",
-                "inf": "ID DO RETORNO"
-            },
-            "funRun": {
-                "name": "chromeActions",
-                "par": { 
-                    "action": "badge", 
-                    "inf": { "text": inf1 }
-                    }
+    securityPass = config['webSocket']['securityPass'] 
+    wsHost = config['webSocket']['ws1'] 
+    portWebSocket = config['webSocket']['portWebSocket'] 
+    device1 = config['webSocket']['device1']['name']
+    url = "http://" + str(wsHost) + ":" + str(portWebSocket) + "/" + str(device1)
+    payload = {
+    "fun": {
+        "securityPass": securityPass,
+        "funRet": {
+            "ret": False,
+            "url": "ws://xx.xxx.xxx.xx:xx/######_RET",
+            "inf": "ID DO RETORNO"
+        },
+        "funRun": {
+            "name": "chromeActions",
+            "par": { 
+                "action": "badge", 
+                "inf": { "text": inf1 }
+                }
             }
         }
-        }
-        response = requests.post(url, json=payload)
+    }
+    response = requests.post(url, json=payload)
 
 def checkProcess2():
     api('PYTH')
@@ -47,7 +58,7 @@ def checkProcess2():
                          "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)
     winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
     winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ,
-                      "127.0.0.1:" + str(proxyPort))
+                      "127.0.0.1:" + str(portMitm))
     winreg.CloseKey(key)
     subprocess.Popen(command)
     #print('PROCESSO INICIADO 2')

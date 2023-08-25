@@ -1,59 +1,53 @@
 console.clear();
 await import('../../Chrome_Extension/src/resources/clearConsole.js');
 await import('../../Chrome_Extension/src/resources/@functions.js');
-import net from 'net'; const portSocket = 3000;
+import net from 'net';
 console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
-const sendPri = {
-    'buffer': 500000,
-    'arrUrl': [
-        'https://ntfy.sh/',
-        'https://desk.oneforma.com/scribo_apps/MTPE_new_process/postediting.php*',
-        'https://www.tryrating.com/api/survey',
-        'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks',
-        'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate',
-        'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback'
-    ]
-};
-const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
-let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
-command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent2}/resources/start.py" "${sendPri.buffer}"`
-// let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
-// command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent2}/resources/start.py"`
-// exec(command, { maxBuffer: 1024 * 5000 }, (err, stdout, stderr) => { if (err) { console.error(err); return; } console.log(stdout); });
-const infCommandLine = { 'background': false, 'command': command }
-const retCommandLine = await commandLine(infCommandLine)
-if (retCommandLine.ret) {
-    try {
-        const sockPri = net.createServer();
-        sockPri.on('connection', (socket) => { socket.write(JSON.stringify(sendPri)) }); sockPri.listen(portSocket, () => { });
-
+try {
+    async function run() {
+        let infConfigStorage, retConfigStorage
+        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
+        retConfigStorage = await configStorage(infConfigStorage)
+        if (!retConfigStorage.ret) { return ret }
+        const portSocket = retConfigStorage.res.portSocket
+        const bufferSocket = retConfigStorage.res.bufferSocket
+        const arrUrl = retConfigStorage.res.arrUrl
+        const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
+        if (!retFileInf.ret) { return ret }
+        let command = `"D:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\4_BACKGROUND.exe"`
+        command = `${command} "D:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe" "${retFileInf.res.pathCurrent1}/resources/start.py"`
+        const infCommandLine = { 'background': false, 'command': command }
+        const retCommandLine = await commandLine(infCommandLine)
+        if (!retCommandLine.ret) { return ret }
         const { default: WebSocket } = await import('isomorphic-ws');
         let WebS = WebSocket;
-        const infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocketRet' }
-        const retConfigStorage = await configStorage(infConfigStorage)
-        const wsHost = `ws://${retConfigStorage.res.ws1}:${retConfigStorage.res.port}`
+        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
+        retConfigStorage = await configStorage(infConfigStorage)
+        if (!retConfigStorage.ret) { return ret }
+        const wsHost = retConfigStorage.res.ws1
+        const portWebSocket = retConfigStorage.res.portWebSocket;
         const securityPass = retConfigStorage.res.securityPass
         const device1 = retConfigStorage.res.device1.name
         const device1Ret = retConfigStorage.res.device1.ret
         const device2 = retConfigStorage.res.device2.name
         const device2Ret = retConfigStorage.res.device2.ret
-        let wsRet = new WebS(`${wsHost}/${device1}`);
+        let wsRet = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`);
         wsRet.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET INTERROMPIDO`); }
 
         async function reqRes(inf) {
             let ret = { 'send': true, res: {} };
             try {
                 ret['res']['reqRes'] = inf.reqRes;
-                if (!!sendPri.arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
+                if (!!arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
                     let search
                     // ######################################################################
 
                     // #### NTFY
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://ntfy.sh/', 'text': inf.url })) {
                         ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
-                        const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
-                        log(infLog)
+                        //const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body }
+                        //log(infLog)
                     }
 
                     // #### EWOQ | template
@@ -165,8 +159,8 @@ if (retCommandLine.ret) {
                         const retReqRes = await reqRes(dataReq)
                         if ((dataReq.reqRes == 'req') && (retReqRes.res.reqRes == 'req')) {
                             const sendB64Req = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
-                            for (let i = 0; i < sendB64Req.length; i += sendPri.buffer) {
-                                const part = sendB64Req.slice(i, i + sendPri.buffer);
+                            for (let i = 0; i < sendB64Req.length; i += bufferSocket) {
+                                const part = sendB64Req.slice(i, i + bufferSocket);
                                 socket.write(part);
                             }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
                         }; getSockReq = ''; // LIMPAR BUFFER
@@ -176,7 +170,7 @@ if (retCommandLine.ret) {
                 console.log(regexE({ 'e': e }).res)
             }
         });
-        sockReq.listen((portSocket + 1), () => { });
+        sockReq.listen((portSocket), () => { });
 
         // ################################################## RESPONSE
         const sockRes = net.createServer((socket) => {
@@ -192,8 +186,8 @@ if (retCommandLine.ret) {
                         const retReqRes = await reqRes(dataRes)
                         if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
                             const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
-                            for (let i = 0; i < sendB64Res.length; i += sendPri.buffer) {
-                                const part = sendB64Res.slice(i, i + sendPri.buffer);
+                            for (let i = 0; i < sendB64Res.length; i += bufferSocket) {
+                                const part = sendB64Res.slice(i, i + bufferSocket);
                                 socket.write(part);
                             }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
                         }; getSockRes = ''; // LIMPAR BUFFER
@@ -203,7 +197,7 @@ if (retCommandLine.ret) {
                 console.log(regexE({ 'e': e }).res)
             }
         });
-        sockRes.listen((portSocket + 2), () => { });
+        sockRes.listen((portSocket + 1), () => { });
 
 
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -227,7 +221,7 @@ if (retCommandLine.ret) {
                         "securityPass": securityPass,
                         "funRet": {
                             "ret": false,
-                            "url": `${wsHost}/${device1}`,
+                            "url": `ws://${wsHost}:${portWebSocket}/${device1}`,
                             "inf": "ID DO RETORNO 1"
                         },
                         "funRun": {
@@ -249,13 +243,13 @@ if (retCommandLine.ret) {
                         "securityPass": securityPass,
                         "funRet": {
                             "ret": true,
-                            "url": `${wsHost}/${device2}`,
+                            "url": `ws://${wsHost}:${portWebSocket}/${device2}`,
                             "inf": "ID DO RETORNO 1",
                             "fun": {
                                 "securityPass": securityPass,
                                 "funRet": {
                                     "ret": false,
-                                    "url": `${wsHost}/${device2Ret}`,
+                                    "url": `ws://${wsHost}:${portWebSocket}/${device2Ret}`,
                                     "inf": "ID DO RETORNO 2"
                                 },
                                 "funRun": {
@@ -314,8 +308,14 @@ if (retCommandLine.ret) {
 
 
 
-    } catch (e) {
-        console.log(regexE({ 'e': e }).res)
-    }
 
+
+
+    }
+    await run()
+} catch (e) {
+    console.log(regexE({ 'e': e }).res)
 }
+
+
+

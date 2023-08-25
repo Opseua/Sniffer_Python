@@ -21,6 +21,7 @@ with open(full_pathJson, 'r') as file:
     config = json.load(file)
 portSocket = config['sniffer']['portSocket'] 
 bufferSocket = config['sniffer']['bufferSocket']
+bufferSocket = bufferSocket * 1000
 arrUrl = config['sniffer']['arrUrl']
 
 def console(*args):

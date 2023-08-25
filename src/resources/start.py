@@ -45,8 +45,9 @@ def api(inf):
     response = requests.post(url, json=payload)
 
 def checkProcess2():
-    api({"name": "chromeActions","par": { "action": "badge", "inf": { "text": 'PYTH' }}})
     api({"name": "notification","par": { "duration": 3, "type": "basic","title":"SNIFFER","message":"Ativado","iconUrl":"./src/media/notification_1.png"}})
+    api({"name": "chromeActions","par": { "action": "badge", "inf": { "color": [25, 255, 71, 255] }}})
+    api({"name": "chromeActions","par": { "action": "badge", "inf": { "text": 'PYTH' }}})
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                          "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)
     winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
@@ -71,8 +72,8 @@ def checkProcess2():
                     break
         if indiceArr == -1:
             #print('NAO 2')
-            api({"name": "chromeActions","par": { "action": "badge", "inf": { "text": '' }}})
             api({"name": "notification","par": { "duration": 3, "type": "basic","title":"SNIFFER","message":"Desativado","iconUrl":"./src/media/notification_2.png"}})
+            api({"name": "chromeActions","par": { "action": "badge", "inf": { "text": '' }}})
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                                 "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, winreg.KEY_WRITE)
             winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ,"")

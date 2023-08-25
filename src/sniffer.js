@@ -21,22 +21,6 @@ try {
         const device1Ret = retConfigStorage.res.device1.ret
         const device2 = retConfigStorage.res.device2.name
         const device2Ret = retConfigStorage.res.device2.ret
-        // const infFile = { 'action': 'read', 'file': `D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt` };
-        // const retFile = await file(infFile);
-        // if (retFile.ret) {
-        //     const infApi = {
-        //         url: `http://${wsHost}:${portWebSocket}/${device2}`,
-        //         method: 'POST', headers: { 'accept-language': 'application/json' },
-        //         body: {
-        //             "fun": {
-        //                 "securityPass": securityPass, "funRet": { "ret": false, },
-        //                 "funRun": { "name": "commandLine", "par": { "background": false, "command": 'taskkill /IM "nodeSniffer.exe" /F' } }
-        //             }
-        //         }
-        //     };
-        //     const retApi = await api(infApi);
-        //     return
-        // }
         const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
         if (!retFileInf.ret) { return }
         let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
@@ -46,8 +30,10 @@ try {
         if (!retCommandLine.ret) { return }
         const { default: WebSocket } = await import('isomorphic-ws');
         let WebS = WebSocket;
-        let wsRet = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`);
-        wsRet.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET INTERROMPIDO`); }
+        let wsRet1 = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`);
+        wsRet1.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 1 INTERROMPIDO`) }
+        let wsRet2 = new WebS(`ws://${wsHost}:${portWebSocket}/${device2}`);
+        wsRet2.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 2 INTERROMPIDO`) }
 
         async function reqRes(inf) {
             let ret = { 'send': true, res: {} };
@@ -112,6 +98,26 @@ try {
                             nameTask = 'peroptyxQIDC'
                         }
                         if (sendWebBolean) {
+
+                            let infFile, retFile, reg
+                            const time = dateHour().res
+                            const time1 = `${time.mon}-${time.day}`
+                            const time2 = `${time.hou}.${time.min}.${time.sec}`
+                            const jsonGet = inf.body
+                            infFile = { // ############# json GET
+                                'action': 'write',
+                                'file': `../log/TryRating/${time1}/${time2} RES GET.txt`,
+                                'rewrite': true, // 'true' adiciona, 'false' limpa
+                                'text': `${JSON.stringify(jsonGet)}\n\n`
+                            }; retFile = await file(infFile);
+
+                            infFile = { // #############  time json GET
+                                'action': 'write',
+                                'file': `../log/TryRating/timeLastGet.txt`,
+                                'rewrite': false, // 'true' adiciona, 'false' limpa
+                                'text': dateHour().res.tim
+                            }; retFile = await file(infFile);
+
                             const sendWeb = {
                                 "fun": {
                                     "securityPass": securityPass,
@@ -129,8 +135,41 @@ try {
                                     }
                                 }
                             }
-                            wsRet.send(JSON.stringify(sendWeb))
+                            wsRet1.send(JSON.stringify(sendWeb))
+
                         }
+                    }
+
+                    // #### Peroptyx | submit
+                    if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://www.tryrating.com/api/client_log', 'text': inf.url })) {
+
+                        let infFile, retFile, reg
+                        const time = dateHour().res
+                        const time1 = `${time.mon}-${time.day}`
+                        const time2 = `${time.hou}.${time.min}.${time.sec}`
+                        const jsonSend = inf.body
+                        infFile = { // ############# json SEND
+                            'action': 'write',
+                            'file': `../log/TryRating/${time1}/${time2} REQ SEND.txt`,
+                            'rewrite': true, // 'true' adiciona, 'false' limpa
+                            'text': `${JSON.stringify(jsonSend)}\n\n`
+                        }; retFile = await file(infFile);
+
+                        infFile = { 'action': 'read', 'file': `../log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
+                        const dif = Number(dateHour().res.tim) - Number(retFile.res)
+
+                        infFile = { 'action': 'read', 'file': `../log/TryRating/${time1}/### REG ###.txt` }; retFile = await file(infFile);
+                        if (!retFile.ret) { reg = 0 } else { reg = retFile.res }
+
+                        const total = Number(reg) + dif
+
+                        infFile = { // ############# total trabalhado
+                            'action': 'write',
+                            'file': `../log/TryRating/${time1}/### REG ###.txt`,
+                            'rewrite': false, // 'true' adiciona, 'false' limpa
+                            'text': JSON.stringify(total)
+                        }; retFile = await file(infFile);
+
                     }
 
                     // ######################################################################
@@ -290,7 +329,7 @@ try {
                     }
                 }
             }
-            wsRet.send(JSON.stringify(sendWeb))
+            wsRet1.send(JSON.stringify(sendWeb))
         }
 
 

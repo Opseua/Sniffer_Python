@@ -21,22 +21,22 @@ try {
         const device1Ret = retConfigStorage.res.device1.ret
         const device2 = retConfigStorage.res.device2.name
         const device2Ret = retConfigStorage.res.device2.ret
-        const infFile = { 'action': 'read', 'file': `D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt` };
-        const retFile = await file(infFile);
-        if (retFile.ret) {
-            const infApi = {
-                url: `http://${wsHost}:${portWebSocket}/${device2}`,
-                method: 'POST', headers: { 'accept-language': 'application/json' },
-                body: {
-                    "fun": {
-                        "securityPass": securityPass, "funRet": { "ret": false, },
-                        "funRun": { "name": "commandLine", "par": { "background": false, "command": 'taskkill /IM "nodeSniffer.exe" /F' } }
-                    }
-                }
-            };
-            const retApi = await api(infApi);
-            return
-        }
+        // const infFile = { 'action': 'read', 'file': `D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt` };
+        // const retFile = await file(infFile);
+        // if (retFile.ret) {
+        //     const infApi = {
+        //         url: `http://${wsHost}:${portWebSocket}/${device2}`,
+        //         method: 'POST', headers: { 'accept-language': 'application/json' },
+        //         body: {
+        //             "fun": {
+        //                 "securityPass": securityPass, "funRet": { "ret": false, },
+        //                 "funRun": { "name": "commandLine", "par": { "background": false, "command": 'taskkill /IM "nodeSniffer.exe" /F' } }
+        //             }
+        //         }
+        //     };
+        //     const retApi = await api(infApi);
+        //     return
+        // }
         const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
         if (!retFileInf.ret) { return }
         let command = `"D:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\4_BACKGROUND.exe"`

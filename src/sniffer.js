@@ -39,8 +39,8 @@ try {
         // }
         const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
         if (!retFileInf.ret) { return }
-        let command = `"D:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\4_BACKGROUND.exe"`
-        command = `${command} "D:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe" "${retFileInf.res.pathCurrent1}/resources/start.py"`
+        let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
+        command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent1}/resources/start.py"`
         const infCommandLine = { 'background': false, 'command': command }
         const retCommandLine = await commandLine(infCommandLine)
         if (!retCommandLine.ret) { return }

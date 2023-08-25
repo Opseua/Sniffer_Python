@@ -14,9 +14,9 @@ import winreg
 import subprocess
 import requests
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-full_path = os.path.abspath(os.path.join(script_dir, ''))
-full_pathJson = os.path.abspath(os.path.join(script_dir, '../../../Chrome_Extension/src/config.json'))
+script_dir = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
+full_path = os.path.abspath(os.path.join(script_dir, '')).replace("\\", "/")
+full_pathJson = os.path.abspath(os.path.join(script_dir, '../../../Chrome_Extension/src/config.json')).replace("\\", "/")
 config = ''
 with open(full_pathJson, 'r') as file:
     config = json.load(file)

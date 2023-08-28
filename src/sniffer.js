@@ -1,17 +1,18 @@
 await import('../../Chrome_Extension/src/resources/@functions.js');
+const p = new Error()
 import net from 'net';
 console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
 try {
     async function run() {
         let infConfigStorage, retConfigStorage
-        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
+        infConfigStorage = { 'p': p, 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
         retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return }
         const portSocket = retConfigStorage.res.portSocket
         const bufferSocket = retConfigStorage.res.bufferSocket
         const arrUrl = retConfigStorage.res.arrUrl
-        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
+        infConfigStorage = { 'p': p, 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
         retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return }
         const wsHost = retConfigStorage.res.ws1
@@ -97,34 +98,36 @@ try {
                             sendWebBolean = true
                             nameTask = 'peroptyxQIDC'
                         }
+
+                        let infFile, retFile, reg, time2
+                        const time = dateHour().res
+                        const time1 = `MES_${time.mon}/DIA_${time.day}`
                         if (sendWebBolean) {
+                            time2 = `${time.hou}.${time.min}.${time.sec}`
+                        } else {
+                            time2 = `${time.hou}.${time.min}.${time.sec}_NEW_TASK`
+                        }
+                        const jsonGet = inf.body
+                        infFile = { // ############# json GET
+                            'action': 'write',
+                            'file': `../log/TryRating/${time1}/${time2}_RES_GET.txt`,
+                            'rewrite': true, // 'true' adiciona, 'false' limpa
+                            'text': `${JSON.stringify(jsonGet)}\n\n`
+                        }; retFile = await file(infFile);
 
-                            let infFile, retFile, reg
-                            const time = dateHour().res
-                            const time1 = `${time.mon}-${time.day}`
-                            const time2 = `${time.hou}.${time.min}.${time.sec}`
-                            const jsonGet = inf.body
-                            infFile = { // ############# json GET
-                                'action': 'write',
-                                'file': `../log/TryRating/${time1}/${time2} RES GET.txt`,
-                                'rewrite': true, // 'true' adiciona, 'false' limpa
-                                'text': `${JSON.stringify(jsonGet)}\n\n`
-                            }; retFile = await file(infFile);
+                        infFile = { // #############  time json GET
+                            'action': 'write',
+                            'file': `../log/TryRating/timeLastGet.txt`,
+                            'rewrite': false, // 'true' adiciona, 'false' limpa
+                            'text': dateHour().res.tim
+                        }; retFile = await file(infFile);
 
-                            infFile = { // #############  time json GET
-                                'action': 'write',
-                                'file': `../log/TryRating/timeLastGet.txt`,
-                                'rewrite': false, // 'true' adiciona, 'false' limpa
-                                'text': dateHour().res.tim
-                            }; retFile = await file(infFile);
-
+                        if (sendWebBolean) {
                             const sendWeb = {
                                 "fun": {
                                     "securityPass": securityPass,
                                     "funRet": {
                                         "ret": false,
-                                        "url": "aaaa",
-                                        "inf": "ID DO RETORNO 1"
                                     },
                                     "funRun": {
                                         "name": nameTask,
@@ -136,7 +139,27 @@ try {
                                 }
                             }
                             wsRet1.send(JSON.stringify(sendWeb))
-
+                        } else {
+                            const sendWeb = {
+                                "fun": {
+                                    "securityPass": securityPass,
+                                    "funRet": {
+                                        "ret": false,
+                                    },
+                                    "funRun": {
+                                        "name": "notification",
+                                        "par": {
+                                            "duration": 5,
+                                            "type": "basic",
+                                            "title": `ALERTA`,
+                                            "message": "Outro tipo de tarefa!",
+                                            "iconUrl": "./src/media/notification_3.png",
+                                            "buttons": [],
+                                        }
+                                    }
+                                }
+                            }
+                            wsRet1.send(JSON.stringify(sendWeb))
                         }
                     }
 
@@ -145,27 +168,27 @@ try {
 
                         let infFile, retFile, reg
                         const time = dateHour().res
-                        const time1 = `${time.mon}-${time.day}`
+                        const time1 = `MES_${time.mon}/DIA_${time.day}`
                         const time2 = `${time.hou}.${time.min}.${time.sec}`
                         const jsonSend = inf.body
                         infFile = { // ############# json SEND
                             'action': 'write',
-                            'file': `../log/TryRating/${time1}/${time2} REQ SEND.txt`,
+                            'file': `../log/TryRating/${time1}/${time2}_REQ_SEND.txt`,
                             'rewrite': true, // 'true' adiciona, 'false' limpa
                             'text': `${JSON.stringify(jsonSend)}\n\n`
                         }; retFile = await file(infFile);
 
-                        infFile = { 'action': 'read', 'file': `../log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
+                        infFile = { 'p': p, 'action': 'read', 'file': `../log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
                         const dif = Number(dateHour().res.tim) - Number(retFile.res)
 
-                        infFile = { 'action': 'read', 'file': `../log/TryRating/${time1}/### REG ###.txt` }; retFile = await file(infFile);
+                        infFile = { 'p': p, 'action': 'read', 'file': `../log/TryRating/${time1}/###_REG_###.txt` }; retFile = await file(infFile);
                         if (!retFile.ret) { reg = 0 } else { reg = retFile.res }
 
                         const total = Number(reg) + dif
 
                         infFile = { // ############# total trabalhado
                             'action': 'write',
-                            'file': `../log/TryRating/${time1}/### REG ###.txt`,
+                            'file': `../log/TryRating/${time1}/###_REG_###.txt`,
                             'rewrite': false, // 'true' adiciona, 'false' limpa
                             'text': JSON.stringify(total)
                         }; retFile = await file(infFile);

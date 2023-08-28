@@ -24,7 +24,7 @@ portMitm = config['sniffer']['portMitm']
 arrUrl = config['sniffer']['arrUrl']
 arrHost = [urlparse(url).hostname for url in arrUrl if urlparse(url).scheme in ('http', 'https')]
 arrHost = ' '.join([f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))])
-command = f'mitmdump --quiet --anticache -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+command = f'"C:/Program Files/mitmproxy/bin/mitmdump.exe" --quiet --anticache -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
 os.system('cls' if os.name == 'nt' else 'clear')
 
 def api(inf):

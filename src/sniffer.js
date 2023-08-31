@@ -1,31 +1,31 @@
 await import('../../Chrome_Extension/src/resources/@functions.js');
-const p = new Error()
 import net from 'net';
 console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
 try {
     async function run() {
         let infConfigStorage, retConfigStorage
-        infConfigStorage = { 'p': p, 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
+        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
         retConfigStorage = await configStorage(infConfigStorage)
-        if (!retConfigStorage.ret) { return }
-        const portSocket = retConfigStorage.res.portSocket
-        const bufferSocket = retConfigStorage.res.bufferSocket
-        const arrUrl = retConfigStorage.res.arrUrl
-        infConfigStorage = { 'p': p, 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
+        if (!retConfigStorage.ret) { return ret } else { retConfigStorage = retConfigStorage.res }
+        const portSocket = retConfigStorage.portSocket
+        const bufferSocket = retConfigStorage.bufferSocket
+        const arrUrl = retConfigStorage.arrUrl
+        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
         retConfigStorage = await configStorage(infConfigStorage)
-        if (!retConfigStorage.ret) { return }
-        const wsHost = retConfigStorage.res.ws1
-        const portWebSocket = retConfigStorage.res.portWebSocket;
-        const securityPass = retConfigStorage.res.securityPass
-        const device1 = retConfigStorage.res.device1.name
-        const device1Ret = retConfigStorage.res.device1.ret
-        const device2 = retConfigStorage.res.device2.name
-        const device2Ret = retConfigStorage.res.device2.ret
-        const retFileInf = await fileInf({ 'path': new URL(import.meta.url).pathname });
-        if (!retFileInf.ret) { return }
-        let command = `"D:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
-        command = `${command} "D:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFileInf.res.pathCurrent1}/resources/start.py"`
+        if (!retConfigStorage.ret) { return ret } else { retConfigStorage = retConfigStorage.res }
+        const wsHost = retConfigStorage.ws1
+        const portWebSocket = retConfigStorage.portWebSocket;
+        const securityPass = retConfigStorage.securityPass
+        const device0Ret = retConfigStorage.device0.ret
+        const device1 = retConfigStorage.device1.name
+        const device1Ret = retConfigStorage.device1.ret
+        const device2 = retConfigStorage.device2.name
+        const device2Ret = retConfigStorage.device2.ret
+        let infFile, retFile; infFile = { 'action': 'inf' };
+        retFile = await file(infFile); if (!retFile.ret) { return ret } else { retFile = retFile.res }
+        let command = `"${letter}:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
+        command = `${command} "${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFile[1]}/src/resources/start.py"`
         const infCommandLine = { 'background': false, 'command': command }
         const retCommandLine = await commandLine(infCommandLine)
         if (!retCommandLine.ret) { return }
@@ -110,14 +110,14 @@ try {
                         const jsonGet = inf.body
                         infFile = { // ############# json GET
                             'action': 'write',
-                            'file': `../log/TryRating/${time1}/${time2}_RES_GET.txt`,
+                            'path': `../Sniffer_Python/log/TryRating/${time1}/${time2}_RES_GET.txt`,
                             'rewrite': true, // 'true' adiciona, 'false' limpa
                             'text': `${JSON.stringify(jsonGet)}\n\n`
                         }; retFile = await file(infFile);
 
                         infFile = { // #############  time json GET
                             'action': 'write',
-                            'file': `../log/TryRating/timeLastGet.txt`,
+                            'path': `../Sniffer_Python/log/TryRating/timeLastGet.txt`,
                             'rewrite': false, // 'true' adiciona, 'false' limpa
                             'text': dateHour().res.tim
                         }; retFile = await file(infFile);
@@ -173,22 +173,22 @@ try {
                         const jsonSend = inf.body
                         infFile = { // ############# json SEND
                             'action': 'write',
-                            'file': `../log/TryRating/${time1}/${time2}_REQ_SEND.txt`,
+                            'path': `../Sniffer_Python/log/TryRating/${time1}/${time2}_REQ_SEND.txt`,
                             'rewrite': true, // 'true' adiciona, 'false' limpa
                             'text': `${JSON.stringify(jsonSend)}\n\n`
                         }; retFile = await file(infFile);
 
-                        infFile = { 'p': p, 'action': 'read', 'file': `../log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
+                        infFile = { 'action': 'read', 'path': `../Sniffer_Python/log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
                         const dif = Number(dateHour().res.tim) - Number(retFile.res)
 
-                        infFile = { 'p': p, 'action': 'read', 'file': `../log/TryRating/${time1}/###_REG_###.txt` }; retFile = await file(infFile);
+                        infFile = { 'action': 'read', 'path': `../Sniffer_Python/log/TryRating/${time1}/###_REG_###.txt` }; retFile = await file(infFile);
                         if (!retFile.ret) { reg = 0 } else { reg = retFile.res }
 
                         const total = Number(reg) + dif
 
                         infFile = { // ############# total trabalhado
                             'action': 'write',
-                            'file': `../log/TryRating/${time1}/###_REG_###.txt`,
+                            'path': `../Sniffer_Python/log/TryRating/${time1}/###_REG_###.txt`,
                             'rewrite': false, // 'true' adiciona, 'false' limpa
                             'text': JSON.stringify(total)
                         }; retFile = await file(infFile);
@@ -285,7 +285,7 @@ try {
             const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
             const infFile = {
                 'action': 'write',
-                'file': `D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
+                'path': `../Sniffer_Python/log/Welocalize/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
                 'rewrite': true, // 'true' adiciona, 'false' limpa
                 'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
             };
@@ -332,7 +332,7 @@ try {
                                     "name": "file",
                                     "par": {
                                         "action": "write",
-                                        "file": "D:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt",
+                                        "file": `${letter}:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt`,
                                         "rewrite": true,
                                         "text": "########"
                                     }

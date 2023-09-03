@@ -1,17 +1,15 @@
-await import('../../Chrome_Extension/src/resources/@functions.js');
-import net from 'net';
-console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
+await import('../../Chrome_Extension/src/resources/@functions.js'); import net from 'net'; console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 
 try {
     async function run() {
         let infConfigStorage, retConfigStorage
-        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'sniffer' }
+        infConfigStorage = { 'action': 'get', 'key': 'sniffer' }
         retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return ret } else { retConfigStorage = retConfigStorage.res }
-        const portSocket = retConfigStorage.portSocket
-        const bufferSocket = retConfigStorage.bufferSocket
+        const portSocket = retConfigStorage.portSocket;
+        const bufferSocket = retConfigStorage.bufferSocket;
         const arrUrl = retConfigStorage.arrUrl
-        infConfigStorage = { 'path': '../../Chrome_Extension/src/config.json', 'action': 'get', 'key': 'webSocket' }
+        infConfigStorage = { 'action': 'get', 'key': 'webSocket' }
         retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return ret } else { retConfigStorage = retConfigStorage.res }
         const wsHost = retConfigStorage.ws1
@@ -24,13 +22,12 @@ try {
         const device2Ret = retConfigStorage.device2.ret
         let infFile, retFile; infFile = { 'action': 'inf' };
         retFile = await file(infFile); if (!retFile.ret) { return ret } else { retFile = retFile.res }
-        let command = `"${letter}:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
-        command = `${command} "${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${retFile[1]}/src/resources/start.py"`
+        let command = `"${conf[0]}:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/4_BACKGROUND.exe"`
+        command = `${command} "${conf[0]}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe" "${conf[0]}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`
         const infCommandLine = { 'background': false, 'command': command }
         const retCommandLine = await commandLine(infCommandLine)
         if (!retCommandLine.ret) { return }
-        const { default: WebSocket } = await import('isomorphic-ws');
-        let WebS = WebSocket;
+        const { default: WebSocket } = await import('isomorphic-ws'); let WebS = WebSocket;
         let wsRet1 = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`);
         wsRet1.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 1 INTERROMPIDO`) }
         let wsRet2 = new WebS(`ws://${wsHost}:${portWebSocket}/${device2}`);
@@ -41,8 +38,7 @@ try {
             try {
                 ret['res']['reqRes'] = inf.reqRes;
                 if (!!arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
-                    let search
-                    // ######################################################################
+                    let search // ######################################################################
 
                     // #### NTFY
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://ntfy.sh/', 'text': inf.url })) {
@@ -110,14 +106,16 @@ try {
                         const jsonGet = inf.body
                         infFile = { // ############# json GET
                             'action': 'write',
-                            'path': `../Sniffer_Python/log/TryRating/${time1}/${time2}_RES_GET.txt`,
+                            'functionLocal': false,
+                            'path': `./log/TryRating/${time1}/${time2}_RES_GET.txt`,
                             'rewrite': true, // 'true' adiciona, 'false' limpa
                             'text': `${JSON.stringify(jsonGet)}\n\n`
                         }; retFile = await file(infFile);
 
                         infFile = { // #############  time json GET
                             'action': 'write',
-                            'path': `../Sniffer_Python/log/TryRating/timeLastGet.txt`,
+                            'functionLocal': false,
+                            'path': `./log/TryRating/timeLastGet.txt`,
                             'rewrite': false, // 'true' adiciona, 'false' limpa
                             'text': dateHour().res.tim
                         }; retFile = await file(infFile);
@@ -173,22 +171,24 @@ try {
                         const jsonSend = inf.body
                         infFile = { // ############# json SEND
                             'action': 'write',
-                            'path': `../Sniffer_Python/log/TryRating/${time1}/${time2}_REQ_SEND.txt`,
+                            'functionLocal': false,
+                            'path': `./log/TryRating/${time1}/${time2}_REQ_SEND.txt`,
                             'rewrite': true, // 'true' adiciona, 'false' limpa
                             'text': `${JSON.stringify(jsonSend)}\n\n`
                         }; retFile = await file(infFile);
 
-                        infFile = { 'action': 'read', 'path': `../Sniffer_Python/log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
+                        infFile = { 'action': 'read', 'functionLocal': false, 'path': `./log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
                         const dif = Number(dateHour().res.tim) - Number(retFile.res)
 
-                        infFile = { 'action': 'read', 'path': `../Sniffer_Python/log/TryRating/${time1}/###_REG_###.txt` }; retFile = await file(infFile);
+                        infFile = { 'action': 'read', 'functionLocal': false, 'path': `./log/TryRating/${time1}/###_REG_###.txt` }; retFile = await file(infFile);
                         if (!retFile.ret) { reg = 0 } else { reg = retFile.res }
 
                         const total = Number(reg) + dif
 
                         infFile = { // ############# total trabalhado
                             'action': 'write',
-                            'path': `../Sniffer_Python/log/TryRating/${time1}/###_REG_###.txt`,
+                            'functionLocal': false,
+                            'path': `./log/TryRating/${time1}/###_REG_###.txt`,
                             'rewrite': false, // 'true' adiciona, 'false' limpa
                             'text': JSON.stringify(total)
                         }; retFile = await file(infFile);
@@ -211,71 +211,44 @@ try {
 
 
 
-
-
-
-
-
-
-
-
         // -------------------------------------------------------------------------------------------------
-
-        // ################################################## REQUEST
-        const sockReq = net.createServer((socket) => {
+        const sockReq = net.createServer((socket) => {// ########### REQUEST
             try {
-                let getSockReq = '';
-                socket.on('data', async (chunk) => {
+                let getSockReq = ''; socket.on('data', async (chunk) => {
                     getSockReq += chunk.toString();
                     if (getSockReq.endsWith('#fim#')) {
-                        // SOCKET: RECEBIDO
-                        getSockReq = Buffer.from(getSockReq.split("#fim#")[0], 'base64').toString('utf-8');
+                        getSockReq = Buffer.from(getSockReq.split("#fim#")[0], 'base64').toString('utf-8');  // SOCKET: RECEBIDO
                         const dataReq = JSON.parse(getSockReq); let ret = { 'send': true, res: {} };
-                        // SOCKET: ENVIADO
-                        const retReqRes = await reqRes(dataReq)
+                        const retReqRes = await reqRes(dataReq) // SOCKET: ENVIADO
                         if ((dataReq.reqRes == 'req') && (retReqRes.res.reqRes == 'req')) {
                             const sendB64Req = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
                             for (let i = 0; i < sendB64Req.length; i += bufferSocket) {
-                                const part = sendB64Req.slice(i, i + bufferSocket);
-                                socket.write(part);
-                            }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
+                                const part = sendB64Req.slice(i, i + bufferSocket); socket.write(part);
+                            }; socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
                         }; getSockReq = ''; // LIMPAR BUFFER
                     }
                 });
-            } catch (e) {
-                console.log(regexE({ 'e': e }).res)
-            }
-        });
-        sockReq.listen((portSocket), () => { });
+            } catch (e) { console.log(regexE({ 'e': e }).res) }
+        }); sockReq.listen((portSocket), () => { });
 
-        // ################################################## RESPONSE
-        const sockRes = net.createServer((socket) => {
+        const sockRes = net.createServer((socket) => { // ########### RESPONSE
             try {
-                let getSockRes = '';
-                socket.on('data', async (chunk) => {
+                let getSockRes = ''; socket.on('data', async (chunk) => {
                     getSockRes += chunk.toString();
                     if (getSockRes.endsWith('#fim#')) {
-                        // SOCKET: RECEBIDO
-                        getSockRes = Buffer.from(getSockRes.split("#fim#")[0], 'base64').toString('utf-8');
+                        getSockRes = Buffer.from(getSockRes.split("#fim#")[0], 'base64').toString('utf-8'); // SOCKET: RECEBIDO
                         const dataRes = JSON.parse(getSockRes); let ret = { 'send': true, res: {} };
-                        // SOCKET: ENVIADO
-                        const retReqRes = await reqRes(dataRes)
+                        const retReqRes = await reqRes(dataRes) // SOCKET: ENVIADO
                         if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
                             const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
                             for (let i = 0; i < sendB64Res.length; i += bufferSocket) {
-                                const part = sendB64Res.slice(i, i + bufferSocket);
-                                socket.write(part);
-                            }; socket.write('#fim#');  // ENVIAR CARACTERE DE FIM 
+                                const part = sendB64Res.slice(i, i + bufferSocket); socket.write(part);
+                            }; socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
                         }; getSockRes = ''; // LIMPAR BUFFER
                     }
                 });
-            } catch (e) {
-                console.log(regexE({ 'e': e }).res)
-            }
-        });
-        sockRes.listen((portSocket + 1), () => { });
-
-
+            } catch (e) { console.log(regexE({ 'e': e }).res) }
+        }); sockRes.listen((portSocket + 1), () => { });
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
@@ -285,7 +258,8 @@ try {
             const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
             const infFile = {
                 'action': 'write',
-                'path': `../Sniffer_Python/log/Welocalize/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
+                'functionLocal': false,
+                'path': `./log/Welocalize/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
                 'rewrite': true, // 'true' adiciona, 'false' limpa
                 'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
             };
@@ -332,7 +306,7 @@ try {
                                     "name": "file",
                                     "par": {
                                         "action": "write",
-                                        "file": `${letter}:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt`,
+                                        "file": `${conf[0]}:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt`,
                                         "rewrite": true,
                                         "text": "########"
                                     }

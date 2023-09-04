@@ -22,9 +22,9 @@ try {
         const device2Ret = retConfigStorage.device2.ret
         let infFile, retFile; infFile = { 'action': 'inf' };
         retFile = await file(infFile); if (!retFile.ret) { return ret } else { retFile = retFile.res }
-        let command = `\"${conf[1]}:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\1_BACKGROUND.exe\"`
-        command = `${command} \"${conf[1]}:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe\"`
-        command = `${command} \"${conf[1]}:\\ARQUIVOS\\PROJETOS\\Sniffer_Python\\src\\resources\\start.py\"`
+        let command = `"${conf[1]}:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\1_BACKGROUND.exe"`
+        command = `${command} "${conf[1]}:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe"`
+        command = `${command} "${conf[1]}:\\ARQUIVOS\\PROJETOS\\Sniffer_Python\\src\\resources\\start.py"`
         const infCommandLine = { 'background': false, 'command': command }
         const retCommandLine = await commandLine(infCommandLine)
         if (!retCommandLine.ret) { return }

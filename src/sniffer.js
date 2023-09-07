@@ -17,7 +17,7 @@ try {
         command = `${command} "${conf[1]}:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe"`
         command = `${command} "${conf[1]}:\\ARQUIVOS\\PROJETOS\\Sniffer_Python\\src\\resources\\start.py"`
         const infCommandLine = { 'background': false, 'command': command }; const retCommandLine = await commandLine(infCommandLine); if (!retCommandLine.ret) { return }
-        const { default: WebSocket } = await import('isomorphic-ws'); let WebS = WebSocket;
+        const { default: WebSocket } = await import('ws'); let WebS = WebSocket
         let wsRet1 = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`);
         wsRet1.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 1 INTERROMPIDO`) }
         let wsRet2 = new WebS(`ws://${wsHost}:${portWebSocket}/${device2}`);

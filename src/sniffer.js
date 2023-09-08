@@ -70,7 +70,7 @@ try {
                             sendWebBolean = true; nameTask = 'peroptyxQIDC'
                         }
 
-                        let infFile, time2; const time = dateHour().res; const time1 = `MES_${time.mon}/DIA_${time.day}`
+                        let infFile, time2; const time = dateHour().res; const time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`
                         if (sendWebBolean) { time2 = `${time.hou}.${time.min}.${time.sec}` }
                         else { time2 = `${time.hou}.${time.min}.${time.sec}_NEW_TASK` }; const jsonGet = inf.body
                         infFile = { // ############# json GET
@@ -86,7 +86,7 @@ try {
                             'functionLocal': false,
                             'path': `./log/TryRating/timeLastGet.txt`,
                             'rewrite': false, // 'true' adiciona, 'false' limpa
-                            'text': dateHour().res.tim
+                            'text': time.tim
                         }; retFile = await file(infFile);
 
                         if (sendWebBolean) {
@@ -102,8 +102,7 @@ try {
                                         }
                                     }
                                 }
-                            }
-                            wsRet1.send(JSON.stringify(sendWeb))
+                            }; wsRet1.send(JSON.stringify(sendWeb))
                         } else {
                             const sendWeb = {
                                 "fun": {
@@ -119,15 +118,14 @@ try {
                                         }
                                     }
                                 }
-                            }
-                            wsRet1.send(JSON.stringify(sendWeb))
+                            }; wsRet1.send(JSON.stringify(sendWeb))
                         }
                     }
 
                     // #### Peroptyx | submit
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://www.tryrating.com/api/client_log', 'text': inf.url })) {
 
-                        let infFile, retFile, reg; const time = dateHour().res; const time1 = `MES_${time.mon}/DIA_${time.day}`
+                        let infFile, retFile, reg; const time = dateHour().res; const time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`
                         const time2 = `${time.hou}.${time.min}.${time.sec}`; const jsonSend = inf.body
                         infFile = { // ############# json SEND
                             'action': 'write',
@@ -138,7 +136,37 @@ try {
                         }; retFile = await file(infFile);
 
                         infFile = { 'action': 'read', 'functionLocal': false, 'path': `./log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
-                        const dif = Number(dateHour().res.tim) - Number(retFile.res)
+                        const dif = Number(time.tim) - Number(retFile.res)
+
+
+                        const nameTask = `${JSON.parse(jsonSend).data.templateTaskType.replace(/[^a-zA-Z0-9]/g, '')}`;
+                        let infConfigStorage, retConfigStorage; let json
+                        infConfigStorage = { 'path': `./log/TryRating/${time1}/###_JSON_###.json`, 'functionLocal': false, 'action': 'get', 'key': 'tryRating' }
+                        retConfigStorage = await configStorage(infConfigStorage);
+                        if (!retConfigStorage.ret) { json = {}; json['tryRating'] = {}; json = json['tryRating'] } else { json = retConfigStorage.res }
+                        if (!json[nameTask]) { json[nameTask] = { 'inf': {}, 'tasks': [] } };
+                        const jsonInf1 = new Date(Number(`${retFile.res}000`)).toLocaleTimeString(undefined, { hour12: false });
+                        const jsonInf2 = new Date(Number(time.timMil)).toLocaleTimeString(undefined, { hour12: false });
+                        json[nameTask].tasks.push({ 'start': jsonInf1, 'end': jsonInf2, 'sec': dif });
+                        infConfigStorage = { 'path': `./log/TryRating/${time1}/###_JSON_###.json`, 'functionLocal': false, 'action': 'set', 'key': 'tryRating', 'value': json }
+                        retConfigStorage = await configStorage(infConfigStorage); let tasksSec = 0, tasksQtd = 0
+                        json[nameTask].tasks.map(async (value, index) => { tasksQtd = tasksQtd + 1; tasksSec = tasksSec + value.sec })
+                        const sendWeb = {
+                            "fun": {
+                                "securityPass": securityPass,
+                                "funRet": { "ret": false, },
+                                "funRun": {
+                                    "name": "notification",
+                                    "par": {
+                                        "duration": 3,
+                                        "title": `SPAM | ${nameTask}`,
+                                        "message": `QTD: ${tasksQtd} | TIME: ${secToHour(tasksSec).res} | ~SEC ${(tasksSec / tasksQtd).toFixed(0)}`,
+                                        "iconUrl": "./src/media/notification_3.png",
+                                    }
+                                }
+                            }
+                        }; wsRet1.send(JSON.stringify(sendWeb))
+
 
                         infFile = { 'action': 'read', 'functionLocal': false, 'path': `./log/TryRating/${time1}/###_REG_###.txt` }; retFile = await file(infFile);
                         if (!retFile.ret) { reg = 0 } else { reg = retFile.res }

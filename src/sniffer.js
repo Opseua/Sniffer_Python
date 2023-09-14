@@ -6,7 +6,7 @@ try {
 
         infConfigStorage = { 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }
-        const portSocket = retConfigStorage.portSocket; const bufferSocket = retConfigStorage.bufferSocket;
+        const portSocket = retConfigStorage.portSocket; const bu = retConfigStorage.bufferSocket;
         const arrUrl = retConfigStorage.arrUrl
 
         infConfigStorage = { 'action': 'get', 'key': 'webSocket' }; retConfigStorage = await configStorage(infConfigStorage)
@@ -28,8 +28,9 @@ try {
         let wsRet1 = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`); wsRet1.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 1 INTERROMPIDO`) }
         let wsRet2 = new WebS(`ws://${wsHost}:${portWebSocket}/${device2}`); wsRet2.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 2 INTERROMPIDO`) }
 
+        let hitApp = '#', retLog
         async function reqRes(inf) {
-            let ret = { 'send': true, res: {} };
+            let ret = { 'send': true, res: {} }
             try {
                 ret['res']['reqRes'] = inf.reqRes;
                 if (!!arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
@@ -42,51 +43,69 @@ try {
 
                     // #### EWOQ | template
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'text': inf.url })) {
-                        const hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
-                        let tsk; if (hitApp) { tsk = hitApp[1]; } else { tsk = 'NAO ENCONTRADO'; }
-                        const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': tsk, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'tsk': tsk } }
-                        logOld(infLog)
+                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, sendWeb
+                        hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
+                        if (hitApp.length > 0) { hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, '') }
+                        else { hitApp = 'NewTask' }
+                        // const infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': tsk, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'tsk': tsk } }
+                        retLog = await log({ 'folder': 'EWOQ', 'file': `RES_GET_template.txt`, 'text': inf.body }); // logOld(infLog)
+
+                        infFile = { 'action': 'list', 'functionLocal': false, 'path': `./log/EWOQ/${time1}`, 'max': 1000 }
+                        retFile = await file(infFile); retFile.res.map(async (value, index) => {
+                            if (value.path.includes('#')) { retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace('#', hitApp) }) }
+                        }); sendWeb = {
+                            "fun": [
+                                {
+                                    "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                        "name": "notification", "par": {
+                                            "duration": 3, "iconUrl": "./src/media/notification_2.png",
+                                            "title": `EWOQ - NOVA TASK`, "message": hitApp
+                                        }
+                                    }
+                                }
+                            ]
+                        }; wsRet1.send(JSON.stringify(sendWeb))
                     }
 
                     // #### EWOQ | new task
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'text': inf.url })) {
-                        let infLog, ewoq = JSON.parse(inf.body)
-                        if (ewoq['1']) {
-                            const id = ewoq['1'][0]['1']['1']
-                            infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'id': id } }
-                        } else { infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body } }; logOld(infLog)
+                        let infLog, time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, ewoq = JSON.parse(inf.body); if (ewoq['1']) {
+                            const id = ewoq['1'][0]['1']['1']; infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'id': id } }
+                        } else { infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body } }; // logOld(infLog)
+                        retLog = await log({ 'folder': 'EWOQ', 'file': 'timeLastGet.txt', 'text': time.tim })
+                        retLog = await log({ 'folder': 'EWOQ', 'file': `RES_GET_${hitApp}.txt`, 'text': infLog })
+
+                        infFile = { 'action': 'list', 'functionLocal': false, 'path': `./log/EWOQ/${time1}`, 'max': 1000 }
+                        retFile = await file(infFile); retFile.res.map(async (value, index) => {
+                            if (value.path.includes('#') && hitApp !== '#') { retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace('#', hitApp) }) }
+                        })
                     }
 
                     // #### EWOQ | submit
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'text': inf.url })) {
-                        let infLog, ewoq = JSON.parse(inf.body)
-                        if (ewoq['6']) {
-                            const id = ewoq['6']['1']
-                            infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'id': id } }
-                        } else { infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body } }; logOld(infLog)
+                        let infLog, ewoq = JSON.parse(inf.body); if (ewoq['6']) {
+                            const id = ewoq['6']['1']; infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body, 'inf': { 'reqRes': inf.reqRes, 'lin': 'AQUI_LIN', 'id': id } }
+                        } else { infLog = { 'reqRes': inf.reqRes, 'url': inf.url, 'value': inf.body } }; // logOld(infLog)
+                        retLog = await log({ 'folder': 'EWOQ', 'file': `REQ_SEND_${hitApp}.txt`, 'text': infLog })
                     }
 
                     // #### Peroptyx | survey
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': 'https://www.tryrating.com/api/survey', 'text': inf.url })) {
-                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}`, retLog, sendWeb
-                        let hitApp = `${JSON.parse(inf.body).templateTaskType.replace(/[^a-zA-Z0-9]/g, '')}`;
-                        if (hitApp == 'Search20') { hitApp = 'SCH20' }
-                        else if (hitApp == 'QueryImageDeservingClassification') { hitApp = 'QIDC' } else { hitApp = 'NewTask' }
+                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, sendWeb
+                        hitApp = JSON.parse(inf.body).templateTaskType; hitApp = hitApp.replace(/[^a-zA-Z0-9]/g, '')
+                        if (hitApp !== 'Search20' && hitApp !== 'QueryImageDeservingClassification') { hitApp = 'NewTask' }
 
                         retLog = await log({ 'folder': 'TryRating', 'file': 'timeLastGet.txt', 'text': time.tim })
                         retLog = await log({ 'folder': 'TryRating', 'file': `RES_GET_${hitApp}.txt`, 'text': inf.body })
 
-                        if (hitApp.includes('NewTask')) {
+                        if (hitApp == 'NewTask') {
                             sendWeb = {
                                 "fun": [
                                     {
-                                        "securityPass": securityPass, "funRet": { "retUrl": false },
-                                        "funRun": {
-                                            "name": "notification",
-                                            "par": {
+                                        "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                            "name": "notification", "par": {
                                                 "duration": 5, "iconUrl": "./src/media/notification_3.png",
-                                                "title": `ALERTA`,
-                                                "message": "Outro tipo de tarefa!"
+                                                "title": `ALERTA`, "message": "Outro tipo de tarefa!"
                                             }
                                         }
                                     }
@@ -96,11 +115,8 @@ try {
                             sendWeb = {
                                 "fun": [
                                     {
-                                        "securityPass": securityPass, "funRet": { "retUrl": false },
-                                        "funRun": {
-                                            "name": `peroptyx_${hitApp}`,
-                                            "par": {
-                                                "server": true,
+                                        "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                            "name": `peroptyx_${hitApp}`, "par": {
                                                 "logFile": retLog.res
                                             }
                                         }
@@ -112,11 +128,10 @@ try {
 
                     // #### Peroptyx | submit
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': 'https://www.tryrating.com/api/client_log', 'text': inf.url })) {
-                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}`, json, retLog
+                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, json
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
-                        let hitApp = `${JSON.parse(inf.body).data.templateTaskType.replace(/[^a-zA-Z0-9]/g, '')}`;
-                        if (hitApp == 'Search20') { hitApp = 'SCH20' }
-                        else if (hitApp == 'QueryImageDeservingClassification') { hitApp = 'QIDC' } else { hitApp = 'NewTask' }
+                        hitApp = `${JSON.parse(inf.body).data.templateTaskType.replace(/[^a-zA-Z0-9]/g, '')}`;
+                        if (hitApp !== 'Search20' && hitApp !== 'QueryImageDeservingClassification') { hitApp = 'NewTask' }
 
                         retLog = await log({ 'folder': 'TryRating', 'file': `REQ_SEND_${hitApp}.txt`, 'text': inf.body })
                         infFile = { 'action': 'read', 'functionLocal': false, 'path': `./log/TryRating/timeLastGet.txt` }; retFile = await file(infFile);
@@ -132,8 +147,7 @@ try {
                         json.tasks.push({ 'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': dif });
                         if (!tryRating[hitApp]) { lastHour = tryRating.default.lastHour } else { lastHour = tryRating[hitApp].lastHour }
                         json.tasks.map(async (value, index) => {
-                            tasksQtd += 1; tasksSec += value.sec
-                            if (value.taskName == hitApp) {
+                            tasksQtd += 1; tasksSec += value.sec; if (value.taskName == hitApp) {
                                 tasksQtdHitApp += 1; tasksSecHitApp += value.sec
                                 const timestamp = new Date(`2023-${time.mon}-${time.day}T${value.start}`).getTime();
                                 if (timestamp + lastHour * 1000 > Number(time.timMil)) { tasksQtdHitAppLast += 1; tasksSecHitAppLast += value.sec }
@@ -156,10 +170,8 @@ try {
                         const sendWeb = {
                             "fun": [
                                 {
-                                    "securityPass": securityPass, "funRet": { "retUrl": false },
-                                    "funRun": {
-                                        "name": "notification",
-                                        "par": {
+                                    "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                        "name": "notification", "par": {
                                             "duration": 3, "iconUrl": "./src/media/icon_4.png",
                                             "message": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
                                         }
@@ -178,36 +190,30 @@ try {
         // -------------------------------------------------------------------------------------------------
         const sockReq = net.createServer((socket) => {// ########### REQUEST
             try {
-                let getSockReq = ''; socket.on('data', async (chunk) => {
-                    getSockReq += chunk.toString();
-                    if (getSockReq.endsWith('#fim#')) {
-                        getSockReq = Buffer.from(getSockReq.split("#fim#")[0], 'base64').toString('utf-8');  // SOCKET: RECEBIDO
-                        const dataReq = JSON.parse(getSockReq); let ret = { 'send': true, res: {} };
-                        const retReqRes = await reqRes(dataReq) // SOCKET: ENVIADO
-                        if ((dataReq.reqRes == 'req') && (retReqRes.res.reqRes == 'req')) {
-                            const sendB64Req = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
-                            for (let i = 0; i < sendB64Req.length; i += bufferSocket) {
-                                const part = sendB64Req.slice(i, i + bufferSocket); socket.write(part);
-                            }; socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
-                        }; getSockReq = ''; // LIMPAR BUFFER
+                let g = ''; socket.on('data', async (chunk) => {
+                    g += chunk.toString(); if (g.endsWith('#fim#')) {
+                        g = Buffer.from(g.split("#fim#")[0], 'base64').toString('utf-8');
+                        const d = JSON.parse(g); const r = await reqRes(d) // SOCKET: ENVIADO
+                        if ((d.reqRes == 'req') && (r.res.reqRes == 'req')) {
+                            const b = Buffer.from(JSON.stringify(r)).toString('base64');
+                            for (let i = 0; i < b.length; i += bu) { const p = b.slice(i, i + bu); socket.write(p) }
+                            socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
+                        }; g = ''; // LIMPAR BUFFER
                     }
                 });
             } catch (e) { (async () => { const m = await regexE({ 'e': e }); console.log(m.res) })() }
         }); sockReq.listen((portSocket), () => { });
         const sockRes = net.createServer((socket) => { // ########### RESPONSE
             try {
-                let getSockRes = ''; socket.on('data', async (chunk) => {
-                    getSockRes += chunk.toString();
-                    if (getSockRes.endsWith('#fim#')) {
-                        getSockRes = Buffer.from(getSockRes.split("#fim#")[0], 'base64').toString('utf-8'); // SOCKET: RECEBIDO
-                        const dataRes = JSON.parse(getSockRes); let ret = { 'send': true, res: {} };
-                        const retReqRes = await reqRes(dataRes) // SOCKET: ENVIADO
-                        if ((dataRes.reqRes == 'res') && (retReqRes.res.reqRes == 'res')) {
-                            const sendB64Res = Buffer.from(JSON.stringify(retReqRes)).toString('base64');
-                            for (let i = 0; i < sendB64Res.length; i += bufferSocket) {
-                                const part = sendB64Res.slice(i, i + bufferSocket); socket.write(part);
-                            }; socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
-                        }; getSockRes = ''; // LIMPAR BUFFER
+                let g = ''; socket.on('data', async (chunk) => {
+                    g += chunk.toString(); if (g.endsWith('#fim#')) {
+                        g = Buffer.from(g.split("#fim#")[0], 'base64').toString('utf-8'); // SOCKET: RECEBIDO
+                        const d = JSON.parse(g); const r = await reqRes(d) // SOCKET: ENVIADO
+                        if ((d.reqRes == 'res') && (r.res.reqRes == 'res')) {
+                            const b = Buffer.from(JSON.stringify(r)).toString('base64');
+                            for (let i = 0; i < b.length; i += bu) { const part = b.slice(i, i + bu); socket.write(part) };
+                            socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
+                        }; g = ''; // LIMPAR BUFFER
                     }
                 });
             } catch (e) { (async () => { const m = await regexE({ 'e': e }); console.log(m.res) })() }
@@ -217,9 +223,8 @@ try {
         async function logOld(inf) {
             let sendWeb; const RetDH = dateHour(); const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
             infFile = {
-                'action': 'write', 'functionLocal': false,
-                'path': `./log/Welocalize/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
-                'rewrite': true, // 'true' adiciona, 'false' limpa
+                'action': 'write', 'functionLocal': false, 'rewrite': true, // 'true' adiciona, 'false' limpa
+                'path': `./log/EWOQ/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
                 'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
             }; retFile = await file(infFile);
 
@@ -228,10 +233,8 @@ try {
                     "fun": {
                         "securityPass": securityPass, "funRet": { "ret": false, "url": `ws://${wsHost}:${portWebSocket}/${device1}`, },
                         "funRun": {
-                            "name": "notification",
-                            "par": {
-                                "duration": 2,
-                                "title": `WELOCALIZE`,
+                            "name": "notification", "par": {
+                                "duration": 2, "title": `EWOQ`,
                                 "message": inf.value,
                             }
                         }
@@ -248,20 +251,16 @@ try {
                                 "funRun": {
                                     "name": "file",
                                     "par": {
-                                        "action": "write",
+                                        "action": "write", "rewrite": true,
                                         "file": `${conf[1]}:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt`,
-                                        "rewrite": true,
                                         "text": "########"
                                     }
                                 }
                             }
                         },
                         "funRun": {
-                            "name": "excel",
-                            "par": {
-                                "action": "set",
-                                "tab": "YARE",
-                                "col": "A",
+                            "name": "excel", "par": {
+                                "action": "set", "tab": "YARE", "col": "A",
                                 "value": inf.value,
                                 "inf": JSON.stringify(inf.inf)
                             }

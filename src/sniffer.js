@@ -100,8 +100,8 @@ try {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                                 "name": "notification", "par": {
-                                                    "duration": 5, "icon": "./src/media/notification_2.png", "title": `EWOQ | Pode ter a resposta!`,
-                                                    "text": `${body['1'][0]['10']['1'][0]['2']}\n\n${body['1'][0]['11']['1'][0]['4']}`
+                                                    "duration": 5, "icon": "./src/media/notification_2.png", "title": `EWOQ | ${body['1'][0]['10']['1'][0]['2']}`,
+                                                    "text": `${body['1'][0]['11']['1'][0]['4']}`
                                                 }
                                             }
                                         }]

@@ -105,7 +105,8 @@ try {
                                                 }
                                             }
                                         }]
-                                    }; wsRet1.send(JSON.stringify(sendWeb))
+                                    }; await clipboard({ 'value': `${body['1'][0]['10']['1'][0]['2']}\n\n${body['1'][0]['11']['1'][0]['4']}` })
+                                    wsRet1.send(JSON.stringify(sendWeb))
                                 } else {
                                     const sendWeb = {
                                         "fun": [{
@@ -116,7 +117,7 @@ try {
                                                 }
                                             }
                                         }]
-                                    }; wsRet1.send(JSON.stringify(sendWeb))
+                                    }; await clipboard({ 'value': `${body['1'][0]['10']['1'][0]['2']}` }); wsRet1.send(JSON.stringify(sendWeb))
                                 }
                             }
                         })

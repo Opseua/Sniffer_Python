@@ -43,8 +43,8 @@ try {
                     }
 
                     // #### EWOQ | /home
-                    if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
-
+                    if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
+                        platforms.EWOQ.tasksFile = []
                     }
 
                     // #### EWOQ | /GetTemplate
@@ -63,8 +63,8 @@ try {
                             "fun": [{
                                 "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                     "name": "notification", "par": {
-                                        "duration": 3, "iconUrl": "./src/media/notification_2.png",
-                                        "title": `EWOQ | NOVA TASK`, "message": hitApp
+                                        "duration": 3, "icon": "./src/media/notification_2.png",
+                                        "title": `EWOQ | NOVA TASK`, "text": hitApp
                                     }
                                 }
                             }]
@@ -89,32 +89,37 @@ try {
                         }
                     }
 
-                    // #### EWOQ | /RecordRaterVisibleTaskAcquisitionLatency [open task] 
+                    // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': inf.url })) {
-                        const body = JSON.parse(platforms.EWOQ.tasksFile[0].body)
-                        if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
-                            const sendWeb = {
-                                "fun": [{
-                                    "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
-                                        "name": "notification", "par": {
-                                            "duration": 3, "iconUrl": "./src/media/notification_2.png", "title": `EWOQ | Pode ter a resposta!`,
-                                            "message": `${body['1'][0]['10']['1'][0]['2']}\n\n${body['1'][0]['11']['1'][0]['4']}`
-                                        }
-                                    }
-                                }]
-                            }; wsRet1.send(JSON.stringify(sendWeb))
-                        } else {
-                            const sendWeb = {
-                                "fun": [{
-                                    "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
-                                        "name": "notification", "par": {
-                                            "duration": 3, "iconUrl": "./src/media/notification_2.png", "title": `EWOQ | `,
-                                            "message": `${body['1'][0]['10']['1'][0]['2']}`
-                                        }
-                                    }
-                                }]
-                            }; wsRet1.send(JSON.stringify(sendWeb))
-                        }
+                        const id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
+                        platforms.EWOQ.tasksFile.map(async (value, index) => {
+                            if (id == value.id) {
+                                const body = JSON.parse(value.body)
+                                if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
+                                    const sendWeb = {
+                                        "fun": [{
+                                            "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                                "name": "notification", "par": {
+                                                    "duration": 5, "icon": "./src/media/notification_2.png", "title": `EWOQ | Pode ter a resposta!`,
+                                                    "text": `${body['1'][0]['10']['1'][0]['2']}\n\n${body['1'][0]['11']['1'][0]['4']}`
+                                                }
+                                            }
+                                        }]
+                                    }; wsRet1.send(JSON.stringify(sendWeb))
+                                } else {
+                                    const sendWeb = {
+                                        "fun": [{
+                                            "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                                "name": "notification", "par": {
+                                                    "duration": 3, "icon": "./src/media/notification_2.png", "title": `EWOQ | `,
+                                                    "text": `${body['1'][0]['10']['1'][0]['2']}`
+                                                }
+                                            }
+                                        }]
+                                    }; wsRet1.send(JSON.stringify(sendWeb))
+                                }
+                            }
+                        })
                     }
 
                     // #### EWOQ | /SubmitFeedback
@@ -162,8 +167,8 @@ try {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                                 "name": "notification", "par": {
-                                                    "duration": 3, "iconUrl": "./src/media/icon_4.png", "title": `TryRating | ${hitApp}`,
-                                                    "message": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
+                                                    "duration": 3, "icon": "./src/media/icon_4.png", "title": `TryRating | ${hitApp}`,
+                                                    "text": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
                                                 }
                                             }
                                         }]
@@ -195,8 +200,8 @@ try {
                                 "fun": [{
                                     "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                         "name": "notification", "par": {
-                                            "duration": 5, "iconUrl": "./src/media/notification_2.png",
-                                            "title": `TryRating | AVISO`, "message": "Outro tipo de tarefa. TEM A RESPOSTA!"
+                                            "duration": 5, "icon": "./src/media/notification_2.png",
+                                            "title": `TryRating | AVISO`, "text": "Outro tipo de tarefa. TEM A RESPOSTA!"
                                         }
                                     }
                                 }]
@@ -206,8 +211,8 @@ try {
                                 "fun": [{
                                     "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                         "name": "notification", "par": {
-                                            "duration": 5, "iconUrl": "./src/media/notification_3.png",
-                                            "title": `TryRating | ALERTA`, "message": "Outro tipo de tarefa."
+                                            "duration": 5, "icon": "./src/media/notification_3.png",
+                                            "title": `TryRating | ALERTA`, "text": "Outro tipo de tarefa."
                                         }
                                     }
                                 }]
@@ -257,8 +262,8 @@ try {
                             "fun": [{
                                 "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                     "name": "notification", "par": {
-                                        "duration": 3, "iconUrl": "./src/media/icon_4.png", "title": `TryRating | ${hitApp}`,
-                                        "message": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
+                                        "duration": 3, "icon": "./src/media/icon_4.png", "title": `TryRating | ${hitApp}`,
+                                        "text": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
                                     }
                                 }
                             }]
@@ -316,7 +321,7 @@ try {
                 sendWeb = {
                     "fun": {
                         "securityPass": securityPass, "funRet": { "ret": false, "url": `ws://${wsHost}:${portWebSocket}/${device1}`, },
-                        "funRun": { "name": "notification", "par": { "duration": 2, "title": `EWOQ |`, "message": inf.value, } }
+                        "funRun": { "name": "notification", "par": { "duration": 2, "title": `EWOQ |`, "text": inf.value, } }
                     }
                 }
             } else {

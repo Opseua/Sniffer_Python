@@ -53,9 +53,9 @@ def checkProcess2():
                 "funRun": {
                     "name": "notification",
                             "par": {
-                                "duration": 3,  "iconUrl": "./src/media/notification_1.png",
+                                "duration": 3,  "icon": "./src/media/notification_1.png",
                                 "title": "SNIFFER",
-                                "message": "Ativado"
+                                "text": "Ativado"
                             }
                 }
             },
@@ -113,9 +113,9 @@ def checkProcess2():
                         "funRun": {
                             "name": "notification",
                             "par": {
-                                "duration": 3,  "iconUrl": "./src/media/notification_2.png",
+                                "duration": 3,  "icon": "./src/media/notification_2.png",
                                 "title": "SNIFFER",
-                                "message": "Desativado"
+                                "text": "Desativado"
                             }
                         }
                     },

@@ -136,7 +136,7 @@ try {
                                     retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                                     const dif = body['9']
 
-                                    infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DAY_#.json`, 'functionLocal': false, 'action': 'get', 'key': 'EWOQ' }
+                                    infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': 'EWOQ' }
                                     retConfigStorage = await configStorage(infConfigStorage);
                                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                                     else { json = retConfigStorage.res };
@@ -153,14 +153,14 @@ try {
                                         }
                                     }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec }
                                     json.inf.taskName[hitAppEWOQ] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp }
-                                    infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DAY_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'EWOQ', 'value': json }
+                                    infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'EWOQ', 'value': json }
                                     retConfigStorage = await configStorage(infConfigStorage);
 
                                     json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
-                                    infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MON_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
+                                    infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
                                     retConfigStorage = await configStorage(infConfigStorage);
 
-                                    infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MON_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
+                                    infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                                     retConfigStorage = await configStorage(infConfigStorage);
                                     for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
 
@@ -252,7 +252,7 @@ try {
                             if (id == value.id) {
                                 retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                                 const dif = Number(time.tim) - value.lastTaskTimestamp
-                                infConfigStorage = { 'path': `./log/TryRating/${time1}/#_DAY_#.json`, 'functionLocal': false, 'action': 'get', 'key': 'tryRating' }
+                                infConfigStorage = { 'path': `./log/TryRating/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': 'tryRating' }
                                 retConfigStorage = await configStorage(infConfigStorage);
                                 if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                                 else { json = retConfigStorage.res };
@@ -270,14 +270,14 @@ try {
                                     }
                                 }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec }
                                 json.inf.taskName[hitAppTryRating] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp }
-                                infConfigStorage = { 'path': `./log/TryRating/${time1}/#_DAY_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'tryRating', 'value': json }
+                                infConfigStorage = { 'path': `./log/TryRating/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'tryRating', 'value': json }
                                 retConfigStorage = await configStorage(infConfigStorage);
 
                                 json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
-                                infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MON_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
+                                infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
                                 retConfigStorage = await configStorage(infConfigStorage);
 
-                                infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MON_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
+                                infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                                 retConfigStorage = await configStorage(infConfigStorage);
                                 for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
 

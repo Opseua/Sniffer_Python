@@ -2,12 +2,10 @@ await import('../../Chrome_Extension/src/resources/@functions.js'); import net f
 
 try {
     async function run() {
-        let infConfigStorage, retConfigStorage, infFile, retFile
-
+        let infConfigStorage, retConfigStorage, infFile, retFile, retLog, sendWeb
         infConfigStorage = { 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }
-        const portSocket = retConfigStorage.portSocket; const bu = retConfigStorage.bufferSocket;
-        const arrUrl = retConfigStorage.arrUrl
+        const portSocket = retConfigStorage.portSocket; const bu = retConfigStorage.bufferSocket; const arrUrl = retConfigStorage.arrUrl
 
         infConfigStorage = { 'action': 'get', 'key': 'webSocket' }; retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }
@@ -16,10 +14,8 @@ try {
         const device1Ret = retConfigStorage.device1.ret; const device2 = retConfigStorage.device2.name;
         const device2Ret = retConfigStorage.device2.ret;
 
-
         infConfigStorage = { 'action': 'get', 'key': 'platforms' }; retConfigStorage = await configStorage(infConfigStorage);
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }; let platforms = retConfigStorage
-
 
         infFile = { 'action': 'inf' }; retFile = await file(infFile); if (!retFile.ret) { return } else { retFile = retFile.res }
         let command = `"${conf[1]}:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\1_BACKGROUND.exe"`
@@ -30,7 +26,7 @@ try {
         let wsRet1 = new WebS(`ws://${wsHost}:${portWebSocket}/${device1}`); wsRet1.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 1 INTERROMPIDO`) }
         let wsRet2 = new WebS(`ws://${wsHost}:${portWebSocket}/${device2}`); wsRet2.onclose = async (event) => { console.log(`SNIFFER PYTHON: WEBSOCKET 2 INTERROMPIDO`) }
 
-        let hitAppEWOQ = '#1#', hitAppTryRating = '#1#', retLog
+        let hitAppEWOQ = '#1#', hitAppTryRating = '#1#'; platforms.EWOQ['log'] = []; platforms.tryRating['log'] = []
         async function reqRes(inf) {
             let ret = { 'send': true, res: {} }
             try {
@@ -44,20 +40,28 @@ try {
 
                     // #### EWOQ | /home
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
-                        platforms.EWOQ.tasksFile = []
+                        platforms.EWOQ.log = []; // platforms.EWOQ.tasksFile = []
+                        await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
                     }
 
                     // #### EWOQ | /GetTemplate
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
-                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, sendWeb
+                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`
                         hitAppEWOQ = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
                         if (hitAppEWOQ.length > 0) { hitAppEWOQ = hitAppEWOQ[1].replace(/[^a-zA-Z0-9]/g, '') } else { hitAppEWOQ = 'NewTask' }
                         retLog = await log({ 'folder': 'EWOQ', 'path': `RES_GET_template.txt`, 'text': inf.body })
 
-                        platforms.EWOQ.tasksFile.map(async (value, index) => {
+                        // platforms.EWOQ.tasksFile.map(async (value, index) => {
+                        //     if (hitAppEWOQ !== '#1#' && value.path.includes('#1#')) {
+                        //         retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace('#1#', `${hitAppEWOQ}`) })
+                        //         platforms.EWOQ.tasksFile[index].path = value.path.replace('#1#', `${hitAppEWOQ}`)
+                        //     }
+                        // }); 
+
+                        platforms.EWOQ.log.map(async (value, index) => {
                             if (hitAppEWOQ !== '#1#' && value.path.includes('#1#')) {
                                 retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace('#1#', `${hitAppEWOQ}`) })
-                                platforms.EWOQ.tasksFile[index].path = value.path.replace('#1#', `${hitAppEWOQ}`)
+                                platforms.EWOQ.log[index].path = value.path.replace('#1#', `${hitAppEWOQ}`)
                             }
                         }); sendWeb = {
                             "fun": [{
@@ -77,13 +81,22 @@ try {
                         if (body['1']) {
                             const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, '')
                             retLog = await log({ 'folder': 'EWOQ', 'path': `RES_GET_#1#.txt`, 'text': inf.body })
-                            platforms.EWOQ.tasksFile.push({ 'path': retLog.res, 'id': id, 'body': inf.body });
+                            // platforms.EWOQ.tasksFile.push({ 'path': retLog.res, 'id': id, 'body': inf.body });
+                            platforms.EWOQ.log.push({ 'path': retLog.res, 'id': id, 'body': inf.body });
 
-                            platforms.EWOQ.tasksFile.map(async (value, index) => {
+                            // platforms.EWOQ.tasksFile.map(async (value, index) => {
+                            //     if (hitAppEWOQ !== '#1#' && value.path.includes('#1#')) {
+                            //         retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace('#1#', `${hitAppEWOQ}`) })
+                            //         platforms.EWOQ.tasksFile[index].path = value.path.replace('#1#', `${hitAppEWOQ}`)
+                            //         platforms.EWOQ.tasksFile[index]['hitApp'] = hitAppEWOQ
+                            //     }
+                            // })
+
+                            platforms.EWOQ.log.map(async (value, index) => {
                                 if (hitAppEWOQ !== '#1#' && value.path.includes('#1#')) {
                                     retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace('#1#', `${hitAppEWOQ}`) })
-                                    platforms.EWOQ.tasksFile[index].path = value.path.replace('#1#', `${hitAppEWOQ}`)
-                                    platforms.EWOQ.tasksFile[index]['hitApp'] = hitAppEWOQ
+                                    platforms.EWOQ.log[index].path = value.path.replace('#1#', `${hitAppEWOQ}`)
+                                    platforms.EWOQ.log[index]['hitApp'] = hitAppEWOQ
                                 }
                             })
                         }
@@ -92,11 +105,13 @@ try {
                     // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': inf.url })) {
                         const id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
-                        platforms.EWOQ.tasksFile.map(async (value, index) => {
+                        await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
+                        //platforms.EWOQ.tasksFile.map(async (value, index) => {
+                        platforms.EWOQ.log.map(async (value, index) => {
                             if (id == value.id) {
                                 const body = JSON.parse(value.body)
                                 if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
-                                    const sendWeb = {
+                                    sendWeb = {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                                 "name": "notification", "par": {
@@ -108,7 +123,7 @@ try {
                                     }; await clipboard({ 'value': `${body['1'][0]['10']['1'][0]['2']}\n\n${body['1'][0]['11']['1'][0]['4']}` })
                                     wsRet1.send(JSON.stringify(sendWeb))
                                 } else {
-                                    const sendWeb = {
+                                    sendWeb = {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                                 "name": "notification", "par": {
@@ -128,7 +143,8 @@ try {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, json, body = JSON.parse(inf.body)
                         if (body['6']) {
                             const id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '')
-                            platforms.EWOQ.tasksFile.map(async (value, index) => {
+                            // platforms.EWOQ.tasksFile.map(async (value, index) => {
+                            platforms.EWOQ.log.map(async (value, index) => {
                                 if (id == value.id) {
                                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
                                     retLog = await log({ 'folder': 'EWOQ', 'path': `REQ_SEND_${hitAppEWOQ}.txt`, 'text': inf.body })
@@ -142,8 +158,8 @@ try {
                                     else { json = retConfigStorage.res };
                                     const jsonInf1 = new Date(Number(time.timMil) - dif).toLocaleTimeString(undefined, { hour12: false });
                                     const jsonInf2 = new Date(Number(time.timMil)).toLocaleTimeString(undefined, { hour12: false });
-                                    const jsonInf3 = false
-                                    json.tasks.push({ 'taskName': hitAppEWOQ, 'start': jsonInf1, 'end': jsonInf2, 'sec': Math.round(dif / 1000), 'blind': jsonInf3 });
+                                    const jsonInf3 = false; const add = { 'id': id }
+                                    json.tasks.push({ 'taskName': hitAppEWOQ, 'start': jsonInf1, 'end': jsonInf2, 'sec': Math.round(dif / 1000), 'blind': jsonInf3, ...add });
                                     if (!platforms.EWOQ[hitAppEWOQ]) { lastHour = platforms.EWOQ.default.lastHour } else { lastHour = platforms.EWOQ[hitAppEWOQ].lastHour }
                                     json.tasks.map(async (value, index) => {
                                         tasksQtd += 1; tasksSec += value.sec; if (value.taskName == hitAppEWOQ) {
@@ -164,7 +180,7 @@ try {
                                     retConfigStorage = await configStorage(infConfigStorage);
                                     for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
 
-                                    const sendWeb = {
+                                    sendWeb = {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                                 "name": "notification", "par": {
@@ -173,7 +189,7 @@ try {
                                                 }
                                             }
                                         }]
-                                    }; wsRet1.send(JSON.stringify(sendWeb)); platforms.EWOQ.tasksFile.splice(index, 1);
+                                    }; wsRet1.send(JSON.stringify(sendWeb)); platforms.EWOQ.log.splice(index, 1); // platforms.EWOQ.tasksFile.splice(index, 1);
                                 }
                             })
                         }
@@ -181,18 +197,19 @@ try {
 
                     // #### Peroptyx | /home
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': inf.url })) {
-                        platforms.tryRating.tasksFile = []
+                        platforms.tryRating.log = []; // platforms.tryRating.tasksFile = []
                         await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
                     }
 
                     // #### Peroptyx | /survey
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
-                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, sendWeb, body = JSON.parse(inf.body)
+                        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, body = JSON.parse(inf.body)
                         hitAppTryRating = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); const id = body.requestId
 
                         retLog = await log({ 'folder': 'TryRating', 'path': `RES_GET_${hitAppTryRating}.txt`, 'text': inf.body })
                         const add = { 'id': id, 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': body.targetLocalIds }
-                        platforms.tryRating.tasksFile.push({ 'path': retLog.res, 'id': id, 'lastTaskTimestamp': Number(time.tim), 'body': inf.body, ...add });
+                        platforms.tryRating.log.push({ 'path': retLog.res, 'id': id, 'lastTaskTimestamp': Number(time.tim), 'body': inf.body, ...add });
+                        // platforms.tryRating.tasksFile.push({ 'path': retLog.res, 'id': id, 'lastTaskTimestamp': Number(time.tim), 'body': inf.body, ...add });
                         await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
 
                         if (['Search20', 'QueryImageDeservingClassification'].includes(hitAppTryRating)) {
@@ -247,8 +264,8 @@ try {
 
                         retLog = await log({ 'folder': 'TryRating', 'path': `REQ_SEND_${hitAppTryRating}.txt`, 'text': inf.body })
                         retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-
-                        platforms.tryRating.tasksFile.map(async (value, index) => {
+                        // platforms.tryRating.tasksFile.map(async (value, index) => {
+                        platforms.tryRating.log.map(async (value, index) => {
                             if (id == value.id) {
                                 retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                                 const dif = Number(time.tim) - value.lastTaskTimestamp
@@ -281,7 +298,7 @@ try {
                                 retConfigStorage = await configStorage(infConfigStorage);
                                 for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
 
-                                const sendWeb = {
+                                sendWeb = {
                                     "fun": [{
                                         "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                             "name": "notification", "par": {
@@ -290,7 +307,7 @@ try {
                                             }
                                         }
                                     }]
-                                }; wsRet1.send(JSON.stringify(sendWeb)); platforms.tryRating.tasksFile.splice(index, 1);
+                                }; wsRet1.send(JSON.stringify(sendWeb)); platforms.tryRating.log.splice(index, 1); // platforms.tryRating.tasksFile.splice(index, 1);
                             }
                         })
                     }
@@ -335,7 +352,7 @@ try {
         // -------------------------------------------------------------------------------------------------
 
         async function logOld(inf) {
-            let sendWeb; const RetDH = dateHour(); const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
+            const RetDH = dateHour(); const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
             infFile = {
                 'action': 'write', 'functionLocal': false, 'rewrite': true, // 'true' adiciona, 'false' limpa
                 'path': `./log/EWOQ/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
@@ -410,9 +427,7 @@ try {
     }
     await run()
 }
-catch (e) {
-    console.log(regexE({ 'e': e }).res)
-}
+catch (e) { const m = await regexE({ 'e': e }); console.log(m.res) }
 
 
 

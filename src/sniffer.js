@@ -313,7 +313,7 @@ try {
                     }
 
                     // ######################################################################
-                    if (!ret.send) { console.log('REQUISICAO CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('REQUISICAO ALTERADA') }
+                    if (!ret.send) { console.log('REQ/RES CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('REQ/RES ALTERADA') }
                 } else { console.log('OUTRO URL |', inf.url) }
             } catch (e) { const m = await regexE({ 'e': e }); console.log(m.res) }; return ret
         }

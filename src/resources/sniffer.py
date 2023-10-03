@@ -15,14 +15,16 @@ import zlib
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.abspath(os.path.join(script_dir, ''))
-full_pathJson = os.path.abspath(os.path.join(script_dir, '../../../Chrome_Extension/src/config.json'))
+full_pathJson = os.path.abspath(os.path.join(
+    script_dir, '../../../Chrome_Extension/src/config.json'))
 config = ''
 with open(full_pathJson, 'r') as file:
     config = json.load(file)
-portSocket = config['sniffer']['portSocket'] 
+portSocket = config['sniffer']['portSocket']
 bufferSocket = config['sniffer']['bufferSocket']
 bufferSocket = bufferSocket * 1000
 arrUrl = config['sniffer']['arrUrl']
+
 
 def console(*args):
     msg = ' '.join(str(arg) for arg in args)
@@ -31,11 +33,15 @@ def console(*args):
         os.system('cls' if os.name == 'nt' else 'clear')
         print('CONSOLE LIMPO!')
     console.counter += 1
+
+
 console.counter = 0
+
 
 def rgxMat(a, b):
     c = re.escape(b).replace(r'\*', '.*')
     return re.match(f"^{c}$", a) is not None
+
 
 sockReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sockRes = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,6 +52,7 @@ try:
     send_data = b''
 except Exception as e:
     console('ERRO AO SE CONECTAR NO SOCKET JS 1')
+
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
@@ -156,11 +163,9 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                             if newReq['body']:
                                 flow.request.content = str.encode(
                                     newReq['body'])
-                            console(
-                                "########### REQ ALTERADA ###########")
+                            console("REQ ALTERADA")
                     else:
-                        console(
-                            "########### REQ CANCELADA ###########")
+                        console("REQ CANCELADA")
                         flow.kill()
                 except Exception as e:
                     console('ALTERAR/CANCELAR REQ: ERRO', e)
@@ -173,6 +178,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
     else:
         # console('OUTRO URL REQ |', urlparse(flow.request.url).hostname)
         pass
+
 
 def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
@@ -287,10 +293,9 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                                     newRes['body'])
                             if newRes['status']:
                                 flow.response.status_code = newRes['status']
-                            console(
-                                "########### RES ALTERADO ###########")
+                            console("RES ALTERADO")
                     else:
-                        console("########### RES CANCELADO ###########")
+                        console("RES CANCELADO")
                         flow.kill()
                 except Exception as e:
                     console('ALTERAR/CANCELAR RES: ERRO', e)
@@ -302,7 +307,8 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
         # console('OUTRO URL RES |', urlparse(flow.request.url).hostname)
         pass
 
+
 # ##################################################
 os.system('cls' if os.name == 'nt' else 'clear')
 time.sleep(0.3)
-console('MITMPROXY RODANDO')
+console('MITMPROXY RODANDO\n')

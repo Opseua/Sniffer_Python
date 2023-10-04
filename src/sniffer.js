@@ -1,5 +1,4 @@
 await import('../../Chrome_Extension/src/resources/@functions.js'); import net from 'net'; console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
- 
 try {
     async function run() {
         let infConfigStorage, retConfigStorage, infFile, retFile, retLog, sendWeb

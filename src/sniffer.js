@@ -12,7 +12,7 @@ try {
         const wsHost = retConfigStorage.ws1; const portWebSocket = retConfigStorage.portWebSocket;
         const securityPass = retConfigStorage.securityPass; const device1 = retConfigStorage.device1.name;
         const device1Ret = retConfigStorage.device1.ret; const device2 = retConfigStorage.device2.name;
-        const device2Ret = retConfigStorage.device2.ret; 
+        const device2Ret = retConfigStorage.device2.ret
 
         infConfigStorage = { 'action': 'get', 'key': 'platforms' }; retConfigStorage = await configStorage(infConfigStorage);
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }; let platforms = retConfigStorage

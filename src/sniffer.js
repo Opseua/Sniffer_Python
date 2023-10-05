@@ -142,7 +142,6 @@ try {
                                         retFile = await file({ 'action': 'change', 'path': tokenEWOQ.path, 'pathNew': tokenEWOQ.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                                         tokenEWOQ.path = false
                                     }; const dif = body['9']
-
                                     infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': 'EWOQ' }
                                     retConfigStorage = await configStorage(infConfigStorage);
                                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
@@ -161,16 +160,12 @@ try {
                                     }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec }
                                     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp }
                                     infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'EWOQ', 'value': json }
-                                    retConfigStorage = await configStorage(infConfigStorage);
-
-                                    json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
+                                    retConfigStorage = await configStorage(infConfigStorage); json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
                                     infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
                                     retConfigStorage = await configStorage(infConfigStorage);
-
                                     infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                                     retConfigStorage = await configStorage(infConfigStorage);
                                     for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
-
                                     sendWeb = {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
@@ -188,21 +183,17 @@ try {
 
                     // #### Peroptyx | /home
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': inf.url })) {
-                        platforms.tryRating.log = []; // platforms.tryRating.tasksFile = []
-                        await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+                        platforms.tryRating.log = []; await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
                     }
 
                     // #### Peroptyx | /survey
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, body = JSON.parse(inf.body)
                         let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); const id = body.requestId
-
                         retLog = await log({ 'folder': 'TryRating', 'path': `RES_GET_${hitApp}.txt`, 'text': inf.body })
                         const add = { 'id': id, 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': body.targetLocalIds }
                         platforms.tryRating.log.push({ 'path': retLog.res, 'id': id, 'lastTaskTimestamp': Number(time.tim), 'body': inf.body, ...add });
-                        // platforms.tryRating.tasksFile.push({ 'path': retLog.res, 'id': id, 'lastTaskTimestamp': Number(time.tim), 'body': inf.body, ...add });
                         await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
-
                         if (['Search20', 'QueryImageDeservingClassification'].includes(hitApp)) {
                             sendWeb = {
                                 "fun": [{
@@ -252,10 +243,8 @@ try {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, json, body = JSON.parse(inf.body)
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
                         let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); const id = body.data.tasks[0].requestId
-
                         retLog = await log({ 'folder': 'TryRating', 'path': `REQ_SEND_${hitApp}.txt`, 'text': inf.body })
                         retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-                        // platforms.tryRating.tasksFile.map(async (value, index) => {
                         platforms.tryRating.log.map(async (value, index) => {
                             if (id == value.id) {
                                 retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
@@ -280,15 +269,12 @@ try {
                                 json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp }
                                 infConfigStorage = { 'path': `./log/TryRating/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'tryRating', 'value': json }
                                 retConfigStorage = await configStorage(infConfigStorage);
-
                                 json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
                                 infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
                                 retConfigStorage = await configStorage(infConfigStorage);
-
                                 infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                                 retConfigStorage = await configStorage(infConfigStorage);
                                 for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
-
                                 sendWeb = {
                                     "fun": [{
                                         "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {

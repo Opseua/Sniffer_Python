@@ -1,5 +1,5 @@
 await import('../../Chrome_Extension/src/resources/@functions.js'); import net from 'net'; console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
-try { 
+try {
     async function run() {
         let infConfigStorage, retConfigStorage, infFile, retFile, retLog, sendWeb
         infConfigStorage = { 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage)
@@ -39,8 +39,7 @@ try {
 
                     // #### EWOQ | /home
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
-                        platforms.EWOQ.log = [];
-                        await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+                        platforms.EWOQ.log = []; await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
                     }
 
                     // #### EWOQ | /GetTemplate [REQ-1]
@@ -80,7 +79,7 @@ try {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, body = JSON.parse(inf.body)
                         if (body['1']) {
                             const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, '')
-                            platforms.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'] });
+                            platforms.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'], 'locale': body['1'][0]['10']['1']['1']['2'] });
                             platforms.EWOQ.log.map(async (value, index) => {
                                 if (tokenEWOQ.lastToken == value.hitApp) {
                                     let hitApp = tokenEWOQ[tokenEWOQ.lastToken]; platforms.EWOQ.log[index]['hitApp'] = hitApp
@@ -103,24 +102,26 @@ try {
                                         "fun": [{
                                             "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
                                                 "name": "notification", "par": {
-                                                    "duration": 5, "icon": "./src/media/notification_2.png", "title": `EWOQ | ${body['1'][0]['10']['1'][0]['2']}`,
-                                                    "text": `${body['1'][0]['11']['1'][0]['4']}`
+                                                    "duration": 5, "icon": "./src/media/notification_2.png",
+                                                    "title": `EWOQ | ${body['1'][0]['10']['1'][0]['2']}`, "text": `${body['1'][0]['11']['1'][0]['4']}`
                                                 }
                                             }
                                         }]
                                     }; await clipboard({ 'value': `${body['1'][0]['10']['1'][0]['2']}\n\n${body['1'][0]['11']['1'][0]['4']}` })
+                                    wsRet1.send(JSON.stringify(sendWeb))
                                 } else {
-                                    // sendWeb = {
-                                    //     "fun": [{
-                                    //         "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
-                                    //             "name": "notification", "par": {
-                                    //                 "duration": 3, "icon": "./src/media/notification_2.png", "title": `EWOQ | `,
-                                    //                 "text": `${body['1'][0]['10']['1'][0]['2']}`
-                                    //             }
-                                    //         }
-                                    //     }]
-                                    // }; await clipboard({ 'value': `${body['1'][0]['10']['1'][0]['2']}` });
-                                }; wsRet1.send(JSON.stringify(sendWeb))
+                                    sendWeb = {
+                                        "fun": [{
+                                            "securityPass": securityPass, "funRet": { "retUrl": false }, "funRun": {
+                                                "name": "notification", "par": {
+                                                    "duration": 3, "icon": "./src/media/notification_2.png", "title": `EWOQ | `,
+                                                    "text": `${body['1'][0]['10']['1'][0]['2']}`
+                                                }
+                                            }
+                                        }]
+                                    }; await clipboard({ 'value': `${body['1'][0]['10']['1'][0]['2']}` });
+                                    // wsRet1.send(JSON.stringify(sendWeb))
+                                };
                             }
                         })
                     }
@@ -134,8 +135,6 @@ try {
                                 if (id == value.id) {
                                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
                                     let hitApp = tokenEWOQ[value.token];
-                                    // console.log(value)
-                                    // console.log(tokenEWOQ)
                                     retLog = await log({ 'folder': 'EWOQ', 'path': `REQ_SEND_${hitApp}.txt`, 'text': inf.body })
                                     retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                                     retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
@@ -150,7 +149,7 @@ try {
                                     else { json = retConfigStorage.res };
                                     const jsonInf1 = new Date(Number(time.timMil) - dif).toLocaleTimeString(undefined, { hour12: false });
                                     const jsonInf2 = new Date(Number(time.timMil)).toLocaleTimeString(undefined, { hour12: false });
-                                    const jsonInf3 = false; const add = { 'id': id }
+                                    const jsonInf3 = false; const add = { 'id': value.id, 'locale': value.locale }
                                     json.tasks.push({ 'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': Math.round(dif / 1000), 'blind': jsonInf3, ...add });
                                     if (!platforms.EWOQ[hitApp]) { lastHour = platforms.EWOQ.default.lastHour } else { lastHour = platforms.EWOQ[hitApp].lastHour }
                                     json.tasks.map(async (value, index) => {
@@ -181,7 +180,7 @@ try {
                                                 }
                                             }
                                         }]
-                                    }; wsRet1.send(JSON.stringify(sendWeb)); platforms.EWOQ.log.splice(index, 1); // platforms.EWOQ.tasksFile.splice(index, 1);
+                                    }; wsRet1.send(JSON.stringify(sendWeb)); platforms.EWOQ.log.splice(index, 1);
                                 }
                             })
                         }

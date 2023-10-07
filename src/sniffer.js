@@ -78,8 +78,8 @@ try {
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': inf.url })) {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, body = JSON.parse(inf.body)
                         if (body['1']) {
-                            const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, '')
-                            platforms.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'], 'locale': body['1'][0]['10']['1']['1']['2'] });
+                            const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); const r = regex({ 'pattern': '":"locale","(.*?)","', 'text': inf.body })
+                            platforms.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'], 'locale': r.res['1'].split('":"')[1] });
                             platforms.EWOQ.log.map(async (value, index) => {
                                 if (tokenEWOQ.lastToken == value.hitApp) {
                                     let hitApp = tokenEWOQ[tokenEWOQ.lastToken]; platforms.EWOQ.log[index]['hitApp'] = hitApp

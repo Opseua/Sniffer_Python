@@ -10,8 +10,7 @@ try {
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }
         const wsHost = retConfigStorage.ws1; const portWebSocket = retConfigStorage.portWebSocket;
         const securityPass = retConfigStorage.securityPass; const device1 = retConfigStorage.device1.name;
-        const device1Ret = retConfigStorage.device1.ret; const device2 = retConfigStorage.device2.name;
-        const device2Ret = retConfigStorage.device2.ret
+        const device1Ret = retConfigStorage.device1.ret; const device2 = retConfigStorage.device2.name; const device2Ret = retConfigStorage.device2.ret
 
         infConfigStorage = { 'action': 'get', 'key': 'platforms' }; retConfigStorage = await configStorage(infConfigStorage);
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }; let platforms = retConfigStorage
@@ -327,56 +326,6 @@ try {
             } catch (e) { (async () => { const m = await regexE({ 'e': e }); console.log(m.res) })() }
         }); sockRes.listen((portSocket + 1), () => { });
         // -------------------------------------------------------------------------------------------------
-
-        async function logOld(inf) {
-            const RetDH = dateHour(); const text = `🟡 ${inf.reqRes} | ${inf.url}\n${inf.value}\n\n`
-            infFile = {
-                'action': 'write', 'functionLocal': false, 'rewrite': true, // 'true' adiciona, 'false' limpa
-                'path': `./log/EWOQ/[${RetDH.res.mon}-${RetDH.res.day}]/arquivo.txt`,
-                'text': `🟢 ${RetDH.res.hou}:${RetDH.res.min}:${RetDH.res.sec}:${RetDH.res.mil} | ${text}`
-            }; retFile = await file(infFile);
-
-            if (inf.url == arrUrl[2]) {
-                sendWeb = {
-                    "fun": {
-                        "securityPass": securityPass, "funRet": { "ret": false, "url": `ws://${wsHost}:${portWebSocket}/${device1}`, },
-                        "funRun": { "name": "notification", "par": { "duration": 2, "title": `EWOQ |`, "text": inf.value, } }
-                    }
-                }
-            } else {
-                sendWeb = {
-                    "fun": {
-                        "securityPass": securityPass,
-                        "funRet": {
-                            "ret": true, "url": `ws://${wsHost}:${portWebSocket}/${device2}`,
-                            "fun": {
-                                "securityPass": securityPass, "funRet": { "ret": false, "url": `ws://${wsHost}:${portWebSocket}/${device2Ret}` },
-                                "funRun": {
-                                    "name": "file", "par": {
-                                        "action": "write", "rewrite": true,
-                                        "file": `${conf[1]}:/ARQUIVOS/PROJETOS/Chrome_Extension/log/arquivo.txt`, "text": "########"
-                                    }
-                                }
-                            }
-                        },
-                        "funRun": {
-                            "name": "excel", "par": {
-                                "action": "set", "tab": "YARE", "col": "A", "value": inf.value, "inf": JSON.stringify(inf.inf)
-                            }
-                        }
-                    }
-                }
-            }; wsRet1.send(JSON.stringify(sendWeb))
-        }
-
-
-
-
-
-
-
-
-
 
 
 

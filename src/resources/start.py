@@ -89,7 +89,7 @@ def checkProcess2():
     subprocess.Popen(command)
     # print('PROCESSO INICIADO 2')
     with open(f'{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt', 'w') as file:
-        file.write('1')
+        file.write('ON')
     time.sleep(3)
     while True:
         processos = psutil.process_iter(['cmdline'])
@@ -135,9 +135,8 @@ def checkProcess2():
             winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, "")
             winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 0)
             winreg.CloseKey(key)
-            if os.path.exists(f'{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt'):
-                os.remove(
-                    f'{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt')
+            with open(f'{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt', 'w') as file:
+                file.write('OFF')
             processos = psutil.process_iter(['cmdline'])
             for indice, proc in enumerate(processos):
                 cmdline = proc.info['cmdline']

@@ -77,8 +77,8 @@ try {
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': inf.url })) {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, body = JSON.parse(inf.body)
                         if (body['1']) {
-                            const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); const r = regex({ 'pattern': '":"locale","(.*?)","', 'text': inf.body })
-                            platforms.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'], 'locale': r.res['1'].split('":"')[1] });
+                            const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); const r = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body })
+                            platforms.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'], 'locale': r.res['2'].split('":"')[1].split('"')[0] });
                             platforms.EWOQ.log.map(async (value, index) => {
                                 if (tokenEWOQ.lastToken == value.hitApp) {
                                     let hitApp = tokenEWOQ[tokenEWOQ.lastToken]; platforms.EWOQ.log[index]['hitApp'] = hitApp
@@ -156,10 +156,10 @@ try {
                                             const timestamp = new Date(`2023-${time.mon}-${time.day}T${value.start}`).getTime();
                                             if (timestamp + lastHour * 1000 > Number(time.timMil)) { tasksQtdHitAppLast += 1; tasksSecHitAppLast += value.sec }
                                         }
-                                    }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec }
-                                    json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp }
+                                    }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
+                                    json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
                                     infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'EWOQ', 'value': json }
-                                    retConfigStorage = await configStorage(infConfigStorage); json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
+                                    retConfigStorage = await configStorage(infConfigStorage);
                                     infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
                                     retConfigStorage = await configStorage(infConfigStorage);
                                     infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
@@ -264,11 +264,10 @@ try {
                                         const timestamp = new Date(`2023-${time.mon}-${time.day}T${value.start}`).getTime();
                                         if (timestamp + lastHour * 1000 > Number(time.timMil)) { tasksQtdHitAppLast += 1; tasksSecHitAppLast += value.sec }
                                     }
-                                }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec }
-                                json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp }
+                                }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
+                                json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
                                 infConfigStorage = { 'path': `./log/TryRating/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'tryRating', 'value': json }
                                 retConfigStorage = await configStorage(infConfigStorage);
-                                json.inf.reg['tasksHour'] = `${secToHour(tasksSec).res}`
                                 infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf.reg }
                                 retConfigStorage = await configStorage(infConfigStorage);
                                 infConfigStorage = { 'path': `./log/TryRating/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }

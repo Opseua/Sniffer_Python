@@ -189,6 +189,7 @@ try {
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
                         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, body = JSON.parse(inf.body)
                         let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); const id = body.requestId
+                        retLog = await log({ 'folder': 'TryRating', 'path': `reg.txt`, 'text': time.tim })
                         retLog = await log({ 'folder': 'TryRating', 'path': `RES_GET_${hitApp}.txt`, 'text': inf.body })
                         const add = { 'id': id, 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': body.targetLocalIds }
                         platforms.tryRating.log.push({ 'path': retLog.res, 'id': id, 'lastTaskTimestamp': Number(time.tim), 'body': inf.body, ...add });

@@ -64,7 +64,7 @@ def checkProcess2():
                 "funRun": {
                     "name": "chromeActions",
                             "par": {
-                                "action": "badge", "inf": {"color": [25, 255, 71, 255]}
+                                "action": "badge", "color": [25, 255, 71, 255]
                             }
                 }
             },
@@ -74,7 +74,7 @@ def checkProcess2():
                 "funRun": {
                     "name": "chromeActions",
                             "par": {
-                                "action": "badge", "inf": {"text": "PYTH"}
+                                "action": "badge", "text": "PYTH"
                             }
                 }
             }
@@ -124,7 +124,7 @@ def checkProcess2():
                         "funRun": {
                             "name": "chromeActions",
                             "par": {
-                                "action": "badge", "inf": {"text": ""}
+                                "action": "badge", "text": ""
                             }
                         }
                     }

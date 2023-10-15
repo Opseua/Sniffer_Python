@@ -166,8 +166,8 @@ def run():
 
         checkProcess1()
     except Exception as e:
-        commandErr = f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON" "Ocorreu um erro"'
-        subprocess.Popen(commandErr)
+        subprocess.Popen(
+            f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON" "Ocorreu um erro"')
 
 
 run()

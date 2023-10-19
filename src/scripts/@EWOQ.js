@@ -1,0 +1,159 @@
+async function EWOQ(inf) {
+    let ret = { 'ret': false }; // gO.inf['EWOQ'].log = { 'a': '4' }; await csf([gO.inf]) // SET
+    try {
+        let infConfigStorage, retConfigStorage, infFile, retFile, infNotification, retNotification, retLog
+        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
+        let csf = configStorage; inf['tim'] = Number(time.tim); inf['hour'] = `${time1}/${time2}`
+        let other = { 'default': { 'lastHour': 3600 } }
+
+        // #### EWOQ | /home
+        if ((inf.url == 'EWOQ/home')) {
+            gO.inf['EWOQ'] = {}; gO.inf.EWOQ['log'] = []; gO.inf.EWOQ['token'] = {}
+            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+            await csf([gO.inf]);
+            console.log('#### EWOQ | /home')
+        }
+
+        // #### EWOQ | /GetTemplate_[REQ-1]
+        if ((inf.url == 'EWOQ/GetTemplate_[REQ-1]')) {
+            const tk = JSON.parse(inf.body)['1']; gO.inf.EWOQ.token['lastToken'] = tk; gO.inf.EWOQ.token[tk] = false
+            console.log('#### EWOQ | /GetTemplate_[REQ-1]')
+        }
+
+        // #### EWOQ | /GetTemplate_[RES-2]
+        if ((inf.url == 'EWOQ/GetTemplate_[RES-2]')) {
+            let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/); if (hitApp.length > 0) {
+                hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, '');
+                gO.inf.EWOQ.token[gO.inf.EWOQ.token.lastToken] = hitApp; gO.inf.EWOQ.token[gO.inf.EWOQ.token.lastToken] = hitApp
+                retLog = await log({ 'folder': 'EWOQ', 'path': `RES_GET_template_${hitApp}.txt`, 'text': inf.body });
+                gO.inf.EWOQ.token['path'] = retLog.res;
+                gO.inf.EWOQ.log.map(async (value, index) => {
+                    if (gO.inf.EWOQ.token.lastToken == value.hitApp) {
+                        hitApp = gO.inf.EWOQ.token[gO.inf.EWOQ.token.lastToken]; gO.inf.EWOQ.log[index]['hitApp'] = hitApp
+                        retLog = await log({ 'folder': 'EWOQ', 'path': `RES_GET_${hitApp}.txt`, 'text': value.body });
+                        gO.inf.EWOQ.log[index]['path'] = retLog.res
+                    }
+                }); infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `EWOQ | NOVA TASK`, 'text': hitApp }
+                retNotification = await notification(infNotification);
+            }
+            await csf([gO.inf]);
+            console.log('#### EWOQ | /GetTemplate_[RES-2]')
+        }
+
+        // #### EWOQ | /GetNewTasks
+        if ((inf.url == 'EWOQ/GetNewTasks')) {
+            let body = JSON.parse(inf.body); if (body['1']) {
+                const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); const r = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body })
+                const addGet = { 'locale': r.res['2'].split('":"')[1].split('"')[0] }
+                gO.inf.EWOQ.log.push({ 'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'], 'addGet': addGet });
+                gO.inf.EWOQ.log.map(async (value, index) => {
+                    if (gO.inf.EWOQ.token.lastToken == value.hitApp) {
+                        let hitApp = gO.inf.EWOQ.token[gO.inf.EWOQ.token.lastToken]; gO.inf.EWOQ.log[index]['hitApp'] = hitApp
+                        retLog = await log({ 'folder': 'EWOQ', 'path': `RES_GET_${hitApp}.txt`, 'text': value.body });
+                        gO.inf.EWOQ.log[index]['path'] = retLog.res
+                    }
+                })
+            }
+            await csf([gO.inf]);
+            console.log('#### EWOQ | /GetNewTasks')
+        }
+
+        // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
+        if ((inf.url == 'EWOQ/RecordTaskRenderingLatency')) {
+            const id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
+            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
+            gO.inf.EWOQ.log.map(async (value, index) => {
+                if (id == value.id) {
+                    const body = JSON.parse(value.body); let text
+                    if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
+                        text = body['1'][0]['11']['1'][0]['4']
+                        const infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text };
+                        const retTranslate = await translate(infTranslate);
+                        if (retTranslate.ret) { text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}` }
+                        else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` }
+                        infNotification = {
+                            'duration': 5, 'icon': './src/media/notification_1.png',
+                            'title': `EWOQ | TEM A RESPOSTA!`, 'text': text
+                        }; retNotification = await notification(infNotification);
+                    } else {
+                        text = body['1'][0]['10']['1'][0]['2']
+                        infNotification = {
+                            'duration': 3, 'icon': './src/media/notification_2.png',
+                            'title': `EWOQ | `, 'text': text
+                        }; // retNotification = await notification(infNotification);
+                    };
+                    await clipboard({ 'value': text });
+                }
+            })
+            console.log('#### EWOQ | /RecordTaskRenderingLatency [task 100% loaded]')
+        }
+
+        // #### EWOQ | /SubmitFeedback
+        if ((inf.url == 'EWOQ/SubmitFeedback')) {
+            let json, body = JSON.parse(inf.body); if (body['6']) {
+                const id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); gO.inf.EWOQ.log.map(async (value, index) => {
+                    if (id == value.id) {
+                        let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
+                        let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf.EWOQ.token[value.token];
+                        retLog = await log({ 'folder': 'EWOQ', 'path': `REQ_SEND_${hitApp}.txt`, 'text': inf.body })
+                        retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
+                        retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
+                        if (gO.inf.EWOQ.token.path) {
+                            retFile = await file({
+                                'action': 'change', 'path': gO.inf.EWOQ.token.path,
+                                'pathNew': gO.inf.EWOQ.token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`)
+                            }); gO.inf.EWOQ.token.path = false
+                        }; const dif = body['9']
+                        infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': 'EWOQ' }
+                        retConfigStorage = await configStorage(infConfigStorage);
+                        if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
+                        else { json = retConfigStorage.res };
+                        const jsonInf1 = new Date(Number(time.timMil) - dif).toLocaleTimeString(undefined, { hour12: false });
+                        const jsonInf2 = new Date(Number(time.timMil)).toLocaleTimeString(undefined, { hour12: false }); const jsonInf3 = false;
+                        json.tasks.push({
+                            'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': Math.round(dif / 1000),
+                            'blind': jsonInf3, 'id': value.id, 'addGet': value.addGet
+                        });
+                        if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
+                        json.tasks.map(async (value, index) => {
+                            tasksQtd += 1; tasksSec += value.sec; if (value.taskName == hitApp) {
+                                tasksQtdHitApp += 1; tasksSecHitApp += value.sec
+                                const timestamp = new Date(`2023-${time.mon}-${time.day}T${value.start}`).getTime();
+                                if (timestamp + lastHour * 1000 > Number(time.timMil)) { tasksQtdHitAppLast += 1; tasksSecHitAppLast += value.sec }
+                            }
+                        }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
+                        json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
+                        infConfigStorage = { 'path': `./log/EWOQ/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': 'EWOQ', 'value': json }
+                        retConfigStorage = await configStorage(infConfigStorage);
+                        infConfigStorage = {
+                            'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set',
+                            'key': `DIA_${time.day}`, 'value': json.inf.reg
+                        }
+                        retConfigStorage = await configStorage(infConfigStorage);
+                        infConfigStorage = { 'path': `./log/EWOQ/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
+                        retConfigStorage = await configStorage(infConfigStorage);
+                        for (const nameKey in retConfigStorage.res) {
+                            tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec
+                        }
+                        gO.inf.EWOQ.log.splice(index, 1);
+                        infNotification = {
+                            'duration': 3, 'icon': './src/media/icon_4.png', 'title': `TryRating | ${hitApp}`,
+                            'text': `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
+                        }; retNotification = await notification(infNotification);
+                    }
+                })
+            }
+            console.log('#### EWOQ | /SubmitFeedback')
+        }
+
+        ret['ret'] = true; ret['msg'] = `EWOQ: OK`; ret['res'] = `resposta aqui`;
+    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res };
+    if (!ret.ret) { console.log(ret.msg) };
+    ret = { 'ret': ret.ret, 'msg': ret.msg, 'res': ret.res }; return ret
+}
+
+if (typeof window !== 'undefined') { // CHROME
+    window['EWOQ'] = EWOQ;
+} else { // NODEJS
+    global['EWOQ'] = EWOQ;
+}

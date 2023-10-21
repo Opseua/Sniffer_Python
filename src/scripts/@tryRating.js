@@ -4,7 +4,7 @@ await import('./TryRating_Search20.js');
 async function TryRating(inf) {
     let ret = { 'ret': false }; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
-        let platform = inf.platform ? inf.platform : 'Teste', csf = configStorage
+        let platform = inf.platform ? inf.platform : 'Teste'
         let infConfigStorage, retConfigStorage, infFile, retFile, infNotification, retNotification, retLog
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
         let other = { 'default': { 'lastHour': 3600 }, 'QueryImageDeservingClassification': { 'lastHour': 1800 } }

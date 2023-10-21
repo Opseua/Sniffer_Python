@@ -1,27 +1,22 @@
 await import('../../Chrome_Extension/src/resources/@functions.js'); import net from 'net'; console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
 await import('./scripts/@EWOQ.js');
 await import('./scripts/@TryRating.js');
-await import('./scripts/TryRating_QueryImageDeservingClassification.js');
-await import('./scripts/TryRating_Search20.js');
+
 try {
     async function run() {
         let infConfigStorage, retConfigStorage, infFile, retFile
-        let csf = configStorage, cs = await csf(['']); gO.inf = cs.res // ***** CS ***** GET
+        cs = await csf(['']); gO.inf = cs.res // ***** CS ***** GET
         infConfigStorage = { 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage)
         if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }; const portSocket = retConfigStorage.portSocket;
         const bufferSocket = retConfigStorage.bufferSocket; const arrUrl = retConfigStorage.arrUrl
 
-        infConfigStorage = { 'action': 'get', 'key': 'webSocket' }; retConfigStorage = await configStorage(infConfigStorage)
-        if (!retConfigStorage.ret) { return ret } else { retConfigStorage = retConfigStorage.res }; const securityPass = retConfigStorage.securityPass;
-        let s = retConfigStorage.server['1'], url = s.url, host = s.host, port = s.port, dev = retConfigStorage.devices;
-        let devChrome = `${url}://${host}:${port}/${dev[1].name}`
-        gO.inf['webSocket'] = {}; gO.inf.webSocket['wsArr'] = [devChrome,]; await wsConnect(gO.inf.webSocket.wsArr);
+        gO.inf['wsArr'] = [devChrome, devBlueStacks]; await wsConnect(gO.inf.wsArr);
 
         infFile = { 'action': 'inf' }; retFile = await file(infFile); if (!retFile.ret) { return } else { retFile = retFile.res }
         let command = `"${conf[1]}:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\1_BACKGROUND.exe"`
         command = `${command} "${conf[1]}:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe"`
         command = `${command} "${conf[1]}:\\ARQUIVOS\\PROJETOS\\Sniffer_Python\\src\\resources\\start.py"`
-        const infCommandLine = { 'background': false, 'command': command }; const retCommandLine = await commandLine(infCommandLine); if (!retCommandLine.ret) { return }
+        // const infCommandLine = { 'background': false, 'command': command }; const retCommandLine = await commandLine(infCommandLine); if (!retCommandLine.ret) { return }
 
         async function reqRes(inf) {
             let ret = { 'send': true, res: {} }
@@ -36,47 +31,47 @@ try {
 
                     // #### EWOQ | /home
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'url': 'EWOQ/home', 'body': inf.body })
+                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/home`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /GetTemplate_[REQ-1]
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'url': 'EWOQ/GetTemplate_[REQ-1]', 'body': inf.body })
+                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/GetTemplate_[REQ-1]`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /GetTemplate_[RES-2]
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'url': 'EWOQ/GetTemplate_[RES-2]', 'body': inf.body })
+                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/GetTemplate_[RES-2]`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /GetNewTasks
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'url': 'EWOQ/GetNewTasks', 'body': inf.body })
+                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/GetNewTasks`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'url': 'EWOQ/RecordTaskRenderingLatency', 'body': inf.body })
+                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/RecordTaskRenderingLatency`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /SubmitFeedback
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[5], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'url': 'EWOQ/SubmitFeedback', 'body': inf.body })
+                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/SubmitFeedback`, 'body': inf.body })
                     }
 
-                    // #### Peroptyx | /home
+                    // #### TryRating | /home
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': inf.url })) {
-                        const retTryRating = await TryRating({ 'url': 'TryRating/home', 'body': inf.body })
+                        const retTryRating = await TryRating({ 'platform': inf.platform, 'url': `${inf.platform}/home`, 'body': inf.body })
                     }
 
-                    // #### Peroptyx | /survey
+                    // #### TryRating | /survey
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
-                        const retTryRating = await TryRating({ 'url': 'TryRating/survey', 'body': inf.body })
+                        const retTryRating = await TryRating({ 'platform': inf.platform, 'url': `${inf.platform}/survey`, 'body': inf.body })
                     }
 
-                    // #### Peroptyx | /client_log [submit]
+                    // #### TryRating | /client_log [submit]
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[8], 'text': inf.url })) {
-                        const retTryRating = await TryRating({ 'url': 'TryRating/client_log', 'body': inf.body })
+                        const retTryRating = await TryRating({ 'platform': inf.platform, 'url': `${inf.platform}/client_log`, 'body': inf.body })
                     }
 
                     // ######################################################################
@@ -84,7 +79,86 @@ try {
                 } else { console.log('OUTRO URL |', inf.url) }
             } catch (e) { const m = await regexE({ 'e': e }); console.log(m.res) }; return ret
         }
+        
 
+        // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+        // var platform = 'EWOQ_teste' // ################################ EWOQ
+        // // #### EWOQ | /home
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/1_RES_GET_##_VAZIO_##.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // // #### EWOQ | /GetNewTasks
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/4-RES_GET_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // // #### EWOQ | /GetTemplate_[REQ-1]
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/2-REQ_SEND_template_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // // #### EWOQ | /GetTemplate_[RES-2]
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/3-RES_GET_template_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // // #### EWOQ | /GetNewTasks
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/4-RES_GET_HonestAds_2.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/5-REQ_SEND_RecordTaskRendering.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/LatencyRecordingService/RecordTaskRenderingLatency', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // // #### EWOQ | /SubmitFeedback
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/6-REQ_SEND_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 5000) })
+
+        // // #### EWOQ | /SubmitFeedback
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/6-REQ_SEND_HonestAds_2.txt' }
+        // retFile = await file(infFile);
+        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'body': retFile.res })
+
+        // await new Promise(resolve => { setTimeout(resolve, 1500) })
+
+        var platform = 'TryRating_teste' // ################################ TryRating
+        // #### TryRating | /home
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_REQ-RES_#/1_RES_GET_##_VAZIO_##.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://www.tryrating.com/app/home', 'body': retFile.res })
+
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // #### TryRating | /survey
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_REQ-RES_#/2-RES_GET_Autocomplete.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://www.tryrating.com/api/survey', 'body': retFile.res })
+
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
+
+        // #### TryRating | /client_log [submit]
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_REQ-RES_#/3-REQ_SEND_Autocomplete.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://www.tryrating.com/api/client_log', 'body': retFile.res })
 
 
 
@@ -152,6 +226,8 @@ try {
     await run()
 }
 catch (e) { const m = await regexE({ 'e': e }); console.log(m.res) }
+
+
 
 
 

@@ -31,47 +31,56 @@ try {
 
                     // #### EWOQ | /home
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/home`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'EWOQ'
+                        const retEWOQ = await EWOQ({ 'platform': platform, 'url': `${platform}/home`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /GetTemplate_[REQ-1]
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/GetTemplate_[REQ-1]`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'EWOQ'
+                        const retEWOQ = await EWOQ({ 'platform': platform, 'url': `${platform}/GetTemplate_[REQ-1]`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /GetTemplate_[RES-2]
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/GetTemplate_[RES-2]`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'EWOQ'
+                        const retEWOQ = await EWOQ({ 'platform': platform, 'url': `${platform}/GetTemplate_[RES-2]`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /GetNewTasks
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/GetNewTasks`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'EWOQ'
+                        const retEWOQ = await EWOQ({ 'platform': platform, 'url': `${platform}/GetNewTasks`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/RecordTaskRenderingLatency`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'EWOQ'
+                        const retEWOQ = await EWOQ({ 'platform': platform, 'url': `${platform}/RecordTaskRenderingLatency`, 'body': inf.body })
                     }
 
                     // #### EWOQ | /SubmitFeedback
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[5], 'text': inf.url })) {
-                        const retEWOQ = await EWOQ({ 'platform': inf.platform, 'url': `${inf.platform}/SubmitFeedback`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'EWOQ'
+                        const retEWOQ = await EWOQ({ 'platform': platform, 'url': `${platform}/SubmitFeedback`, 'body': inf.body })
                     }
 
                     // #### TryRating | /home
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': inf.url })) {
-                        const retTryRating = await TryRating({ 'platform': inf.platform, 'url': `${inf.platform}/home`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'TryRating'
+                        const retTryRating = await TryRating({ 'platform': platform, 'url': `${platform}/home`, 'body': inf.body })
                     }
 
                     // #### TryRating | /survey
                     if ((inf.reqRes == 'res') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
-                        const retTryRating = await TryRating({ 'platform': inf.platform, 'url': `${inf.platform}/survey`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'TryRating'
+                        const retTryRating = await TryRating({ 'platform': platform, 'url': `${platform}/survey`, 'body': inf.body })
                     }
 
                     // #### TryRating | /client_log [submit]
                     if ((inf.reqRes == 'req') && regex({ 'simple': true, 'pattern': arrUrl[8], 'text': inf.url })) {
-                        const retTryRating = await TryRating({ 'platform': inf.platform, 'url': `${inf.platform}/client_log`, 'body': inf.body })
+                        const platform = inf.platform ? inf.platform : 'TryRating'
+                        const retTryRating = await TryRating({ 'platform': platform, 'url': `${platform}/client_log`, 'body': inf.body })
                     }
 
                     // ######################################################################
@@ -79,86 +88,86 @@ try {
                 } else { console.log('OUTRO URL |', inf.url) }
             } catch (e) { const m = await regexE({ 'e': e }); console.log(m.res) }; return ret
         }
-        
+
 
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-        // var platform = 'EWOQ_teste' // ################################ EWOQ
-        // // #### EWOQ | /home
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/1_RES_GET_##_VAZIO_##.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0', 'body': retFile.res })
+        var platform = 'EWOQ_teste' // ################################ EWOQ
+        // #### EWOQ | /home
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/1_RES_GET_##_VAZIO_##.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': arrUrl[1], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // // #### EWOQ | /GetNewTasks
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/4-RES_GET_HonestAds.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'body': retFile.res })
+        // #### EWOQ | /GetNewTasks
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/4-RES_GET_HonestAds.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': arrUrl[3], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // // #### EWOQ | /GetTemplate_[REQ-1]
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/2-REQ_SEND_template_HonestAds.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'body': retFile.res })
+        // #### EWOQ | /GetTemplate_[REQ-1]
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/2-REQ_SEND_template_HonestAds.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': arrUrl[2], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // // #### EWOQ | /GetTemplate_[RES-2]
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/3-RES_GET_template_HonestAds.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SafeTemplateService/GetTemplate', 'body': retFile.res })
+        // #### EWOQ | /GetTemplate_[RES-2]
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/3-RES_GET_template_HonestAds.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': arrUrl[2], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // // #### EWOQ | /GetNewTasks
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/4-RES_GET_HonestAds_2.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/AssignmentAcquisitionService/GetNewTasks', 'body': retFile.res })
+        // #### EWOQ | /GetNewTasks
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/4-RES_GET_HonestAds_2.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': arrUrl[3], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/5-REQ_SEND_RecordTaskRendering.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/LatencyRecordingService/RecordTaskRenderingLatency', 'body': retFile.res })
+        // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/5-REQ_SEND_RecordTaskRendering.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': arrUrl[4], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 2000) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // // #### EWOQ | /SubmitFeedback
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/6-REQ_SEND_HonestAds.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'body': retFile.res })
+        // #### EWOQ | /SubmitFeedback
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/6-REQ_SEND_HonestAds.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': arrUrl[5], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 5000) })
+        await new Promise(resolve => { setTimeout(resolve, 5000) })
 
-        // // #### EWOQ | /SubmitFeedback
-        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/6-REQ_SEND_HonestAds_2.txt' }
-        // retFile = await file(infFile);
-        // await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://rating.ewoq.google.com/u/0/rpc/rating/SubmitFeedbackService/SubmitFeedback', 'body': retFile.res })
+        // #### EWOQ | /SubmitFeedback
+        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_REQ-RES_#/6-REQ_SEND_HonestAds_2.txt' }
+        retFile = await file(infFile);
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': arrUrl[5], 'body': retFile.res })
 
-        // await new Promise(resolve => { setTimeout(resolve, 1500) })
+        await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         var platform = 'TryRating_teste' // ################################ TryRating
         // #### TryRating | /home
         infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_REQ-RES_#/1_RES_GET_##_VAZIO_##.txt' }
         retFile = await file(infFile);
-        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://www.tryrating.com/app/home', 'body': retFile.res })
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': arrUrl[6], 'body': retFile.res })
 
         await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // #### TryRating | /survey
         infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_REQ-RES_#/2-RES_GET_Autocomplete.txt' }
         retFile = await file(infFile);
-        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': 'https://www.tryrating.com/api/survey', 'body': retFile.res })
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'res', 'url': arrUrl[7], 'body': retFile.res })
 
         await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // #### TryRating | /client_log [submit]
         infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_REQ-RES_#/3-REQ_SEND_Autocomplete.txt' }
         retFile = await file(infFile);
-        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': 'https://www.tryrating.com/api/client_log', 'body': retFile.res })
+        await reqRes({ 'platform': `${platform}`, 'reqRes': 'req', 'url': arrUrl[8], 'body': retFile.res })
 
 
 

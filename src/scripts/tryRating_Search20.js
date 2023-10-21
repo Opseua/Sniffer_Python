@@ -1,6 +1,4 @@
-// tryRating_Search20()
-
-async function tryRating_Search20(inf) {
+async function TryRating_Search20(inf) {
     let ret = { 'ret': false }; try {
         let infNotification, retNotification, retSniffer, retFile
         if (inf.snifferChrome) {
@@ -86,7 +84,7 @@ async function tryRating_Search20(inf) {
 }
 
 if (typeof window !== 'undefined') { // CHROME
-    window['tryRating_Search20'] = tryRating_Search20;
+    window['TryRating_Search20'] = TryRating_Search20;
 } else { // NODEJS
-    global['tryRating_Search20'] = tryRating_Search20;
+    global['TryRating_Search20'] = TryRating_Search20;
 }

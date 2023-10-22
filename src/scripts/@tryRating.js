@@ -100,9 +100,9 @@ async function TryRating(inf) {
                         "text": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
                     }; retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);
+                    await csf([gO.inf]);
                 }
             })
-            await csf([gO.inf]);
             console.log(`#### ${platform} | /client_log`)
         }
 

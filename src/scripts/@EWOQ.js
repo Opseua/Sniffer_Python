@@ -146,11 +146,12 @@ async function EWOQ(inf) {
                         for (const nameKey in retConfigStorage.res) {
                             tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec
                         }
-                        gO.inf[platform].log.splice(index, 1);
                         infNotification = {
                             'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
                             'text': `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
                         }; retNotification = await notification(infNotification);
+                        gO.inf[platform].log.splice(index, 1);
+                        await csf([gO.inf]);
                     }
                 })
             }

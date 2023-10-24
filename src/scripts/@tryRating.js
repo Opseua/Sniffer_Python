@@ -1,5 +1,6 @@
 await import('./TryRating_QueryImageDeservingClassification.js');
 await import('./TryRating_Search20.js');
+await import('./TryRating_DrivingNavigation3DMaps.js');
 
 async function TryRating(inf) {
     let ret = { 'ret': false }; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
@@ -35,9 +36,15 @@ async function TryRating(inf) {
             await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             await csf([gO.inf]);
             console.log(`#### ${platform}/survey`)
-            if (['QueryImageDeservingClassification', 'Search20'].includes(hitApp)) {
-                const name = global[`TryRating_${hitApp}`]
-                const retName = await name({ 'body': inf.body })
+            if (['QueryImageDeservingClassification', 'Search20','DrivingNavigation3DMaps'].includes(hitApp)) {
+                let retTask
+                if (hitApp == 'QueryImageDeservingClassificatio') {
+                    retTask = await TryRating_QueryImageDeservingClassification({ 'body': inf.body })
+                } else if (hitApp == 'Search20') {
+                    retTask = await TryRating_Search20({ 'body': inf.body })
+                } else if (hitApp == 'DrivingNavigation3DMaps') {
+                    retTask = await TryRating_DrivingNavigation3DMaps({ 'body': inf.body })
+                }
             } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                 infNotification = {
                     "duration": 5, "icon": "./src/media/notification_1.png", 'retInf': false,

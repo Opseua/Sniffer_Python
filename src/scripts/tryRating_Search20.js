@@ -6,12 +6,13 @@ async function TryRating_Search20(inf) {
                 if (i.inf.sniffer === 2) { gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false }; return ret }
             }; gOAdd(gOEve);
         }
-        if (inf.logFile) { retFile = await file({ 'action': 'read', 'path': inf.logFile }); retSniffer = JSON.parse(retFile.res) }
-        else { retSniffer = JSON.parse(inf.sniffer) }
+        if (inf.logFile) { retFile = await file({ 'action': 'read', 'path': inf.logFile }); retSniffer = retFile.res }
+        else if (inf.body) { retSniffer = inf.body }
+        else { retSniffer = inf.sniffer };
+        retSniffer = JSON.parse(retSniffer)
         if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
-            infNotification =
-            {
-                'duration': 2, 'icon': './src/media/notification_3.png',
+            infNotification = {
+                'duration': 2, 'icon': './src/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
                 'text': `Avaliar manualmente`,
             }; retNotification = await notification(infNotification)
@@ -35,7 +36,7 @@ async function TryRating_Search20(inf) {
                         not = false
                         infNotification =
                         {
-                            'duration': 3, 'icon': './src/media/icon_4.png',
+                            'duration': 3, 'icon': './src/media/icon_4.png', 'retInf': false,
                             'title': `AGUARDE...`,
                             'text': `Traduzindo e alterando o comentário`,
                         }; retNotification = await notification(infNotification)
@@ -48,7 +49,7 @@ async function TryRating_Search20(inf) {
                     // retTranslate2 = await translate(infTranslate2)
                     // comentario2 = retTranslate2.res
 
-                    const infChatGpt = { 'provider': 'open.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
+                    const infChatGpt = { 'provider': 'ora.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
                     const retChatGpt = await chatGpt(infChatGpt)
                     if (!retChatGpt.ret) { return ret }; comentario2 = retChatGpt.res.replace(/\n/g, ' ').replace(/\\"/g, "'");
                 }
@@ -72,7 +73,7 @@ async function TryRating_Search20(inf) {
 
             infNotification =
             {
-                'duration': 2, 'icon': './src/media/notification_1.png',
+                'duration': 2, 'icon': './src/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,
                 'text': `${JSON.stringify(res, null, 2)}`,
             }; retNotification = await notification(infNotification)

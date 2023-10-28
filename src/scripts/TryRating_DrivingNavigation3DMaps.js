@@ -21,10 +21,10 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
             const resultList = [retSniffer.tasks[0].taskData]
             const testQuestionInformation = retSniffer.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer;
             const res = await Promise.all(resultList.map(async (value, index) => {
-                let resultado = null, comentario = null
+                let resultado = requestId, comentario = null
 
                 return {
-                    '1_RESULTADO': resultado,
+                    '1_RESULTADO': retSniffer.resultado,
                     '2_RESPOSTA': testQuestionInformation.loop,
                 };
             }));
@@ -35,10 +35,10 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
                 'text': `${JSON.stringify(res, null, 2)}`,
             }; retNotification = await notification(infNotification)
 
-            await clipboard({ 'value': JSON.stringify(res, null, 2) })
+            await clipboard({ 'value': res })
         }
         ret['ret'] = true; ret['msg'] = `TRYRATING [DrivingNavigation3DMaps]: OK`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; if (!ret.ret) { console.log(ret.msg) }; return ret
+    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

@@ -30,13 +30,13 @@ async function TryRating(inf) {
             }
             gO.inf[platform].log.push({
                 'tim': Number(time.tim), 'dateHour': `${time1}/${time2}`,
-                'id': id, 'body': inf.body, 'path': retLog.res,
+                'id': id, 'hitApp': hitApp, 'body': inf.body, 'path': retLog.res,
                 'addGet': addGet
             });
             await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             await csf([gO.inf]);
             console.log(`#### ${platform}/survey`)
-            if (['QueryImageDeservingClassification', 'Search20','DrivingNavigation3DMaps'].includes(hitApp)) {
+            if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
                 let retTask
                 if (hitApp == 'QueryImageDeservingClassificatio') {
                     retTask = await TryRating_QueryImageDeservingClassification({ 'body': inf.body })
@@ -82,7 +82,10 @@ async function TryRating(inf) {
                     const jsonInf1 = new Date(Number(`${value.tim}000`)).toLocaleTimeString(undefined, { hour12: false });
                     const jsonInf2 = new Date(Number(`${time.tim}000`)).toLocaleTimeString(undefined, { hour12: false });
                     const jsonInf3 = hasKey({ 'key': 'testQuestionInformation', 'obj': JSON.parse(value.body) }).res;
-                    json.tasks.push({ 'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': dif, 'blind': jsonInf3, 'id': value.id, 'addGet': value.addGet });
+                    json.tasks.push({
+                        'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': dif, 'blind': jsonInf3, 'id': value.id,
+                        'addGet': value.addGet
+                    });
                     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
                     json.tasks.map(async (value, index) => {
                         tasksQtd += 1; tasksSec += value.sec; if (value.taskName == hitApp) {
@@ -96,12 +99,14 @@ async function TryRating(inf) {
                     retConfigStorage = await configStorage(infConfigStorage);
                     infConfigStorage = {
                         'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set',
-                        'key': `DIA_${time.day}`, 'value': json.inf.reg
+                        'key': `DIA_${time.day}`, 'value': json.inf
                     }
                     retConfigStorage = await configStorage(infConfigStorage);
                     infConfigStorage = { 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                     retConfigStorage = await configStorage(infConfigStorage);
-                    for (const nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec }
+                    for (const nameKey in retConfigStorage.res) {
+                        tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
+                    }
                     infNotification = {
                         "duration": 3, "icon": "./src/media/icon_4.png", "title": `${platform} | ${hitApp}`, 'retInf': false,
                         "text": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
@@ -114,9 +119,7 @@ async function TryRating(inf) {
         }
 
         ret['ret'] = true; ret['msg'] = `${platform}: OK`; ret['res'] = `resposta aqui`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res };
-    if (!ret.ret) { console.log(ret.msg) };
-    ret = { 'ret': ret.ret, 'msg': ret.msg, 'res': ret.res }; return ret
+    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

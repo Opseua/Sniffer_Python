@@ -54,7 +54,7 @@ async function EWOQ(inf) {
                 }
                 gO.inf[platform].log.push({
                     'tim': Number(time.tim), 'dateHour': `${time1}/${time2}`,
-                    'id': id, 'body': inf.body, 'hitApp': body['1'][0]['2']['1'], 'token': body['1'][0]['2']['1'],
+                    'id': id, 'hitApp': body['1'][0]['2']['1'], 'body': inf.body, 'token': body['1'][0]['2']['1'],
                     'addGet': addGet
                 });
                 gO.inf[platform].log.map(async (value, index) => {
@@ -122,8 +122,8 @@ async function EWOQ(inf) {
                         const jsonInf1 = new Date(Number(time.timMil) - dif).toLocaleTimeString(undefined, { hour12: false });
                         const jsonInf2 = new Date(Number(time.timMil)).toLocaleTimeString(undefined, { hour12: false }); const jsonInf3 = false;
                         json.tasks.push({
-                            'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': Math.round(dif / 1000),
-                            'blind': jsonInf3, 'id': value.id, 'addGet': value.addGet
+                            'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': Math.round(dif / 1000), 'blind': jsonInf3, 'id': value.id,
+                            'addGet': value.addGet
                         });
                         if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
                         json.tasks.map(async (value, index) => {
@@ -138,13 +138,13 @@ async function EWOQ(inf) {
                         retConfigStorage = await configStorage(infConfigStorage);
                         infConfigStorage = {
                             'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set',
-                            'key': `DIA_${time.day}`, 'value': json.inf.reg
+                            'key': `DIA_${time.day}`, 'value': json.inf
                         }
                         retConfigStorage = await configStorage(infConfigStorage);
                         infConfigStorage = { 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                         retConfigStorage = await configStorage(infConfigStorage);
                         for (const nameKey in retConfigStorage.res) {
-                            tasksQtdMon += retConfigStorage.res[nameKey].tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].tasksSec
+                            tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
                         }
                         infNotification = {
                             'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
@@ -159,9 +159,7 @@ async function EWOQ(inf) {
         }
 
         ret['ret'] = true; ret['msg'] = `${platform}: OK`; ret['res'] = `resposta aqui`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res };
-    if (!ret.ret) { console.log(ret.msg) };
-    ret = { 'ret': ret.ret, 'msg': ret.msg, 'res': ret.res }; return ret
+    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

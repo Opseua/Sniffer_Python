@@ -78,10 +78,10 @@ async function TryRating_Search20(inf) {
                 'text': `${JSON.stringify(res, null, 2)}`,
             }; retNotification = await notification(infNotification)
 
-            await clipboard({ 'value': JSON.stringify(res, null, 2) })
+            await clipboard({ 'value': res })
         }
         ret['ret'] = true; ret['msg'] = `TRYRATING [Search20]: OK`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; if (!ret.ret) { console.log(ret.msg) }; return ret
+    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

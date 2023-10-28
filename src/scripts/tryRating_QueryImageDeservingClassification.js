@@ -48,7 +48,7 @@ async function TryRating_QueryImageDeservingClassification(inf) {
             console.log('buscar no Google')
         };
         ret['ret'] = true; ret['msg'] = `TRYRATING [QueryImageDeservingClassification]: OK`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; if (!ret.ret) { console.log(ret.msg) }; return ret
+    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

@@ -169,7 +169,7 @@ def run():
         checkProcess1()
     except Exception as e:
         subprocess.Popen(
-            f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON" "Ocorreu um erro"')
+            f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON start.py" "Ocorreu um erro"')
 
 
 run()

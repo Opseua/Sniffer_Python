@@ -12,6 +12,9 @@ import io
 import gzip
 import brotli
 import zlib
+import subprocess
+
+letter = os.path.dirname(os.path.realpath(__file__))[0]
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.abspath(os.path.join(script_dir, ''))
@@ -52,6 +55,7 @@ try:
     send_data = b''
 except Exception as e:
     console('ERRO AO SE CONECTAR NO SOCKET JS 1')
+    subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "ERRO AO SE CONECTAR NO SOCKET JS 1"')
 
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
@@ -105,7 +109,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                     reqBody = flow.request.content.decode(
                         'utf-8', errors='ignore')
         objReq = {
-            'reqRes': 'req',
+            'sendGet': 'send',
             'method': flow.request.method,
             'host': urlparse(flow.request.url).hostname,
             'url': flow.request.url,
@@ -125,6 +129,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             # console('SOCKET REQUISICAO [SEND]: OK')
         except Exception as e:
             console('SOCKET REQUISICAO [SEND]: ERRO', e)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET REQUISICAO [SEND]: ERRO"')
             raise
         # SOCKET REQUISICAO [GET]
         try:
@@ -142,11 +147,11 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                 retReq = None
                 try:
                     retReq = dataReq
-                    if retReq.get('send', True):
+                    if retReq.get('complete', True):
                         if len(retReq['res']) > 1:
                             newReq = {
                                 # EDITAVEL: NAO
-                                'reqRes': retReq.get('res', {}).get('reqRes'),
+                                'sendGet': retReq.get('res', {}).get('sendGet'),
                                 'method': retReq.get('res', {}).get('method'),
                                 'host': retReq.get('res', {}).get('host'),
                                 'url': retReq.get('res', {}).get('url'),
@@ -169,10 +174,12 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                         flow.kill()
                 except Exception as e:
                     console('ALTERAR/CANCELAR REQ: ERRO', e)
+                    subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR REQ: ERRO"')
                     flow.kill()
                     raise
         except Exception as e:
             console('SOCKET REQ [GET]: ERRO', e)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET REQ [GET]: ERRO"')
             flow.kill()
             raise
     else:
@@ -231,7 +238,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     resBody = flow.response.content.decode(
                         'utf-8', errors='ignore')
         objRes = {
-            'reqRes': 'res',
+            'sendGet': 'get',
             'method': flow.request.method,
             'host': urlparse(flow.request.url).hostname,
             'url': flow.request.url,
@@ -252,6 +259,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             # console('SOCKET RESPONSE [SEND]: OK')
         except Exception as e:
             console('SOCKET RESPONSE [SEND]: ERRO', e)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET RESPONSE [SEND]: ERRO"')
             pass
         # SOCKET RESPONSE [GET]
         try:
@@ -269,11 +277,11 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                 retRes = None
                 try:
                     retRes = dataRes
-                    if retRes.get('send', True):
+                    if retRes.get('complete', True):
                         if len(retRes['res']) > 1:
                             newRes = {
                                 # EDITAVEL: NAO
-                                'reqRes': retRes.get('res', {}).get('reqRes'),
+                                'sendGet': retRes.get('res', {}).get('sendGet'),
                                 'method': retRes.get('res', {}).get('method'),
                                 'host': retRes.get('res', {}).get('host'),
                                 'url': retRes.get('res', {}).get('url'),
@@ -299,9 +307,11 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                         flow.kill()
                 except Exception as e:
                     console('ALTERAR/CANCELAR RES: ERRO', e)
+                    subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR RES: ERRO"')
                     flow.kill()
         except Exception as e:
             console('SOCKET RES [GET]: ERRO', e)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET RES [GET]: ERRO"')
             flow.kill()
     else:
         # console('OUTRO URL RES |', urlparse(flow.request.url).hostname)

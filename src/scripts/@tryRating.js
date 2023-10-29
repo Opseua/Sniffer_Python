@@ -21,7 +21,7 @@ async function TryRating(inf) {
         // #### TryRating | /survey
         if ((inf.url == `${platform}/survey`)) {
             let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); const id = body.requestId
-            retLog = await log({ 'folder': `${platform}`, 'path': `RES_GET_${hitApp}.txt`, 'text': inf.body })
+            retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body })
             const addGet = {
                 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId,
                 'targetLocalIds': body.targetLocalIds, 'name': body.tasks[0].metadata.name, 'assetType': body.tasks[0].metadata.assetType,
@@ -69,7 +69,7 @@ async function TryRating(inf) {
             let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0
             let tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
             let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); const id = body.data.tasks[0].requestId
-            retLog = await log({ 'folder': `${platform}`, 'path': `REQ_SEND_${hitApp}.txt`, 'text': inf.body })
+            retLog = await log({ 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
             retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
             gO.inf[platform].log.map(async (value, index) => {
                 if (id == value.id) {

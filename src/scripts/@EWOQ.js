@@ -14,30 +14,30 @@ async function EWOQ(inf) {
             console.log(`#### ${platform} | /home`)
         }
 
-        // #### EWOQ | /GetTemplate_[REQ-1]
-        if ((inf.url == `${platform}/GetTemplate_[REQ-1]`)) {
+        // #### EWOQ | /GetTemplate_[1-SEND]
+        if ((inf.url == `${platform}/GetTemplate_[1-SEND]`)) {
             const tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
-            console.log(`#### ${platform} | /GetTemplate_[REQ-1]`)
+            console.log(`#### ${platform} | /GetTemplate_[1-SEND]`)
         }
 
-        // #### EWOQ | /GetTemplate_[RES-2]
-        if ((inf.url == `${platform}/GetTemplate_[RES-2]`)) {
+        // #### EWOQ | /GetTemplate_[2-GET]
+        if ((inf.url == `${platform}/GetTemplate_[2-GET]`)) {
             let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/); if (hitApp.length > 0) {
                 hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, '');
                 gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
-                retLog = await log({ 'folder': `${platform}`, 'path': `RES_GET_template_${hitApp}.txt`, 'text': inf.body });
+                retLog = await log({ 'folder': `${platform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body });
                 gO.inf[platform].token['path'] = retLog.res;
                 gO.inf[platform].log.map(async (value, index) => {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'folder': `${platform}`, 'path': `RES_GET_${hitApp}.txt`, 'text': value.body });
+                        retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 }); infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': hitApp, 'retInf': false }
                 retNotification = await notification(infNotification);
             }
             await csf([gO.inf]);
-            console.log(`#### ${platform} | /GetTemplate_[RES-2]`)
+            console.log(`#### ${platform} | /GetTemplate_[2-GET]`)
         }
 
         // #### EWOQ | /GetNewTasks
@@ -60,7 +60,7 @@ async function EWOQ(inf) {
                 gO.inf[platform].log.map(async (value, index) => {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'folder': `${platform}`, 'path': `RES_GET_${hitApp}.txt`, 'text': value.body });
+                        retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 })
@@ -106,7 +106,7 @@ async function EWOQ(inf) {
                     if (id == value.id) {
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
                         let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];
-                        retLog = await log({ 'folder': `${platform}`, 'path': `REQ_SEND_${hitApp}.txt`, 'text': inf.body })
+                        retLog = await log({ 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
                         retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                         retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                         if (gO.inf[platform].token.path) {

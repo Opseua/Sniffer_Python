@@ -8,20 +8,21 @@ async function EWOQ(inf) {
 
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
+            console.log(`#### ${platform} | /home`)
             gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}
             await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
             await csf([gO.inf]);
-            console.log(`#### ${platform} | /home`)
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
         if ((inf.url == `${platform}/GetTemplate_[1-SEND]`)) {
-            const tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
             console.log(`#### ${platform} | /GetTemplate_[1-SEND]`)
+            const tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
         }
 
         // #### EWOQ | /GetTemplate_[2-GET]
         if ((inf.url == `${platform}/GetTemplate_[2-GET]`)) {
+            console.log(`#### ${platform} | /GetTemplate_[2-GET]`)
             let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/); if (hitApp.length > 0) {
                 hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, '');
                 gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
@@ -37,12 +38,13 @@ async function EWOQ(inf) {
                 retNotification = await notification(infNotification);
             }
             await csf([gO.inf]);
-            console.log(`#### ${platform} | /GetTemplate_[2-GET]`)
         }
 
         // #### EWOQ | /GetNewTasks
         if ((inf.url == `${platform}/GetNewTasks`)) {
-            let body = JSON.parse(inf.body); if (body['1']) {
+            console.log(`#### ${platform} | /GetNewTasks`)
+            let body = JSON.parse(inf.body);
+            if (body['1']) {
                 const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); const r = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body })
                 const addGet = {
                     'locale': r.res['2'].split('":"')[1].split('"')[0],
@@ -66,11 +68,11 @@ async function EWOQ(inf) {
                 })
             }
             await csf([gO.inf]);
-            console.log(`#### ${platform} | /GetNewTasks`)
         }
 
         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
+            console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
             const id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
             await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             gO.inf[platform].log.map(async (value, index) => {
@@ -96,12 +98,13 @@ async function EWOQ(inf) {
                     await clipboard({ 'value': text });
                 }
             })
-            console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
         }
 
         // #### EWOQ | /SubmitFeedback
         if ((inf.url == `${platform}/SubmitFeedback`)) {
-            let json, body = JSON.parse(inf.body); if (body['6']) {
+            console.log(`#### ${platform} | /SubmitFeedback`)
+            let json, body = JSON.parse(inf.body);
+            if (body['6']) {
                 const id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].log.map(async (value, index) => {
                     if (id == value.id) {
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
@@ -155,7 +158,6 @@ async function EWOQ(inf) {
                     }
                 })
             }
-            console.log(`#### ${platform} | /SubmitFeedback`)
         }
 
         ret['ret'] = true; ret['msg'] = `${platform}: OK`; ret['res'] = `resposta aqui`;

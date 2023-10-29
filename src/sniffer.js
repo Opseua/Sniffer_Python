@@ -1,6 +1,5 @@
 await import('../../Chrome_Extension/src/resources/@functions.js'); import net from 'net'; console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
-await import('./scripts/@EWOQ.js');
-await import('./scripts/@TryRating.js');
+await import('./scripts/@EWOQ.js'); await import('./scripts/@TryRating.js');
 
 try {
     async function run() {
@@ -15,7 +14,7 @@ try {
         let command = `"${conf[1]}:\\ARQUIVOS\\WINDOWS\\BAT\\RUN_PORTABLE\\1_BACKGROUND.exe"`
         command = `${command} "${conf[1]}:\\ARQUIVOS\\WINDOWS\\PORTABLE_Python\\python-3.11.1.amd64\\python.exe"`
         command = `${command} "${conf[1]}:\\ARQUIVOS\\PROJETOS\\Sniffer_Python\\src\\resources\\start.py"`
-        // const retCommandLine = await commandLine({ 'background': false, 'command': command }); if (!retCommandLine.ret) { return }
+        const retCommandLine = await commandLine({ 'background': false, 'command': command }); if (!retCommandLine.ret) { return }
 
         async function sendGet(inf) {
             let ret = { 'complete': true, res: {} }
@@ -88,63 +87,62 @@ try {
             } catch (e) { const m = await regexE({ 'e': e }); console.log(m.res) }; return ret
         }
 
-
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-        var platform = 'EWOQ_teste' // ################################ EWOQ
-        // #### EWOQ | /home
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/1-GET_##_VAZIO_##.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[1], 'body': retFile.res })
+        // var platform = 'EWOQ_teste' // ################################ EWOQ
+        // // #### EWOQ | /home
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/1-GET_##_VAZIO_##.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[1], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /GetNewTasks
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
+        // // #### EWOQ | /GetNewTasks
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /GetTemplate_[1-SEND]
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/2-SEND_template_HonestAds.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[2], 'body': retFile.res })
+        // // #### EWOQ | /GetTemplate_[1-SEND]
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/2-SEND_template_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[2], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /GetTemplate_[2-GET]
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/3-GET_template_HonestAds.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[2], 'body': retFile.res })
+        // // #### EWOQ | /GetTemplate_[2-GET]
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/3-GET_template_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[2], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /GetNewTasks
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds_2.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
+        // // #### EWOQ | /GetNewTasks
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds_2.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/5-SEND_RecordTaskRendering.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[4], 'body': retFile.res })
+        // // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/5-SEND_RecordTaskRendering.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[4], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /SubmitFeedback
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
+        // // #### EWOQ | /SubmitFeedback
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
 
-        await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-        // #### EWOQ | /SubmitFeedback
-        infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds_2.txt' }
-        retFile = await file(infFile);
-        await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
+        // // #### EWOQ | /SubmitFeedback
+        // infFile = { 'action': 'read', 'path': 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds_2.txt' }
+        // retFile = await file(infFile);
+        // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
 
         // await new Promise(resolve => { setTimeout(resolve, 5000) })
 

@@ -4,14 +4,14 @@ async function EWOQ(inf) {
         let platform = inf.platform ? inf.platform : 'Teste'
         let infConfigStorage, retConfigStorage, infFile, retFile, infNotification, retNotification, retLog
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
-        let other = { 'default': { 'lastHour': 3600 } }
+        let other = { 'default': { 'lastHour': 1200 } }
 
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
             console.log(`#### ${platform} | /home`)
             gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}
-            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
             await csf([gO.inf]);
+            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
@@ -94,6 +94,33 @@ async function EWOQ(inf) {
                             'duration': 3, 'icon': './src/media/notification_2.png',
                             'title': `${platform} | `, 'text': text
                         }; // retNotification = await notification(infNotification);
+
+                        if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
+                            let rg; rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body }); rg = rg.res['1'] ? rg.res['1'] : false
+                            if (!rg) {
+                                infNotification = {
+                                    'duration': 3, 'icon': './src/media/notification_1.png',
+                                    'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false
+                                }; retNotification = await notification(infNotification);
+                            } else {
+                                const infApi = { // ########## TYPE → json
+                                    'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json' }, 'body': {}
+                                }; const retApi = await api(infApi);
+                                rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body }); rg = rg.res['1'] ? rg.res['1'] : false
+                                if (!rg) {
+                                    infNotification = {
+                                        'duration': 3, 'icon': './src/media/notification_1.png',
+                                        'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false
+                                    }; retNotification = await notification(infNotification);
+                                } else {
+                                    infNotification = {
+                                        'duration': 4, 'icon': './src/media/notification_2.png',
+                                        'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
+                                    }; retNotification = await notification(infNotification);
+                                }
+                            }
+                        }
+
                     };
                     await clipboard({ 'value': text });
                 }
@@ -151,7 +178,7 @@ async function EWOQ(inf) {
                         }
                         infNotification = {
                             'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
-                            'text': `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
+                            'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                         }; retNotification = await notification(infNotification);
                         gO.inf[platform].log.splice(index, 1);
                         await csf([gO.inf]);

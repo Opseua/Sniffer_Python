@@ -6,14 +6,14 @@ async function TryRating(inf) {
         let platform = inf.platform ? inf.platform : 'Teste'
         let infConfigStorage, retConfigStorage, infFile, retFile, infNotification, retNotification, retLog
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
-        let other = { 'default': { 'lastHour': 3600 }, 'QueryImageDeservingClassification': { 'lastHour': 1800 } }
+        let other = { 'default': { 'lastHour': 1800 }, 'QueryImageDeservingClassification': { 'lastHour': 600 } }
 
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
             console.log(`#### ${platform} | /home`)
             gO.inf[platform] = {}; gO.inf[platform]['log'] = [];
-            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
             await csf([gO.inf]);
+            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
         }
 
         // #### TryRating | /survey
@@ -33,8 +33,8 @@ async function TryRating(inf) {
                     'id': id, 'hitApp': hitApp, 'body': inf.body, 'path': retLog.res,
                     'addGet': addGet
                 });
-                await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
                 await csf([gO.inf]);
+                await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
                 if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
                     let retTask
                     if (hitApp == 'QueryImageDeservingClassificatio') {
@@ -109,8 +109,8 @@ async function TryRating(inf) {
                         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
                     }
                     infNotification = {
-                        "duration": 3, "icon": "./src/media/icon_4.png", "title": `${platform} | ${hitApp}`, 'retInf': false,
-                        "text": `QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSecMon).res}\nQTD: ${tasksQtd.toString().padStart(4, '0')} | TOTAL: ${secToHour(tasksSec).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res}`
+                        'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
+                        'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     }; retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);
                     await csf([gO.inf]);

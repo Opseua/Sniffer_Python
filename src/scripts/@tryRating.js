@@ -89,7 +89,8 @@ async function TryRating(inf) {
                     });
                     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
                     json.tasks.map(async (value, index) => {
-                        tasksQtd += 1; tasksSec += value.sec; if (value.taskName == hitApp) {
+                        tasksQtd += 1; tasksSec += value.sec;
+                        if (value.taskName == hitApp) {
                             tasksQtdHitApp += 1; tasksSecHitApp += value.sec
                             const timestamp = new Date(`2023-${time.mon}-${time.day}T${value.start}`).getTime();
                             if (timestamp + lastHour * 1000 > Number(time.timMil)) { tasksQtdHitAppLast += 1; tasksSecHitAppLast += value.sec }

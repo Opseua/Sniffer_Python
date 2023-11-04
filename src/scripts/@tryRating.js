@@ -29,8 +29,8 @@ async function TryRating(inf) {
                     'created': body.tasks[0].metadata.created, 'storageType': body.tasks[0].metadata.storageType
                 }
                 gO.inf[platform].log.push({
-                    'tim': Number(time.tim), 'dateHour': `${time1}/${time2}`,
-                    'id': id, 'hitApp': hitApp, 'body': inf.body, 'path': retLog.res,
+                    'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`,
+                    'qtd': 1, 'id': id, 'body': inf.body, 'path': retLog.res,
                     'addGet': addGet
                 });
                 await csf([gO.inf]);
@@ -46,18 +46,19 @@ async function TryRating(inf) {
                     }
                 } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                     infNotification = {
-                        "duration": 5, "icon": "./src/media/notification_1.png", 'retInf': false,
-                        "title": `${platform} | AVISO`, "text": "Outro tipo de tarefa. TEM A RESPOSTA!"
+                        'duration': 5, 'icon': './src/media/notification_1.png', 'retInf': false,
+                        'title': `${platform} | AVISO`, 'text': 'Outro tipo de tarefa. BLIND, TEM A RESPOSTA!'
                     }; retNotification = await notification(infNotification);
-                } else if (body.targetLocalIds.length == 1) {
+                    await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
+                } else if (!body.tasks[0].metadata.created) {
                     infNotification = {
-                        "duration": 5, "icon": "./src/media/notification_3.png", 'retInf': false,
-                        "title": `${platform} | AVISO`, "text": "Outro tipo de tarefa. BLIND, NÃO TEM A RESPOSTA!"
+                        'duration': 5, 'icon': './src/media/notification_3.png', 'retInf': false,
+                        'title': `${platform} | AVISO`, 'text': 'Outro tipo de tarefa. BLIND, NÃO TEM A RESPOSTA!'
                     }; retNotification = await notification(infNotification);
                 } else {
                     infNotification = {
-                        "duration": 5, "icon": "./src/media/notification_3.png", 'retInf': false,
-                        "title": `${platform} | ALERTA`, "text": "Outro tipo de tarefa."
+                        'duration': 5, 'icon': './src/media/notification_3.png', 'retInf': false,
+                        'title': `${platform} | ALERTA`, 'text': 'Outro tipo de tarefa.'
                     }; retNotification = await notification(infNotification);
                 };
             }
@@ -75,27 +76,29 @@ async function TryRating(inf) {
             gO.inf[platform].log.map(async (value, index) => {
                 if (id == value.id) {
                     retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-                    const dif = Number(time.tim) - value.tim
                     infConfigStorage = { 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` }
                     retConfigStorage = await configStorage(infConfigStorage);
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                     else { json = retConfigStorage.res };
-                    const jsonInf1 = new Date(Number(`${value.tim}000`)).toLocaleTimeString(undefined, { hour12: false });
-                    const jsonInf2 = new Date(Number(`${time.tim}000`)).toLocaleTimeString(undefined, { hour12: false });
-                    const jsonInf3 = hasKey({ 'key': 'testQuestionInformation', 'obj': JSON.parse(value.body) }).res;
+                    const dif = Number(time.tim) - value.tim
+                    // const blind = hasKey({ 'key': 'testQuestionInformation', 'obj': JSON.parse(value.body) }).res;
+                    const blind = JSON.parse(value.body).tasks[0].metadata.created ? false : true
                     json.tasks.push({
-                        'taskName': hitApp, 'start': jsonInf1, 'end': jsonInf2, 'sec': dif, 'blind': jsonInf3, 'id': value.id,
+                        'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
+                        'qtd': value.qtd, 'sec': dif, 'blind': blind, 'id': value.id,
                         'addGet': value.addGet
                     });
                     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
                     json.tasks.map(async (value, index) => {
-                        tasksQtd += 1; tasksSec += value.sec;
+                        tasksQtd += value.qtd; tasksSec += value.sec;
                         if (value.taskName == hitApp) {
-                            tasksQtdHitApp += 1; tasksSecHitApp += value.sec
-                            const timestamp = new Date(`2023-${time.mon}-${time.day}T${value.start}`).getTime();
-                            if (timestamp + lastHour * 1000 > Number(time.timMil)) { tasksQtdHitAppLast += 1; tasksSecHitAppLast += value.sec }
+                            tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
+                            if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
+                                tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
+                            }
                         }
-                    }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
+                    });
+                    json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
                     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
                     infConfigStorage = { 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
                     retConfigStorage = await configStorage(infConfigStorage);

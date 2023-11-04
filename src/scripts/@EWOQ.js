@@ -56,8 +56,8 @@ async function EWOQ(inf) {
                     '13': body['1'][0]['13'] ? true : false, '14': body['1'][0]['14'] ? body['1'][0]['14'] : false,
                 }
                 gO.inf[platform].log.push({
-                    'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`,
-                    'id': id, 'qtd': 1, 'hitApp': body['1'][0]['2']['1'], 'body': inf.body, 'token': body['1'][0]['2']['1'],
+                    'hitApp': body['1'][0]['2']['1'], 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`,
+                    'qtd': 1, 'id': id, 'body': inf.body, 'token': body['1'][0]['2']['1'],
                     'addGet': addGet
                 });
                 gO.inf[platform].log.map(async (value, index) => {
@@ -148,11 +148,11 @@ async function EWOQ(inf) {
                             'pathNew': gO.inf[platform].token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`)
                         }); gO.inf[platform].token.path = false
                     };
-                    const dif = Number(time.tim) - value.tim // Math.round(Number(body['9']) / 1000)
                     infConfigStorage = { 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` }
                     retConfigStorage = await configStorage(infConfigStorage);
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                     else { json = retConfigStorage.res };
+                    const dif = Number(time.tim) - value.tim // Math.round(Number(body['9']) / 1000)
                     const blind = false;
                     json.tasks.push({
                         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
@@ -168,7 +168,8 @@ async function EWOQ(inf) {
                                 tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
                             }
                         }
-                    }); json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
+                    })
+                    json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
                     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
                     infConfigStorage = { 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
                     retConfigStorage = await configStorage(infConfigStorage);

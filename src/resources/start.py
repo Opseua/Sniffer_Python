@@ -43,7 +43,7 @@ def run():
         arrHost = " ".join(
             [f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))]
         )
-        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_mitmproxy/mitmdump.exe" --quiet --anticache -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_mitmproxy/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
         os.system("cls" if os.name == "nt" else "clear")
         securityPass = config["webSocket"]["securityPass"]
 

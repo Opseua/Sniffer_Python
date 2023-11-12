@@ -4,9 +4,9 @@ await import('./scripts/@EWOQ.js'); await import('./scripts/@TryRating.js');
 try {
     async function run() {
         let infConfigStorage, retConfigStorage, infFile, retFile; cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
-        infConfigStorage = { 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage)
-        if (!retConfigStorage.ret) { return } else { retConfigStorage = retConfigStorage.res }; const portSocket = retConfigStorage.portSocket;
-        const bufferSocket = retConfigStorage.bufferSocket; const arrUrl = retConfigStorage.arrUrl
+        infConfigStorage = { 'action': 'get', 'key': 'sniffer' };
+        retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage } else { retConfigStorage = retConfigStorage.res };
+        const portSocket = retConfigStorage.portSocket; const bufferSocket = retConfigStorage.bufferSocket; const arrUrl = retConfigStorage.arrUrl
 
         await wsConnect([devChrome, devBlueStacks]);
 

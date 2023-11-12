@@ -63,32 +63,26 @@ def run():
                     "fun": [
                         {
                             "securityPass": securityPass,
-                            "funRet": {"retUrl": False},
-                            "funRun": {
-                                "name": "notification",
-                                "par": {
-                                    "duration": 3,
-                                    "icon": "./src/media/notification_1.png",
-                                    "title": "SNIFFER",
-                                    "text": "Ativado",
-                                },
+                            "retInf": False,
+                            "name": "notification",
+                            "par": {
+                                "duration": 3,
+                                "icon": "./src/media/notification_1.png",
+                                "title": "SNIFFER",
+                                "text": "Ativado",
                             },
                         },
                         {
                             "securityPass": securityPass,
-                            "funRet": {"retUrl": False},
-                            "funRun": {
-                                "name": "chromeActions",
-                                "par": {"action": "badge", "color": [25, 255, 71, 255]},
-                            },
+                            "retInf": False,
+                            "name": "chromeActions",
+                            "par": {"action": "badge", "color": [25, 255, 71, 255]},
                         },
                         {
                             "securityPass": securityPass,
-                            "funRet": {"retUrl": False},
-                            "funRun": {
-                                "name": "chromeActions",
-                                "par": {"action": "badge", "text": "PYTH"},
-                            },
+                            "retInf": False,
+                            "name": "chromeActions",
+                            "par": {"action": "badge", "text": "PYTH"},
                         },
                     ]
                 }
@@ -140,24 +134,20 @@ def run():
                             "fun": [
                                 {
                                     "securityPass": securityPass,
-                                    "funRet": {"retUrl": False},
-                                    "funRun": {
-                                        "name": "notification",
-                                        "par": {
-                                            "duration": 3,
-                                            "icon": "./src/media/notification_2.png",
-                                            "title": "SNIFFER",
-                                            "text": "Desativado",
-                                        },
+                                    "retInf": False,
+                                    "name": "notification",
+                                    "par": {
+                                        "duration": 3,
+                                        "icon": "./src/media/notification_2.png",
+                                        "title": "SNIFFER",
+                                        "text": "Desativado",
                                     },
                                 },
                                 {
                                     "securityPass": securityPass,
-                                    "funRet": {"retUrl": False},
-                                    "funRun": {
-                                        "name": "chromeActions",
-                                        "par": {"action": "badge", "text": ""},
-                                    },
+                                    "retInf": False,
+                                    "name": "chromeActions",
+                                    "par": {"action": "badge", "text": ""},
                                 },
                             ]
                         }

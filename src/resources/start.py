@@ -111,10 +111,6 @@ def run():
                 f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Stopwatch/Stopwatch.exe"'
             )
             # print('PROCESSO INICIADO 2')
-            with open(
-                f"{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt", "w"
-            ) as file:
-                file.write("ON")
             time.sleep(3)
             while True:
                 processos = psutil.process_iter(["cmdline"])
@@ -163,10 +159,6 @@ def run():
                     winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, "")
                     winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "")
                     winreg.CloseKey(key)
-                    with open(
-                        f"{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt", "w"
-                    ) as file:
-                        file.write("OFF")
                     subprocess.Popen("taskkill /IM Stopwatch.exe /F")
                     processos = psutil.process_iter(["cmdline"])
                     for indice, proc in enumerate(processos):
@@ -212,15 +204,11 @@ def run():
         winreg.SetValueEx(key, "ProxyServer", 0, winreg.REG_SZ, "")
         winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "")
         winreg.CloseKey(key)
-        with open(
-            f"{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/state.txt", "w"
-        ) as file:
-            file.write("OFF")
         subprocess.Popen("taskkill /IM Stopwatch.exe /F")
         subprocess.Popen(
             f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
         )
-        subprocess.Popen("taskkill /IM nodeSniffer.exe /F")
+        subprocess.Popen("taskkill /IM node_#-Sniffer_Python.exe /F")
         # ENCERRAR SCRIPT PYTHON
         sys.exit()
 

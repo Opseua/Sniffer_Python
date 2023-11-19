@@ -2,7 +2,7 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
     let ret = { 'ret': false }; try {
         let infNotification, retNotification, retSniffer, retFile
         if (inf.snifferChrome) {
-            const gOEve = async (i) => {
+            let gOEve = async (i) => {
                 if (i.inf.sniffer === 2) { gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false }; return ret }
             }; gOAdd(gOEve);
         }
@@ -15,12 +15,13 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
                 'duration': 2, 'icon': './src/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
                 'text': `Avaliar manualmente`,
-            }; retNotification = await notification(infNotification)
+            };
+            retNotification = await notification(infNotification)
         }
         else {
-            const resultList = [retSniffer.tasks[0].taskData]
-            const testQuestionInformation = retSniffer.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer;
-            const res = await Promise.all(resultList.map(async (value, index) => {
+            let resultList = [retSniffer.tasks[0].taskData]
+            let testQuestionInformation = retSniffer.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer;
+            let res = await Promise.all(resultList.map(async (value, index) => {
                 let resultado = requestId, comentario = null
 
                 return {
@@ -33,12 +34,18 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
                 'duration': 2, 'icon': './src/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,
                 'text': `${JSON.stringify(res, null, 2)}`,
-            }; retNotification = await notification(infNotification)
+            };
+            retNotification = await notification(infNotification)
 
             await clipboard({ 'value': res })
         }
-        ret['ret'] = true; ret['msg'] = `TRYRATING [DrivingNavigation3DMaps]: OK`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
+        ret['msg'] = `TRYRATING [DrivingNavigation3DMaps]: OK`;
+        ret['ret'] = true;
+    } catch (e) {
+        let m = await regexE({ 'e': e });
+        ret['msg'] = m.res
+    };
+    return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

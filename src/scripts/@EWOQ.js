@@ -9,7 +9,9 @@ async function EWOQ(inf) {
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
             console.log(`#### ${platform} | /home`)
-            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}
+            gO.inf[platform] = {};
+            gO.inf[platform]['log'] = [];
+            gO.inf[platform]['token'] = {}
             await csf([gO.inf]);
             await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
         }
@@ -17,7 +19,9 @@ async function EWOQ(inf) {
         // #### EWOQ | /GetTemplate_[1-SEND]
         if ((inf.url == `${platform}/GetTemplate_[1-SEND]`)) {
             console.log(`#### ${platform} | /GetTemplate_[1-SEND]`)
-            const tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
+            let tk = JSON.parse(inf.body)['1'];
+            gO.inf[platform].token['lastToken'] = tk;
+            gO.inf[platform].token[tk] = false
         }
 
         // #### EWOQ | /GetTemplate_[2-GET]
@@ -31,11 +35,13 @@ async function EWOQ(inf) {
                 gO.inf[platform].token['path'] = retLog.res;
                 gO.inf[platform].log.map(async (value, index) => {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
-                        hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
+                        hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
+                        gO.inf[platform].log[index]['hitApp'] = hitApp
                         retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
-                }); infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': hitApp, 'retInf': false }
+                });
+                infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': hitApp, 'retInf': false }
                 retNotification = await notification(infNotification);
             }
             await csf([gO.inf]);
@@ -46,8 +52,9 @@ async function EWOQ(inf) {
             console.log(`#### ${platform} | /GetNewTasks`)
             let body = JSON.parse(inf.body);
             if (body['1']) {
-                const id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); const r = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body })
-                const addGet = {
+                let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, '');
+                let r = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body })
+                let addGet = {
                     'locale': r.res['2'].split('":"')[1].split('"')[0],
                     '1': body['1'][0]['1'] ? true : false, '2': body['1'][0]['2'] ? true : false, '3': body['1'][0]['3'] ? true : false,
                     '4': body['1'][0]['4'] ? true : false, '5': body['1'][0]['5'] ? true : false, '6': body['1'][0]['6'] ? true : false,
@@ -62,7 +69,8 @@ async function EWOQ(inf) {
                 });
                 gO.inf[platform].log.map(async (value, index) => {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
-                        let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
+                        let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
+                        gO.inf[platform].log[index]['hitApp'] = hitApp
                         retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
@@ -74,23 +82,24 @@ async function EWOQ(inf) {
         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
             console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
-            const id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
+            let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
             await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             gO.inf[platform].log.map(async (value, index) => {
                 if (id == value.id) {
-                    const body = JSON.parse(value.body); let text
+                    let body = JSON.parse(value.body), text
                     gO.inf[platform].log[index]['tim'] = Number(time.tim)
                     gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                         text = body['1'][0]['11']['1'][0]['4']
-                        const infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text };
-                        const retTranslate = await translate(infTranslate);
+                        let infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text };
+                        let retTranslate = await translate(infTranslate);
                         if (retTranslate.ret) { text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}` }
                         else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` }
                         infNotification = {
                             'duration': 5, 'icon': './src/media/notification_1.png',
                             'title': `${platform} | TEM A RESPOSTA!`, 'text': text, 'retInf': false
-                        }; retNotification = await notification(infNotification);
+                        };
+                        retNotification = await notification(infNotification);
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']
                         infNotification = {
@@ -98,27 +107,33 @@ async function EWOQ(inf) {
                             'title': `${platform} | `, 'text': text
                         }; // retNotification = await notification(infNotification);
                         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
-                            let rg; rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body }); rg = rg.res['1'] ? rg.res['1'] : false
+                            let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body });
+                            rg = rg.res['1'] ? rg.res['1'] : false
                             if (!rg) {
                                 infNotification = {
                                     'duration': 3, 'icon': './src/media/notification_1.png',
                                     'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false
-                                }; retNotification = await notification(infNotification);
+                                };
+                                retNotification = await notification(infNotification);
                             } else {
-                                const infApi = { // ########## TYPE → json
+                                let infApi = { // ########## TYPE → json
                                     'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json' }, 'body': {}
-                                }; const retApi = await api(infApi);
-                                rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body }); rg = rg.res['1'] ? rg.res['1'] : false
+                                };
+                                let retApi = await api(infApi);
+                                rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body });
+                                rg = rg.res['1'] ? rg.res['1'] : false
                                 if (!rg) {
                                     infNotification = {
                                         'duration': 3, 'icon': './src/media/notification_1.png',
                                         'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false
-                                    }; retNotification = await notification(infNotification);
+                                    };
+                                    retNotification = await notification(infNotification);
                                 } else {
                                     infNotification = {
                                         'duration': 4, 'icon': './src/media/notification_2.png',
                                         'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
-                                    }; retNotification = await notification(infNotification);
+                                    };
+                                    retNotification = await notification(infNotification);
                                 }
                             }
                         }
@@ -134,7 +149,7 @@ async function EWOQ(inf) {
         if ((inf.url == `${platform}/SubmitFeedback`)) {
             console.log(`#### ${platform} | /SubmitFeedback`)
             let json, body = JSON.parse(inf.body);
-            const id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
+            let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
             gO.inf[platform].log.map(async (value, index) => {
                 if (id == value.id) {
                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
@@ -146,14 +161,15 @@ async function EWOQ(inf) {
                         retFile = await file({
                             'action': 'change', 'path': gO.inf[platform].token.path,
                             'pathNew': gO.inf[platform].token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`)
-                        }); gO.inf[platform].token.path = false
+                        });
+                        gO.inf[platform].token.path = false
                     };
                     infConfigStorage = { 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` }
                     retConfigStorage = await configStorage(infConfigStorage);
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                     else { json = retConfigStorage.res };
-                    const dif = Number(time.tim) - value.tim // Math.round(Number(body['9']) / 1000)
-                    const blind = false;
+                    let dif = Number(time.tim) - value.tim
+                    let blind = false;
                     json.tasks.push({
                         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
                         'qtd': value.qtd, 'sec': dif, 'blind': blind, 'id': value.id,
@@ -180,21 +196,27 @@ async function EWOQ(inf) {
                     retConfigStorage = await configStorage(infConfigStorage);
                     infConfigStorage = { 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
                     retConfigStorage = await configStorage(infConfigStorage);
-                    for (const nameKey in retConfigStorage.res) {
+                    for (let nameKey in retConfigStorage.res) {
                         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
                     }
                     infNotification = {
                         'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
                         'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
-                    }; retNotification = await notification(infNotification);
+                    };
+                    retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);
                     await csf([gO.inf]);
                 }
             })
         }
-
-        ret['ret'] = true; ret['msg'] = `${platform}: OK`; ret['res'] = `resposta aqui`;
-    } catch (e) { const m = await regexE({ 'e': e }); ret['msg'] = m.res }; return ret
+        ret['msg'] = `${platform}: OK`;
+        ret['res'] = `resposta aqui`;
+        ret['ret'] = true;
+    } catch (e) {
+        let m = await regexE({ 'e': e });
+        ret['msg'] = m.res
+    };
+    return ret
 }
 
 if (typeof window !== 'undefined') { // CHROME

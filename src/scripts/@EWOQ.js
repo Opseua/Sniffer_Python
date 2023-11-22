@@ -41,7 +41,21 @@ async function EWOQ(inf) {
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 });
-                infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': hitApp, 'retInf': false }
+                let textNot = {
+                    'b': [
+                        'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
+                        'GLSJobtypeTestTemplate'
+                    ],
+                    'r': ['SearchExperiencetoAdUsefulness']
+                }
+                if (textNot.b.includes(hitApp)) {
+                    textNot = '[B] '
+                } else if (textNot.r.includes(hitApp)) {
+                    textNot = '[R] '
+                } else {
+                    textNot = ''
+                }
+                infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
                 retNotification = await notification(infNotification);
             }
             await csf([gO.inf]);

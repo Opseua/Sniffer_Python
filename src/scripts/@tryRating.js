@@ -35,7 +35,7 @@ async function TryRating(inf) {
                     'qtd': 1, 'id': id, 'body': inf.body, 'path': retLog.res,
                     'addGet': addGet
                 });
-                await csf([gO.inf]);
+                // await csf([gO.inf]);
                 await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
                 if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
                     let retTask
@@ -124,7 +124,7 @@ async function TryRating(inf) {
                     };
                     retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);
-                    await csf([gO.inf]);
+                    // await csf([gO.inf]);
                 }
             })
         }

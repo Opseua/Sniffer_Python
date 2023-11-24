@@ -48,11 +48,11 @@ def run():
         securityPass = config["webSocket"]["securityPass"]
 
         def api(inf):
-            server = config["webSocket"]["server"]["1"]
+            server = config["webSocket"]["server"]["2"]
             wsHost = server["host"]
             wsPort = server["port"]
             devices = config["webSocket"]["devices"]
-            devChrome = devices[1]["name"]
+            devChrome = devices[0]["name"]
             url = "http://" + str(wsHost) + ":" + str(wsPort) + "/" + str(devChrome)
             payload = inf
             response = requests.post(url, json=payload)

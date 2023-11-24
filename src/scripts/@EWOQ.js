@@ -44,7 +44,7 @@ async function EWOQ(inf) {
                 let textNot = {
                     'b': [
                         'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
-                        'GLSJobtypeTestTemplate'
+                        'GLSJobtypeTestTemplate', 'CQPremiumTask'
                     ],
                     'r': ['SearchExperiencetoAdUsefulness']
                 }
@@ -58,7 +58,7 @@ async function EWOQ(inf) {
                 infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
                 retNotification = await notification(infNotification);
             }
-            await csf([gO.inf]);
+            // await csf([gO.inf]);
         }
 
         // #### EWOQ | /GetNewTasks
@@ -90,7 +90,7 @@ async function EWOQ(inf) {
                     }
                 })
             }
-            await csf([gO.inf]);
+            // await csf([gO.inf]);
         }
 
         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
@@ -154,7 +154,7 @@ async function EWOQ(inf) {
 
                     };
                     await clipboard({ 'value': text });
-                    await csf([gO.inf]);
+                    // await csf([gO.inf]);
                 }
             })
         }
@@ -219,7 +219,7 @@ async function EWOQ(inf) {
                     };
                     retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);
-                    await csf([gO.inf]);
+                    // await csf([gO.inf]);
                 }
             })
         }

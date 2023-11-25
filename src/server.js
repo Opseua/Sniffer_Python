@@ -1,5 +1,5 @@
 await import('../../Chrome_Extension/src/resources/@functions.js'); import net from 'net'; console.log('SNIFFER PYTHON [JS] RODANDO', '\n');
-await import('./scripts/@EWOQ.js'); await import('./scripts/@TryRating.js');
+await import('./scripts/@EWOQ.js'); await import('./scripts/@TryRating.js')
 
 try {
     async function run() {

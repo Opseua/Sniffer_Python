@@ -11,9 +11,11 @@ async function server(inf) {
 
             // DEV - [WEB] WEB {IMPAR}
             let dev1 = devChromeWeb
+            // DEV - [LOC] LOCAL {PAR}
+            let dev2 = devChromeLocal
 
             // CONNECT [WEB-LOC]
-            await wsConnect([dev1, , , ,])
+            await wsConnect([dev2, , , ,])
 
             infFile = { 'action': 'inf' }; retFile = await file(infFile); if (!retFile.ret) { return } else { retFile = retFile.res }
             let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe"`

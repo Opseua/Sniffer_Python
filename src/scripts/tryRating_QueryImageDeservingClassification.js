@@ -1,9 +1,17 @@
+
 async function TryRating_QueryImageDeservingClassification(inf) {
     let ret = { 'ret': false }; try {
         let infNotification, retNotification, retSniffer, retFile
         if (inf.snifferChrome) {
             let gOEve = async (i) => {
-                if (i.inf.sniffer === 2) { gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false }; return ret }
+                if (i.inf.sniffer === 2) {
+                    gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false };
+                    return {
+                        ...({ ret: ret.ret }),
+                        ...(ret.msg && { msg: ret.msg }),
+                        ...(ret.res && { res: ret.res }),
+                    };
+                }
             }; gOAdd(gOEve);
         };
         if (inf.logFile) { retFile = await file({ 'action': 'read', 'path': inf.logFile }); retSniffer = retFile.res }
@@ -49,7 +57,7 @@ async function TryRating_QueryImageDeservingClassification(inf) {
             };
             retNotification = await notification(infNotification)
             let radio = { "other": "TryRating_QueryImageDeservingClassification", "inf": [2], "res": "🔵 GIBBERISH", "query": query }
-            await wsSend(devChrome, radio)
+            await wsSend(devChromeLocal, radio)
         } else {
             await wsSend(devBlueStacks, { "name": "google", "par": { "search": query } })
             console.log('buscar no Google')
@@ -61,13 +69,13 @@ async function TryRating_QueryImageDeservingClassification(inf) {
         ret['msg'] = m.res
     };
     return {
-        ...(ret.ret && { ret: ret.ret }),
+        ...({ ret: ret.ret }),
         ...(ret.msg && { msg: ret.msg }),
         ...(ret.res && { res: ret.res }),
     };
 }
 
-if (typeof window !== 'undefined') { // CHROME
+if (eng) { // CHROME
     window['TryRating_QueryImageDeservingClassification'] = TryRating_QueryImageDeservingClassification;
 } else { // NODEJS
     global['TryRating_QueryImageDeservingClassification'] = TryRating_QueryImageDeservingClassification;

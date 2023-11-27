@@ -1,3 +1,4 @@
+
 async function EWOQ(inf) {
     let ret = { 'ret': false }; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
@@ -231,13 +232,13 @@ async function EWOQ(inf) {
         ret['msg'] = m.res
     };
     return {
-        ...(ret.ret && { ret: ret.ret }),
+        ...({ ret: ret.ret }),
         ...(ret.msg && { msg: ret.msg }),
         ...(ret.res && { res: ret.res }),
     };
 }
 
-if (typeof window !== 'undefined') { // CHROME
+if (eng) { // CHROME
     window['EWOQ'] = EWOQ;
 } else { // NODEJS
     global['EWOQ'] = EWOQ;

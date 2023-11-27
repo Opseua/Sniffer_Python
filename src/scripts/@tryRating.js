@@ -1,4 +1,3 @@
-await import('./TryRating_QueryImageDeservingClassification.js'); await import('./TryRating_Search20.js'); await import('./TryRating_DrivingNavigation3DMaps.js');
 
 async function TryRating(inf) {
     let ret = { 'ret': false }; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
@@ -136,13 +135,13 @@ async function TryRating(inf) {
         ret['msg'] = m.res
     };
     return {
-        ...(ret.ret && { ret: ret.ret }),
+        ...({ ret: ret.ret }),
         ...(ret.msg && { msg: ret.msg }),
         ...(ret.res && { res: ret.res }),
     };
 }
 
-if (typeof window !== 'undefined') { // CHROME
+if (eng) { // CHROME
     window['TryRating'] = TryRating;
 } else { // NODEJS
     global['TryRating'] = TryRating;

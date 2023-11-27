@@ -1,9 +1,17 @@
+
 async function TryRating_Search20(inf) {
     let ret = { 'ret': false }; try {
         let infNotification, retNotification, retSniffer, retFile
         if (inf.snifferChrome) {
             let gOEve = async (i) => {
-                if (i.inf.sniffer === 2) { gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false }; return ret }
+                if (i.inf.sniffer === 2) {
+                    gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false };
+                    return {
+                        ...({ ret: ret.ret }),
+                        ...(ret.msg && { msg: ret.msg }),
+                        ...(ret.res && { res: ret.res }),
+                    };
+                }
             }; gOAdd(gOEve);
         }
         if (inf.logFile) { retFile = await file({ 'action': 'read', 'path': inf.logFile }); retSniffer = retFile.res }
@@ -57,7 +65,13 @@ async function TryRating_Search20(inf) {
 
                     let infChatGpt = { 'provider': 'ora.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
                     let retChatGpt = await chatGpt(infChatGpt)
-                    if (!retChatGpt.ret) { return ret };
+                    if (!retChatGpt.ret) {
+                        return {
+                            ...({ ret: ret.ret }),
+                            ...(ret.msg && { msg: ret.msg }),
+                            ...(ret.res && { res: ret.res }),
+                        };
+                    };
                     comentario2 = retChatGpt.res.replace(/\n/g, ' ').replace(/\\"/g, "'");
                 }
 
@@ -95,13 +109,13 @@ async function TryRating_Search20(inf) {
         ret['msg'] = m.res
     };
     return {
-        ...(ret.ret && { ret: ret.ret }),
+        ...({ ret: ret.ret }),
         ...(ret.msg && { msg: ret.msg }),
         ...(ret.res && { res: ret.res }),
     };
 }
 
-if (typeof window !== 'undefined') { // CHROME
+if (eng) { // CHROME
     window['TryRating_Search20'] = TryRating_Search20;
 } else { // NODEJS
     global['TryRating_Search20'] = TryRating_Search20;

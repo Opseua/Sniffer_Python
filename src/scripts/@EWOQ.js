@@ -14,7 +14,7 @@ async function EWOQ(inf) {
             gO.inf[platform]['log'] = [];
             gO.inf[platform]['token'] = {}
             await csf([gO.inf]);
-            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
@@ -98,7 +98,7 @@ async function EWOQ(inf) {
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
             console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
             let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
-            await commandLine({ 'command': `"${conf[1]}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
+            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             gO.inf[platform].log.map(async (value, index) => {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text

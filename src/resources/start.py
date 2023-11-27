@@ -98,7 +98,7 @@ def run():
                 key, "ProxyServer", 0, winreg.REG_SZ, "127.0.0.1:" + str(portMitm)
             )
             # ignorar hosts → → 'Servidor WebSocket EC2', 'WhatsApp Desktop'
-            server = config["webSocket"]["server"]["1"]
+            server = config["webSocket"]["server"]["2"]
             wsHost = server["host"]
             ignoreHosts = f"{wsHost};*fb*;*whatsapp*"
             winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, f"{ignoreHosts}")

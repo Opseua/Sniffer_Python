@@ -6,11 +6,7 @@ async function TryRating_QueryImageDeservingClassification(inf) {
             let gOEve = async (i) => {
                 if (i.inf.sniffer === 2) {
                     gORem(gOEve); chrome.browserAction.setBadgeText({ text: '' }); ret = { 'ret': false };
-                    return {
-                        ...({ ret: ret.ret }),
-                        ...(ret.msg && { msg: ret.msg }),
-                        ...(ret.res && { res: ret.res }),
-                    };
+                    return ret
                 }
             }; gOAdd(gOEve);
         };

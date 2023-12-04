@@ -1,6 +1,7 @@
-
+let e = import.meta.url;
 async function TryRating_QueryImageDeservingClassification(inf) {
-    let ret = { 'ret': false }; try {
+    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
+    try {
         let infNotification, retNotification, retSniffer, retFile
         if (inf.snifferChrome) {
             let gOEve = async (i) => {

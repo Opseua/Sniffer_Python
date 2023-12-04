@@ -32,13 +32,13 @@ async function EWOQ(inf) {
             if (hitApp.length > 0) {
                 hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, '');
                 gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
-                retLog = await log({ 'folder': `${platform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body });
+                retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body });
                 gO.inf[platform].token['path'] = retLog.res;
                 gO.inf[platform].log.map(async (value, index) => {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
                         gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
+                        retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 });
@@ -86,7 +86,7 @@ async function EWOQ(inf) {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
                         gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
+                        retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 })
@@ -169,9 +169,9 @@ async function EWOQ(inf) {
                 if (id == value.id) {
                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
                     let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];
-                    retLog = await log({ 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
-                    retFile = await file({ 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-                    retFile = await file({ 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
+                    retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
+                    retFile = await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
+                    retFile = await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                     if (gO.inf[platform].token.path) {
                         retFile = await file({
                             'action': 'change', 'path': gO.inf[platform].token.path,
@@ -209,17 +209,18 @@ async function EWOQ(inf) {
                         'key': `DIA_${time.day}`, 'value': json.inf
                     }
                     retConfigStorage = await configStorage(infConfigStorage);
-                    infConfigStorage = { 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
-                    retConfigStorage = await configStorage(infConfigStorage);
-                    for (let nameKey in retConfigStorage.res) {
-                        tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
-                    }
-                    infNotification = {
-                        'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
-                        'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
-                    };
-                    retNotification = await notification(infNotification);
-                    gO.inf[platform].log.splice(index, 1);
+                    console.log(retConfigStorage)
+                    // infConfigStorage = { 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
+                    // retConfigStorage = await configStorage(infConfigStorage);
+                    // for (let nameKey in retConfigStorage.res) {
+                    //     tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
+                    // }
+                    // infNotification = {
+                    //     'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
+                    //     'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+                    // };
+                    // retNotification = await notification(infNotification);
+                    // gO.inf[platform].log.splice(index, 1);
                     // await csf([gO.inf]);
                 }
             })
@@ -229,13 +230,13 @@ async function EWOQ(inf) {
         ret['ret'] = true;
 
         // ### LOG FUN ###
-        if (inf.logFun) {
-            let infFile = { 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
+        if (inf && inf.logFun) {
+            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
             infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; retFile = await file(infFile);
         }
     } catch (e) {
-        let m = await regexE({ 'e': e });
-        ret['msg'] = m.res
+        let retRegexE = await regexE({ 'inf': inf, 'e': e });
+        ret['msg'] = retRegexE.res
     };
     return {
         ...({ ret: ret.ret }),

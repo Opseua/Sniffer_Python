@@ -1,11 +1,14 @@
 await import('./resources/@export.js');
+let e = import.meta.url;
 async function server(inf) {
+    let ret = { 'ret': false };
+    e = inf && inf.e ? inf.e : e;
     try {
         let time = dateHour().res; console.log(`${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec}`, `server [Sniffer_Python]`, '\n');
 
         async function run() {
             let infConfigStorage, retConfigStorage, infFile, retFile; cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
-            infConfigStorage = { 'action': 'get', 'key': 'sniffer' };
+            infConfigStorage = { 'e': e, 'action': 'get', 'key': 'sniffer' };
             retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage } else { retConfigStorage = retConfigStorage.res };
             let portSocket = retConfigStorage.portSocket, bufferSocket = retConfigStorage.bufferSocket, arrUrl = retConfigStorage.arrUrl
 
@@ -15,12 +18,11 @@ async function server(inf) {
             let dev2 = devChromeLocal
 
             // CONNECT [WEB-LOC]
-            await wsConnect([dev2, , , ,])
+            await wsConnect({ 'e': e, 'url': [dev2,] })
 
-            infFile = { 'action': 'inf' }; retFile = await file(infFile); if (!retFile.ret) { return } else { retFile = retFile.res }
             let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe"`
             command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`
-            let retCommandLine = await commandLine({ 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
+            // let retCommandLine = await commandLine({ 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
 
             async function sendGet(inf) {
                 let ret = { 'complete': true, res: {} }
@@ -91,9 +93,9 @@ async function server(inf) {
                         if (!ret.complete) { console.log('SEND/GET CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('SEND/GET ALTERADA') }
                     } else { console.log('OUTRO URL |', inf.url) }
                 } catch (e) {
-                    let m = await regexE({ 'e': e });
-                    ret['msg'] = m.res
-                    console.log(m.res)
+                    let retRegexE = await regexE({ 'inf': inf, 'e': e });
+                    ret['msg'] = retRegexE.res
+                    console.log(ret.msg)
                 };
                 return {
                     ...({ ret: ret.ret }),
@@ -104,80 +106,80 @@ async function server(inf) {
 
             // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-            // var platform = 'EWOQ_teste' // ################################ EWOQ
-            // // #### EWOQ | /home
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[1], 'body': retFile.res })
+            var platform = 'EWOQ_teste' // ################################ EWOQ
+            // #### EWOQ | /home
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[1], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /GetNewTasks
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
+            // #### EWOQ | /GetNewTasks
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /GetTemplate_[1-SEND]
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/2-SEND_template_HonestAds.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[2], 'body': retFile.res })
+            // #### EWOQ | /GetTemplate_[1-SEND]
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/2-SEND_template_HonestAds.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[2], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /GetTemplate_[2-GET]
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/3-GET_template_HonestAds.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[2], 'body': retFile.res })
+            // #### EWOQ | /GetTemplate_[2-GET]
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/3-GET_template_HonestAds.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[2], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /GetNewTasks
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds_2.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
+            // #### EWOQ | /GetNewTasks
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/4-GET_HonestAds_2.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[3], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/5-SEND_RecordTaskRendering.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[4], 'body': retFile.res })
+            // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/5-SEND_RecordTaskRendering.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[4], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /SubmitFeedback
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
+            // #### EWOQ | /SubmitFeedback
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
 
-            // await new Promise(resolve => { setTimeout(resolve, 2000) })
+            await new Promise(resolve => { setTimeout(resolve, 2000) })
 
-            // // #### EWOQ | /SubmitFeedback
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds_2.txt` }
-            // retFile = await file(infFile);
-            // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
+            // #### EWOQ | /SubmitFeedback
+            infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/6-SEND_HonestAds_2.txt` }
+            retFile = await file(infFile);
+            await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[5], 'body': retFile.res })
 
             // await new Promise(resolve => { setTimeout(resolve, 5000) })
 
             // var platform = 'TryRating_teste' // ################################ TryRating
             // // #### TryRating | /home
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
+            // infFile = {'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[6], 'body': retFile.res })
             // sendGet
             // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
             // // #### TryRating | /survey
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/2-GET_SearchTerms.txt` }
+            // infFile = {'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/2-GET_SearchTerms.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[7], 'body': retFile.res })
 
             // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
             // // #### TryRating | /client_log [submit]
-            // infFile = { 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/3-SEND_SearchTerms.txt` }
+            // infFile = {'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/3-SEND_SearchTerms.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[8], 'body': retFile.res })
 
@@ -224,7 +226,13 @@ async function server(inf) {
                             }; g = ''; // LIMPAR BUFFER
                         }
                     });
-                } catch (e) { (async () => { let m = await regexE({ 'e': e }); console.log(m.res) })() }
+                } catch (e) {
+                    (async () => {
+                        let retRegexE = await regexE({ 'inf': inf, 'e': e });
+                        ret['msg'] = retRegexE.res
+                        console.log(ret.msg)
+                    })()
+                }
             }); sockReq.listen((portSocket), () => { });
             let sockRes = _net.createServer((socket) => { // ########### RESPONSE
                 try {
@@ -239,7 +247,13 @@ async function server(inf) {
                             }; g = ''; // LIMPAR BUFFER
                         }
                     });
-                } catch (e) { (async () => { let m = await regexE({ 'e': e }); console.log(m.res) })() }
+                } catch (e) {
+                    (async () => {
+                        let retRegexE = await regexE({ 'inf': inf, 'e': e });
+                        ret['msg'] = retRegexE.res
+                        console.log(ret.msg)
+                    })()
+                }
             }); sockRes.listen((portSocket + 1), () => { });
             // -------------------------------------------------------------------------------------------------
 
@@ -247,8 +261,9 @@ async function server(inf) {
         await run()
     }
     catch (e) {
-        let m = await regexE({ 'e': e });
-        console.log(m.res)
+        let retRegexE = await regexE({ 'inf': inf, 'e': e });
+        ret['msg'] = retRegexE.res
+        console.log(ret.msg)
     }
 }
 await server()

@@ -165,7 +165,7 @@ async function TryRating(inf) {
                         if (value.taskName == hitApp) {
                             tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
                             if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
-                                tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
+                                tasksQtdHitAppLast += value.qtd; tasksSecHitAppLast += value.sec
                             }
                         }
                     }
@@ -183,9 +183,18 @@ async function TryRating(inf) {
                     for (let nameKey in retConfigStorage.res) {
                         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
                     }
+                    let notText = [
+                        `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')}`,
+                        `TEMPO: ${secToHour(tasksSecMon).res}`,
+                        `🔵 QTD: ${tasksQtd.toString().padStart(4, '0')}`,
+                        `TEMPO: ${secToHour(tasksSec).res}`,
+                        `🔵 QTD: ${tasksQtdHitApp.toString().padStart(4, '0')}`,
+                        `TEMPO: ${secToHour(tasksSecHitApp).res}`,
+                        `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+                    ]
                     infNotification = {
-                        'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
-                        'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+                        'duration': 9, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
                     retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);

@@ -170,21 +170,21 @@ async function server(inf) {
 
             // var platform = 'TryRating_teste' // ################################ TryRating
             // // #### TryRating | /home
-            // infFile = {'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
+            // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[6], 'body': retFile.res })
             // sendGet
             // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
             // // #### TryRating | /survey
-            // infFile = {'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/2-GET_SearchTerms.txt` }
+            // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/2-GET_SearchTerms.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[7], 'body': retFile.res })
 
             // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
             // // #### TryRating | /client_log [submit]
-            // infFile = {'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/3-SEND_SearchTerms.txt` }
+            // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/3-SEND_SearchTerms.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'send', 'url': arrUrl[8], 'body': retFile.res })
 

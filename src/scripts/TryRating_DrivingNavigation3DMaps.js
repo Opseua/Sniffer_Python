@@ -27,13 +27,16 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
         else {
             let resultList = [retSniffer.tasks[0].taskData]
             let testQuestionInformation = retSniffer.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer;
-            let res = await Promise.all(resultList.map(async (value, index) => {
-                return {
-                    '1_RESULTADO': retSniffer.resultado,
-                    '2_RESPOSTA': testQuestionInformation.loop,
-                };
-            }));
-
+            // let res = await Promise.all(resultList.map(async (value, index) => {
+            //     return {
+            //         '1_RESULTADO': retSniffer.resultado,
+            //         '2_RESPOSTA': testQuestionInformation.loop,
+            //     };
+            // }));
+            let res = []
+            for (let [index, value] of resultList.entries()) {
+                res.push({ '1_RESULTADO': retSniffer.resultado, '2_RESPOSTA': testQuestionInformation.loop })
+            }
             infNotification = {
                 'duration': 2, 'icon': './src/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,

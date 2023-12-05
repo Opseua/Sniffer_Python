@@ -35,14 +35,22 @@ async function EWOQ(inf) {
                 gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
                 retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body });
                 gO.inf[platform].token['path'] = retLog.res;
-                gO.inf[platform].log.map(async (value, index) => {
+                // gO.inf[platform].log.map(async (value, index) => {
+                //     if (gO.inf[platform].token.lastToken == value.hitApp) {
+                //         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
+                //         gO.inf[platform].log[index]['hitApp'] = hitApp
+                //         retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
+                //         gO.inf[platform].log[index]['path'] = retLog.res
+                //     }
+                // });
+                for (let [index, value] of gO.inf[platform].log.entries()) {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
                         gO.inf[platform].log[index]['hitApp'] = hitApp
                         retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
-                });
+                }
                 let textNot = {
                     'b': [
                         'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
@@ -83,14 +91,22 @@ async function EWOQ(inf) {
                     'qtd': 1, 'id': id, 'body': inf.body, 'token': body['1'][0]['2']['1'],
                     'addGet': addGet
                 });
-                gO.inf[platform].log.map(async (value, index) => {
+                // gO.inf[platform].log.map(async (value, index) => {
+                //     if (gO.inf[platform].token.lastToken == value.hitApp) {
+                //         let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
+                //         gO.inf[platform].log[index]['hitApp'] = hitApp
+                //         retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
+                //         gO.inf[platform].log[index]['path'] = retLog.res
+                //     }
+                // })
+                for (let [index, value] of gO.inf[platform].log.entries()) {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken];
                         gO.inf[platform].log[index]['hitApp'] = hitApp
                         retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body });
                         gO.inf[platform].log[index]['path'] = retLog.res
                     }
-                })
+                }
             }
             // await csf([gO.inf]);
         }
@@ -100,7 +116,66 @@ async function EWOQ(inf) {
             console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
             let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
             await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
-            gO.inf[platform].log.map(async (value, index) => {
+            // gO.inf[platform].log.map(async (value, index) => {
+            // if (id == value.id) {
+            //     let body = JSON.parse(value.body), text
+            //     gO.inf[platform].log[index]['tim'] = Number(time.tim)
+            //     gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
+            //     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
+            //         text = body['1'][0]['11']['1'][0]['4']
+            //         let infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text };
+            //         let retTranslate = await translate(infTranslate);
+            //         if (retTranslate.ret) { text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}` }
+            //         else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` }
+            //         infNotification = {
+            //             'duration': 5, 'icon': './src/media/notification_1.png',
+            //             'title': `${platform} | TEM A RESPOSTA!`, 'text': text, 'retInf': false
+            //         };
+            //         retNotification = await notification(infNotification);
+            //     } else {
+            //         text = body['1'][0]['10']['1'][0]['2']
+            //         infNotification = {
+            //             'duration': 3, 'icon': './src/media/notification_2.png',
+            //             'title': `${platform} | `, 'text': text
+            //         }; // retNotification = await notification(infNotification);
+            //         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
+            //             let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body });
+            //             rg = rg.res['1'] ? rg.res['1'] : false
+            //             if (!rg) {
+            //                 infNotification = {
+            //                     'duration': 3, 'icon': './src/media/notification_1.png',
+            //                     'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false
+            //                 };
+            //                 retNotification = await notification(infNotification);
+            //             } else {
+            //                 let infApi = { // ########## TYPE → json
+            //                     'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json' }, 'body': {}
+            //                 };
+            //                 let retApi = await api(infApi);
+            //                 rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body });
+            //                 rg = rg.res['1'] ? rg.res['1'] : false
+            //                 if (!rg) {
+            //                     infNotification = {
+            //                         'duration': 3, 'icon': './src/media/notification_1.png',
+            //                         'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false
+            //                     };
+            //                     retNotification = await notification(infNotification);
+            //                 } else {
+            //                     infNotification = {
+            //                         'duration': 4, 'icon': './src/media/notification_2.png',
+            //                         'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
+            //                     };
+            //                     retNotification = await notification(infNotification);
+            //                 }
+            //             }
+            //         }
+
+            //     };
+            //     await clipboard({ 'value': text });
+            //     // await csf([gO.inf]);
+            // }
+            // })
+            for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text
                     gO.inf[platform].log[index]['tim'] = Number(time.tim)
@@ -158,7 +233,7 @@ async function EWOQ(inf) {
                     await clipboard({ 'value': text });
                     // await csf([gO.inf]);
                 }
-            })
+            }
         }
 
         // #### EWOQ | /SubmitFeedback
@@ -166,7 +241,74 @@ async function EWOQ(inf) {
             console.log(`#### ${platform} | /SubmitFeedback`)
             let json, body = JSON.parse(inf.body);
             let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
-            gO.inf[platform].log.map(async (value, index) => {
+            // gO.inf[platform].log.map(async (value, index) => {
+            // if (id == value.id) {
+            //     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
+            //     let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];
+            //     retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
+            //     retFile = await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
+            //     retFile = await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
+            //     if (gO.inf[platform].token.path) {
+            //         retFile = await file({
+            //             'action': 'change', 'path': gO.inf[platform].token.path,
+            //             'pathNew': gO.inf[platform].token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`)
+            //         });
+            //         gO.inf[platform].token.path = false
+            //     };
+            //     infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` }
+            //     retConfigStorage = await configStorage(infConfigStorage);
+            //     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
+            //     else { json = retConfigStorage.res };
+            //     let dif = Number(time.tim) - value.tim
+            //     let blind = false;
+            //     json.tasks.push({
+            //         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
+            //         'qtd': value.qtd, 'sec': dif, 'blind': blind, 'id': value.id,
+            //         'addGet': value.addGet
+            //     });
+            //     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
+            //     // json.tasks.map(async (value, index) => {
+            //     //     tasksQtd += value.qtd; tasksSec += value.sec;
+            //     //     if (value.taskName == hitApp) {
+            //     //         tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
+            //     //         if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
+            //     //             tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
+            //     //         }
+            //     //     }
+            //     // })
+            //     for (let [index, value] of json.tasks.entries()) {
+            //         tasksQtd += value.qtd; tasksSec += value.sec;
+            //         if (value.taskName == hitApp) {
+            //             tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
+            //             if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
+            //                 tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
+            //             }
+            //         }
+            //     }
+            //     json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
+            //     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
+            //     infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
+            //     retConfigStorage = await configStorage(infConfigStorage);
+            //     infConfigStorage = {
+            //         'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set',
+            //         'key': `DIA_${time.day}`, 'value': json.inf
+            //     }
+            //     retConfigStorage = await configStorage(infConfigStorage);
+            //     infConfigStorage = { 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
+            //     retConfigStorage = await configStorage(infConfigStorage);
+            //     for (let nameKey in retConfigStorage.res) {
+            //         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
+            //     }
+            //     infNotification = {
+            //         'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
+            //         'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+            //     };
+            //     retNotification = await notification(infNotification);
+            //     gO.inf[platform].log.splice(index, 1);
+            //     // await csf([gO.inf]);
+            // }
+            // })
+            for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour
                     let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];
@@ -192,7 +334,16 @@ async function EWOQ(inf) {
                         'addGet': value.addGet
                     });
                     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
-                    json.tasks.map(async (value, index) => {
+                    // json.tasks.map(async (value, index) => {
+                    //     tasksQtd += value.qtd; tasksSec += value.sec;
+                    //     if (value.taskName == hitApp) {
+                    //         tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
+                    //         if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
+                    //             tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
+                    //         }
+                    //     }
+                    // })
+                    for (let [index, value] of json.tasks.entries()) {
                         tasksQtd += value.qtd; tasksSec += value.sec;
                         if (value.taskName == hitApp) {
                             tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
@@ -200,7 +351,7 @@ async function EWOQ(inf) {
                                 tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
                             }
                         }
-                    })
+                    }
                     json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
                     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
                     infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
@@ -223,7 +374,7 @@ async function EWOQ(inf) {
                     gO.inf[platform].log.splice(index, 1);
                     // await csf([gO.inf]);
                 }
-            })
+            }
         }
         ret['msg'] = `${platform}: OK`;
         ret['res'] = `resposta aqui`;

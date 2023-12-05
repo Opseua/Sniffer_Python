@@ -15,7 +15,8 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
         else if (inf.body) { retSniffer = inf.body }
         else { retSniffer = inf.sniffer };
         retSniffer = JSON.parse(retSniffer)
-        if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
+        // if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
+        if (!('testQuestionInformation' in retSniffer.tasks[0].taskData)) {
             infNotification = {
                 'duration': 2, 'icon': './src/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
@@ -27,8 +28,6 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
             let resultList = [retSniffer.tasks[0].taskData]
             let testQuestionInformation = retSniffer.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer;
             let res = await Promise.all(resultList.map(async (value, index) => {
-                let resultado = requestId, comentario = null
-
                 return {
                     '1_RESULTADO': retSniffer.resultado,
                     '2_RESPOSTA': testQuestionInformation.loop,

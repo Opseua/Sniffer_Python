@@ -15,7 +15,8 @@ async function TryRating_Search20(inf) {
         else if (inf.body) { retSniffer = inf.body }
         else { retSniffer = inf.sniffer };
         retSniffer = JSON.parse(retSniffer)
-        if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
+        //if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
+        if (!('testQuestionInformation' in retSniffer.tasks[0].taskData)) {
             infNotification = {
                 'duration': 2, 'icon': './src/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,

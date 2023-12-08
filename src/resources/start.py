@@ -119,7 +119,7 @@ def run():
                     cmdline = proc.info["cmdline"]
                     if cmdline is not None:
                         cmdline_str = " ".join(cmdline)
-                        if "node_#-Sniffer_Python.exe" in cmdline_str:
+                        if "nodeSniffer_Python.exe" in cmdline_str:
                             indiceArr = indice
                             # print(f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}")
                             break
@@ -208,7 +208,7 @@ def run():
         subprocess.Popen(
             f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
         )
-        subprocess.Popen("taskkill /IM node_#-Sniffer_Python.exe /F")
+        subprocess.Popen("taskkill /IM nodeSniffer_Python.exe /F")
         # ENCERRAR SCRIPT PYTHON
         sys.exit()
 

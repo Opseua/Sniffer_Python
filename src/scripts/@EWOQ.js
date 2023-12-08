@@ -376,7 +376,7 @@ async function EWOQ(inf) {
                         `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]
                     infNotification = {
-                        'duration': 9, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
                     retNotification = await notification(infNotification);

@@ -16,13 +16,11 @@ async function server(inf) {
             retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage } else { retConfigStorage = retConfigStorage.res };
             let portSocket = retConfigStorage.portSocket, bufferSocket = retConfigStorage.bufferSocket, arrUrl = retConfigStorage.arrUrl
 
-            // DEV - [WEB] WEB {IMPAR}
-            let dev1 = devChromeWeb
-            // DEV - [LOC] LOCAL {PAR}
-            let dev2 = devChromeLocal
-
-            // CONNECT [WEB-LOC]
-            await wsConnect({ 'e': e, 'url': [dev2,] })
+            // client
+            async function runFun1() {
+                await import('./client.js');
+            }
+            runFun1()
 
             let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe"`
             command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`

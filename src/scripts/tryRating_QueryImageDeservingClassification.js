@@ -54,9 +54,9 @@ async function TryRating_QueryImageDeservingClassification(inf) {
             };
             retNotification = await notification(infNotification)
             let radio = { "other": "TryRating_QueryImageDeservingClassification", "inf": [2], "res": "🔵 GIBBERISH", "query": query }
-            await wsSend({ 'e': e, 'url': devChromeLocal, 'message': radio })
+            await wsSend({ 'e': e, 'url': devSend, 'message': radio })
         } else {
-            await wsSend({ 'e': e, 'url': devBlueStacks, 'message': { "name": "google", "par": { "search": query } } })
+            // await wsSend({ 'e': e, 'url': devBlueStacks, 'message': { "name": "google", "par": { "search": query } } })
             console.log('buscar no Google')
         };
         ret['msg'] = `TRYRATING [QueryImageDeservingClassification]: OK`;

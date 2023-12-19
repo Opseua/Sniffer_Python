@@ -52,8 +52,8 @@ def run():
             wsHost = server["host"]
             wsPort = server["port"]
             devices = config["webSocket"]["devices"]
-            devChrome = devices[0]["name"]
-            url = "http://" + str(wsHost) + ":" + str(wsPort) + "/" + str(devChrome)
+            devSendl = devices[1]["name"]
+            url = "http://" + str(wsHost) + ":" + str(wsPort) + "/" + str(devSend)
             payload = inf
             response = requests.post(url, json=payload)
 

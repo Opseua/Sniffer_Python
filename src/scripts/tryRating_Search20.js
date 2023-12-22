@@ -18,7 +18,7 @@ async function TryRating_Search20(inf) {
         //if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
         if (!('testQuestionInformation' in retSniffer.tasks[0].taskData)) {
             infNotification = {
-                'duration': 2, 'icon': './src/media/notification_3.png', 'retInf': false,
+                'duration': 2, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
                 'text': `Avaliar manualmente`,
             };
@@ -46,7 +46,7 @@ async function TryRating_Search20(inf) {
                         not = false
                         infNotification =
                         {
-                            'duration': 3, 'icon': './src/media/icon_4.png', 'retInf': false,
+                            'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'retInf': false,
                             'title': `AGUARDE...`,
                             'text': `Traduzindo e alterando o comentário`,
                         };
@@ -88,7 +88,7 @@ async function TryRating_Search20(inf) {
 
             infNotification =
             {
-                'duration': 2, 'icon': './src/media/notification_1.png', 'retInf': false,
+                'duration': 2, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,
                 'text': `${JSON.stringify(res, null, 2)}`,
             };

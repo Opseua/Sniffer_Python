@@ -19,13 +19,13 @@ async function TryRating_QueryImageDeservingClassification(inf) {
         await clipboard({ 'value': query })
         if (retSniffer.targetLocalIds.length == 1) {
             infNotification = {
-                'duration': 4, 'icon': './src/media/notification_3.png', 'retInf': false,
+                'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `BLIND`, 'text': `${query}`
             };
             retNotification = await notification(infNotification)
         } else {
             infNotification = {
-                'duration': 2, 'icon': './src/media/notification_1.png', 'retInf': false,
+                'duration': 2, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                 'title': `NÃO BLIND`, 'text': `${query}`
             }; // retNotification = await notification(infNotification)
         };
@@ -36,20 +36,20 @@ async function TryRating_QueryImageDeservingClassification(inf) {
         let retChatGpt = await chatGpt(infChatGpt);
         if (!retChatGpt.ret) {
             infNotification = {
-                'duration': 3, 'icon': './src/media/notification_3.png', 'retInf': false,
+                'duration': 3, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `ERRO PESQUISA NO CHATGPT`, 'text': `'ret' → false`
             };
             retNotification = await notification(infNotification)
         } else if (!retChatGpt.res.includes('####SIM####') && !retChatGpt.res.includes('####NAO####')) {
             infNotification = {
-                'duration': 3, 'icon': './src/media/notification_3.png', 'retInf': false,
+                'duration': 3, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `ERRO CHATGPT`, 'text': `Resposta diferente de 'SIM' ou 'NAO'`
             };
             retNotification = await notification(infNotification);
             console.log(`\n\n@@@\n${retChatGpt.res}\n@@@\n\n`)
         } else if (retChatGpt.res.includes('####NAO####')) {
             infNotification = {
-                'duration': 3, 'icon': './src/media/notification_3.png', 'retInf': false,
+                'duration': 3, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': query, 'text': `🔵 GIBBERISH`
             };
             retNotification = await notification(infNotification)

@@ -57,7 +57,7 @@ async function EWOQ(inf) {
                 } else {
                     textNot = ''
                 }
-                infNotification = { 'duration': 3, 'icon': './src/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
+                infNotification = { 'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
                 retNotification = await notification(infNotification);
             }
             // await csf([gO.inf]);
@@ -115,14 +115,14 @@ async function EWOQ(inf) {
                             text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`
                         }
                         infNotification = {
-                            'duration': 5, 'icon': './src/media/notification_1.png',
+                            'duration': 5, 'icon': './src/scripts/media/notification_1.png',
                             'title': `${platform} | TEM A RESPOSTA!`, 'text': text, 'retInf': false
                         };
                         retNotification = await notification(infNotification);
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']
                         infNotification = {
-                            'duration': 3, 'icon': './src/media/notification_2.png',
+                            'duration': 3, 'icon': './src/scripts/media/notification_2.png',
                             'title': `${platform} | `, 'text': text
                         };
                         // retNotification = await notification(infNotification);
@@ -131,7 +131,7 @@ async function EWOQ(inf) {
                             rg = rg.res['1'] ? rg.res['1'] : false
                             if (!rg) {
                                 infNotification = {
-                                    'duration': 3, 'icon': './src/media/notification_1.png',
+                                    'duration': 3, 'icon': './src/scripts/media/notification_1.png',
                                     'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false
                                 };
                                 retNotification = await notification(infNotification);
@@ -145,13 +145,13 @@ async function EWOQ(inf) {
                                 rg = rg.res['1'] ? rg.res['1'] : false
                                 if (!rg) {
                                     infNotification = {
-                                        'duration': 3, 'icon': './src/media/notification_1.png',
+                                        'duration': 3, 'icon': './src/scripts/media/notification_1.png',
                                         'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false
                                     };
                                     retNotification = await notification(infNotification);
                                 } else {
                                     infNotification = {
-                                        'duration': 4, 'icon': './src/media/notification_2.png',
+                                        'duration': 4, 'icon': './src/scripts/media/notification_2.png',
                                         'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
                                     };
                                     retNotification = await notification(infNotification);
@@ -237,7 +237,7 @@ async function EWOQ(inf) {
                         `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]
                     infNotification = {
-                        'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
                     retNotification = await notification(infNotification);

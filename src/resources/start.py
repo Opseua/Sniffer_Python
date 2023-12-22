@@ -67,7 +67,7 @@ def run():
                             "name": "notification",
                             "par": {
                                 "duration": 3,
-                                "icon": "./src/media/notification_1.png",
+                                "icon": "./src/scripts/media/notification_1.png",
                                 "title": "SNIFFER",
                                 "text": "Ativado",
                             },
@@ -134,7 +134,7 @@ def run():
                                     "name": "notification",
                                     "par": {
                                         "duration": 3,
-                                        "icon": "./src/media/notification_2.png",
+                                        "icon": "./src/scripts/media/notification_2.png",
                                         "title": "SNIFFER",
                                         "text": "Desativado",
                                     },

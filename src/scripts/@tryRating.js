@@ -47,20 +47,20 @@ async function TryRating(inf) {
                     }
                 } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                     infNotification = {
-                        'duration': 5, 'icon': './src/media/notification_1.png', 'retInf': false,
+                        'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'Outro tipo de tarefa. BLIND, TEM A RESPOSTA!'
                     };
                     retNotification = await notification(infNotification);
                     await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
                 } else if (!body.tasks[0].metadata.created) {
                     infNotification = {
-                        'duration': 5, 'icon': './src/media/notification_3.png', 'retInf': false,
+                        'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'Outro tipo de tarefa. BLIND, NÃO TEM A RESPOSTA!'
                     };
                     retNotification = await notification(infNotification);
                 } else {
                     infNotification = {
-                        'duration': 5, 'icon': './src/media/notification_3.png', 'retInf': false,
+                        'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                         'title': `${platform} | ALERTA`, 'text': 'Outro tipo de tarefa.'
                     };
                     retNotification = await notification(infNotification);
@@ -127,7 +127,7 @@ async function TryRating(inf) {
             //         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
             //     }
             //     infNotification = {
-            //         'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
+            //         'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
             //         'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
             //     };
             //     retNotification = await notification(infNotification);
@@ -193,7 +193,7 @@ async function TryRating(inf) {
                         `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]
                     infNotification = {
-                        'duration': 3, 'icon': './src/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
                     retNotification = await notification(infNotification);

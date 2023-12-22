@@ -18,7 +18,7 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
         // if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
         if (!('testQuestionInformation' in retSniffer.tasks[0].taskData)) {
             infNotification = {
-                'duration': 2, 'icon': './src/media/notification_3.png', 'retInf': false,
+                'duration': 2, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
                 'text': `Avaliar manualmente`,
             };
@@ -38,7 +38,7 @@ async function TryRating_DrivingNavigation3DMaps(inf) {
                 res.push({ '1_RESULTADO': retSniffer.resultado, '2_RESPOSTA': testQuestionInformation.loop })
             }
             infNotification = {
-                'duration': 2, 'icon': './src/media/notification_1.png', 'retInf': false,
+                'duration': 2, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,
                 'text': `${JSON.stringify(res, null, 2)}`,
             };

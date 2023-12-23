@@ -4,6 +4,8 @@ import json
 import os
 import time
 import re
+import datetime
+import locale
 
 # 'sniffer.py'
 from mitmproxy import http
@@ -15,7 +17,10 @@ import brotli
 import zlib
 import subprocess
 
+# LETRA DO TERMINAL
 letter = os.path.dirname(os.path.realpath(__file__))[0]
+# FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
+locale.setlocale(locale.LC_TIME, "pt_BR")
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.abspath(os.path.join(script_dir, ""))
@@ -56,10 +61,24 @@ try:
     sockRes.connect(("127.0.0.1", (portSocket + 1)))
     send_data = b""
 except Exception as e:
-    console("ERRO AO SE CONECTAR NO SOCKET JS 1")
-    subprocess.Popen(
-        f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "ERRO AO SE CONECTAR NO SOCKET JS 1"'
-    )
+    err = f'"ALERTA: PYTHON sniffer.py" "ERRO AO SE CONECTAR NO SOCKET JS 1"'
+    console(err)
+    subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
+
+    # DATA E HORA ATUAL
+    current_datetime = datetime.datetime.now()
+    current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+    current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+    current_datetimeHou = f"{current_datetime.strftime('%H')}"
+    current_datetimeMin = f"{current_datetime.strftime('%M')}"
+    current_datetimeSec = f"{current_datetime.strftime('%S')}"
+    current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+    file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
+    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+    # SALVAR ERRO NO TXT
+    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+    with open(file_name, "a") as file:
+        file.write(err)
 
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
@@ -126,10 +145,26 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             sockReq.send("#fim#".encode("utf-8"))
             # console('SOCKET REQUISICAO [SEND]: OK')
         except Exception as e:
-            console("SOCKET REQUISICAO [SEND]: ERRO", e)
-            subprocess.Popen(
-                f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET REQUISICAO [SEND]: ERRO"'
+            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET REQUISICAO [SEND]: ERRO"'
+            console(err)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
+
+            # DATA E HORA ATUAL
+            current_datetime = datetime.datetime.now()
+            current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+            current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+            current_datetimeHou = f"{current_datetime.strftime('%H')}"
+            current_datetimeMin = f"{current_datetime.strftime('%M')}"
+            current_datetimeSec = f"{current_datetime.strftime('%S')}"
+            current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+            file_name = (
+                f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
             )
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+            # SALVAR ERRO NO TXT
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+            with open(file_name, "a") as file:
+                file.write(err)
             raise
         # SOCKET REQUISICAO [GET]
         try:
@@ -171,17 +206,49 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                         console("REQ CANCELADA")
                         flow.kill()
                 except Exception as e:
-                    console("ALTERAR/CANCELAR REQ: ERRO", e)
+                    err = f'"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR REQ: ERRO"'
+                    console(err)
                     subprocess.Popen(
-                        f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR REQ: ERRO"'
+                        f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}'
                     )
+
+                    # DATA E HORA ATUAL
+                    current_datetime = datetime.datetime.now()
+                    current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+                    current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+                    current_datetimeHou = f"{current_datetime.strftime('%H')}"
+                    current_datetimeMin = f"{current_datetime.strftime('%M')}"
+                    current_datetimeSec = f"{current_datetime.strftime('%S')}"
+                    current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+                    file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
+                    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+                    # SALVAR ERRO NO TXT
+                    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+                    with open(file_name, "a") as file:
+                        file.write(err)
                     flow.kill()
                     raise
         except Exception as e:
-            console("SOCKET REQ [GET]: ERRO", e)
-            subprocess.Popen(
-                f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET REQ [GET]: ERRO"'
+            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET REQ [GET]: ERRO"'
+            console(err)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
+
+            # DATA E HORA ATUAL
+            current_datetime = datetime.datetime.now()
+            current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+            current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+            current_datetimeHou = f"{current_datetime.strftime('%H')}"
+            current_datetimeMin = f"{current_datetime.strftime('%M')}"
+            current_datetimeSec = f"{current_datetime.strftime('%S')}"
+            current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+            file_name = (
+                f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
             )
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+            # SALVAR ERRO NO TXT
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+            with open(file_name, "a") as file:
+                file.write(err)
             flow.kill()
             raise
     else:
@@ -254,10 +321,26 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             sockRes.send("#fim#".encode("utf-8"))
             # console('SOCKET RESPONSE [SEND]: OK')
         except Exception as e:
-            console("SOCKET RESPONSE [SEND]: ERRO", e)
-            subprocess.Popen(
-                f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET RESPONSE [SEND]: ERRO"'
+            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET RESPONSE [SEND]: ERRO"'
+            console(err)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
+
+            # DATA E HORA ATUAL
+            current_datetime = datetime.datetime.now()
+            current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+            current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+            current_datetimeHou = f"{current_datetime.strftime('%H')}"
+            current_datetimeMin = f"{current_datetime.strftime('%M')}"
+            current_datetimeSec = f"{current_datetime.strftime('%S')}"
+            current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+            file_name = (
+                f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
             )
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+            # SALVAR ERRO NO TXT
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+            with open(file_name, "a") as file:
+                file.write(err)
             pass
         # SOCKET RESPONSE [GET]
         try:
@@ -302,16 +385,48 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                         console("RES CANCELADO")
                         flow.kill()
                 except Exception as e:
-                    console("ALTERAR/CANCELAR RES: ERRO", e)
+                    err = f'"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR RES: ERRO"'
+                    console(err)
                     subprocess.Popen(
-                        f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR RES: ERRO"'
+                        f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}'
                     )
+
+                    # DATA E HORA ATUAL
+                    current_datetime = datetime.datetime.now()
+                    current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+                    current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+                    current_datetimeHou = f"{current_datetime.strftime('%H')}"
+                    current_datetimeMin = f"{current_datetime.strftime('%M')}"
+                    current_datetimeSec = f"{current_datetime.strftime('%S')}"
+                    current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+                    file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
+                    os.makedirs(os.path.dirname(file_name), exist_ok=True)
+                    # SALVAR ERRO NO TXT
+                    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+                    with open(file_name, "a") as file:
+                        file.write(err)
                     flow.kill()
         except Exception as e:
-            console("SOCKET RES [GET]: ERRO", e)
-            subprocess.Popen(
-                f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON sniffer.py" "SOCKET RES [GET]: ERRO"'
+            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET RES [GET]: ERRO"'
+            console(err)
+            subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
+
+            # DATA E HORA ATUAL
+            current_datetime = datetime.datetime.now()
+            current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+            current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+            current_datetimeHou = f"{current_datetime.strftime('%H')}"
+            current_datetimeMin = f"{current_datetime.strftime('%M')}"
+            current_datetimeSec = f"{current_datetime.strftime('%S')}"
+            current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+            file_name = (
+                f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
             )
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+            # SALVAR ERRO NO TXT
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+            with open(file_name, "a") as file:
+                file.write(err)
             flow.kill()
     else:
         # console('OUTRO URL RES |', urlparse(flow.request.url).hostname)

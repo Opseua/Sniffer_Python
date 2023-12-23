@@ -8,6 +8,8 @@ import json
 import os
 import time
 import re
+import datetime
+import locale
 
 # 'start.py'
 import psutil
@@ -16,12 +18,15 @@ import subprocess
 import requests
 import sys
 
-
+# LETRA DO TERMINAL
 letter = os.path.dirname(os.path.realpath(__file__))[0]
+# FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
+locale.setlocale(locale.LC_TIME, "pt_BR")
 
 
 def run():
     try:
+        # PEGAR DADOS DO config.json
         script_dir = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
         full_path = os.path.abspath(os.path.join(script_dir, "")).replace("\\", "/")
         full_pathJson = os.path.abspath(
@@ -33,6 +38,8 @@ def run():
         config = ""
         with open(full_pathJson, "r") as file:
             config = json.load(file)
+
+        # DEFINIR VARIÁVEIS
         portMitm = config["sniffer"]["portMitm"]
         arrUrl = config["sniffer"]["arrUrl"]
         arrHost = [
@@ -40,9 +47,11 @@ def run():
             for url in arrUrl
             if urlparse(url).scheme in ("http", "https")
         ]
+        # ARRAY COM URLS PARA SEREM INTERCEPTADOS
         arrHost = " ".join(
             [f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))]
         )
+        # COMANDO DE LINHA PARA INICIAR O MITMPROXY
         command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_mitmproxy/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
         os.system("cls" if os.name == "nt" else "clear")
         securityPass = config["webSocket"]["securityPass"]
@@ -52,7 +61,7 @@ def run():
             wsHost = server["host"]
             wsPort = server["port"]
             devices = config["webSocket"]["devices"]
-            devSendl = devices[1]["name"]
+            devSend = devices[1]["name"]
             url = "http://" + str(wsHost) + ":" + str(wsPort) + "/" + str(devSend)
             payload = inf
             response = requests.post(url, json=payload)
@@ -205,10 +214,25 @@ def run():
         winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "")
         winreg.CloseKey(key)
         subprocess.Popen("taskkill /IM Stopwatch.exe /F")
-        subprocess.Popen(
-            f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" "ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
-        )
+        err = f'"ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
+        console(err)
+        subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
         subprocess.Popen("taskkill /IM nodeSniffer_Python.exe /F")
+
+        # DATA E HORA ATUAL
+        current_datetime = datetime.datetime.now()
+        current_datetimeMon = f"MES_{current_datetime.strftime('%m')}_{current_datetime.strftime('%b').upper()}"
+        current_datetimeDay = f"DIA_{current_datetime.strftime('%d')}"
+        current_datetimeHou = f"{current_datetime.strftime('%H')}"
+        current_datetimeMin = f"{current_datetime.strftime('%M')}"
+        current_datetimeSec = f"{current_datetime.strftime('%S')}"
+        current_datetimeMil = f"{current_datetime.microsecond // 1000:03d}"
+        file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
+        os.makedirs(os.path.dirname(file_name), exist_ok=True)
+        # SALVAR ERRO NO TXT
+        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+        with open(file_name, "a") as file:
+            file.write(err)
         # ENCERRAR SCRIPT PYTHON
         sys.exit()
 

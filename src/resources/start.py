@@ -52,17 +52,17 @@ def run():
             [f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))]
         )
         # COMANDO DE LINHA PARA INICIAR O MITMPROXY
-        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_mitmproxy/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
         os.system("cls" if os.name == "nt" else "clear")
         securityPass = config["webSocket"]["securityPass"]
 
         def api(inf):
             server = config["webSocket"]["server"]["2"]
-            wsHost = server["host"]
+            wsHostLocal = server["host"]
             wsPort = server["port"]
             devices = config["webSocket"]["devices"]
             devSend = devices[1]["name"]
-            url = "http://" + str(wsHost) + ":" + str(wsPort) + "/" + str(devSend)
+            url = "http://" + str(wsHostLocal) + ":" + str(wsPort) + "/" + str(devSend)
             payload = inf
             response = requests.post(url, json=payload)
 
@@ -106,10 +106,12 @@ def run():
             winreg.SetValueEx(
                 key, "ProxyServer", 0, winreg.REG_SZ, "127.0.0.1:" + str(portMitm)
             )
-            # ignorar hosts → → 'Servidor WebSocket EC2', 'WhatsApp Desktop'
+            # ignorar hosts → → 'Servidor WebSocket Web', 'Servidor WebSocket Local', 'Facebook', 'WhatsApp Desktop'
+            server = config["webSocket"]["server"]["1"]
+            wsHostWeb = server["host"]
             server = config["webSocket"]["server"]["2"]
-            wsHost = server["host"]
-            ignoreHosts = f"{wsHost};*fb*;*whatsapp*"
+            wsHostLocal = server["host"]
+            ignoreHosts = f"{wsHostWeb};{wsHostLocal};*fb*;*whatsapp*"
             winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, f"{ignoreHosts}")
             winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
             winreg.CloseKey(key)

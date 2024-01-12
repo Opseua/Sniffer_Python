@@ -150,11 +150,16 @@ async function EWOQ(inf) {
                                     };
                                     retNotification = await notification(infNotification);
                                 } else {
-                                    infNotification = {
-                                        'duration': 4, 'icon': './src/scripts/media/notification_2.png',
-                                        'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
-                                    };
-                                    retNotification = await notification(infNotification);
+                                    let uploadDate = new Date(rg);
+                                    uploadDate = Math.floor(uploadDate.getTime() / 1000);
+                                    let retDateHour = Number(dateHour().res.tim) - 1296000 // 15 DIAS ATRÁS
+                                    if (retDateHour > uploadDate) {
+                                        infNotification = {
+                                            'duration': 3, 'icon': './src/scripts/media/notification_3.png',
+                                            'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
+                                        };
+                                        retNotification = await notification(infNotification);
+                                    }
                                 }
                             }
                         }

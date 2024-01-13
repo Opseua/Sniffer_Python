@@ -48,23 +48,17 @@ async function TryRating(inf) {
                 } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                     infNotification = {
                         'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
-                        'title': `${platform} | AVISO`, 'text': 'Outro tipo de tarefa. BLIND, TEM A RESPOSTA!'
+                        'title': `${platform} | AVISO`, 'text': 'BLIND, TEM A RESPOSTA!'
                     };
                     retNotification = await notification(infNotification);
                     await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
                 } else if (!body.tasks[0].metadata.created) {
                     infNotification = {
                         'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
-                        'title': `${platform} | AVISO`, 'text': 'Outro tipo de tarefa. BLIND, NÃO TEM A RESPOSTA!'
+                        'title': `${platform} | AVISO`, 'text': 'BLIND, NÃO TEM A RESPOSTA!'
                     };
                     retNotification = await notification(infNotification);
-                } else {
-                    infNotification = {
-                        'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
-                        'title': `${platform} | ALERTA`, 'text': 'Outro tipo de tarefa.'
-                    };
-                    retNotification = await notification(infNotification);
-                };
+                }
             }
         }
 

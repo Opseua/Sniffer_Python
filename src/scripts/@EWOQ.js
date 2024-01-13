@@ -163,7 +163,6 @@ async function EWOQ(inf) {
                                 }
                             }
                         }
-
                     };
                     await clipboard({ 'value': text });
                     // await csf([gO.inf]);

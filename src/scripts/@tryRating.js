@@ -72,63 +72,6 @@ async function TryRating(inf) {
             let id = body.data.tasks[0].requestId
             retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
             retFile = await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-            // gO.inf[platform].log.map(async (value, index) => {
-            // if (id == value.id) {
-            //     retFile = await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-            //     infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` }
-            //     retConfigStorage = await configStorage(infConfigStorage);
-            //     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
-            //     else { json = retConfigStorage.res };
-            //     let dif = Number(time.tim) - value.tim
-            //     // let blind = hasKey({ 'key': 'testQuestionInformation', 'obj': JSON.parse(value.body) }).res;
-            //     let blind = JSON.parse(value.body).tasks[0].metadata.created ? false : true
-            //     json.tasks.push({
-            //         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
-            //         'qtd': value.qtd, 'sec': dif, 'blind': blind, 'id': value.id,
-            //         'addGet': value.addGet
-            //     });
-            //     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
-            //     // json.tasks.map(async (value, index) => {
-            //     //     tasksQtd += value.qtd; tasksSec += value.sec;
-            //     //     if (value.taskName == hitApp) {
-            //     //         tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
-            //     //         if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
-            //     //             tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
-            //     //         }
-            //     //     }
-            //     // });
-            //     for (let [index, value] of json.tasks.entries()) {
-            //         tasksQtd += value.qtd; tasksSec += value.sec;
-            //         if (value.taskName == hitApp) {
-            //             tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
-            //             if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
-            //                 tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
-            //             }
-            //         }
-            //     }
-            //     json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
-            //     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
-            //     infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
-            //     retConfigStorage = await configStorage(infConfigStorage);
-            //     infConfigStorage = {
-            //         'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set',
-            //         'key': `DIA_${time.day}`, 'value': json.inf
-            //     }
-            //     retConfigStorage = await configStorage(infConfigStorage);
-            //     infConfigStorage = { 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
-            //     retConfigStorage = await configStorage(infConfigStorage);
-            //     for (let nameKey in retConfigStorage.res) {
-            //         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
-            //     }
-            //     infNotification = {
-            //         'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
-            //         'text': `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')} | TEMPO: ${secToHour(tasksSecMon).res}\n🔵 QTD: ${tasksQtd.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSec).res}\n🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')} | TEMPO: ${secToHour(tasksSecHitApp).res} | MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
-            //     };
-            //     retNotification = await notification(infNotification);
-            //     gO.inf[platform].log.splice(index, 1);
-            //     // await csf([gO.inf]);
-            // }
-            // })
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     retFile = await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
@@ -145,15 +88,6 @@ async function TryRating(inf) {
                         'addGet': value.addGet
                     });
                     if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
-                    // json.tasks.map(async (value, index) => {
-                    //     tasksQtd += value.qtd; tasksSec += value.sec;
-                    //     if (value.taskName == hitApp) {
-                    //         tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
-                    //         if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) {
-                    //             tasksQtdHitAppLast = value.qtd; tasksSecHitAppLast += value.sec
-                    //         }
-                    //     }
-                    // });
                     for (let [index, value] of json.tasks.entries()) {
                         tasksQtd += value.qtd; tasksSec += value.sec;
                         if (value.taskName == hitApp) {

@@ -46,7 +46,8 @@ async function EWOQ(inf) {
                 let textNot = {
                     'b': [
                         'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
-                        'GLSJobtypeTestTemplate', 'CQPremiumTask', 'UserInterestEvaluation', 'CQPremiumTask', 'AdTargetingEvaluation', 'KeywordQueryRelevanceEvaluation',
+                        'GLSJobtypeTestTemplate', 'CQPremiumTask', 'UserInterestEvaluation', 'CQPremiumTask', 'AdTargetingEvaluation',
+                        'KeywordQueryRelevanceEvaluation',
                     ],
                     'r': ['SearchExperiencetoAdUsefulness']
                 }

@@ -15,7 +15,6 @@ async function TryRating_Search20(inf) {
         else if (inf.body) { retSniffer = inf.body }
         else { retSniffer = inf.sniffer };
         retSniffer = JSON.parse(retSniffer)
-        //if (!retSniffer.tasks[0].taskData.hasOwnProperty('testQuestionInformation')) {
         if (!('testQuestionInformation' in retSniffer.tasks[0].taskData)) {
             infNotification = {
                 'duration': 2, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
@@ -56,10 +55,6 @@ async function TryRating_Search20(inf) {
                     let infTranslate1 = { 'source': 'auto', 'target': 'pt', 'text': comentario };
                     let retTranslate1 = await translate(infTranslate1);
                     comentario1 = retTranslate1.res
-
-                    // infTranslate2 = { 'source': 'auto', 'target': 'en', 'text': comentario };
-                    // retTranslate2 = await translate(infTranslate2)
-                    // comentario2 = retTranslate2.res
 
                     let infChatGpt = { 'provider': 'ora.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
                     let retChatGpt = await chatGpt(infChatGpt)

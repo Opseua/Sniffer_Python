@@ -153,7 +153,7 @@ async function EWOQ(inf) {
                                 } else {
                                     let uploadDate = new Date(rg);
                                     uploadDate = Math.floor(uploadDate.getTime() / 1000);
-                                    let retDateHour = Number(dateHour().res.tim) - 1296000 // 15 DIAS ATRÁS
+                                    let retDateHour = Number(time.tim) - 1296000 // 15 DIAS ATRÁS
                                     if (retDateHour > uploadDate) {
                                         infNotification = {
                                             'duration': 3, 'icon': './src/scripts/media/notification_3.png',

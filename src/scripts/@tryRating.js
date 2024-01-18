@@ -13,7 +13,7 @@ async function TryRating(inf) {
             gO.inf[platform] = {};
             gO.inf[platform]['log'] = [];
             await csf([gO.inf]);
-            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F3]"` })
+            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` })
         }
 
         // #### TryRating | /survey
@@ -35,7 +35,7 @@ async function TryRating(inf) {
                     'addGet': addGet
                 });
                 // await csf([gO.inf]);
-                await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F3][SHIFT+F4]"` })
+                await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
                 if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
                     let retTask
                     if (hitApp == 'QueryImageDeservingClassificatio') {

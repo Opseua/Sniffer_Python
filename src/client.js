@@ -1,13 +1,13 @@
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function client(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     if (catchGlobal) {
-        let errs = async (errC, ret) => { if (!ret.stop) { ret['stop'] = true; let retRegexE = await regexE({ 'e': errC, 'inf': inf, 'catchGlobal': true }) } };
+        let errs = async (errC, ret) => { if (!ret.stop) { ret['stop'] = true; regexE({ 'e': errC, 'inf': inf, 'catchGlobal': true }) } };
         if (typeof window !== 'undefined') { window.addEventListener('error', (errC) => errs(errC, ret)); window.addEventListener('unhandledrejection', (errC) => errs(errC, ret)) }
         else { process.on('uncaughtException', (errC) => errs(errC, ret)); process.on('unhandledRejection', (errC) => errs(errC, ret)) }
     }
     try {
-        let time = dateHour().res; console.log(`${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec}`, 'client [Sniffer_Python]');
+        logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `[Sniffer_Python]\n` });
 
         // DEV - SEND
         let dev1 = devSend
@@ -45,9 +45,9 @@ async function client(inf) {
                     let infDevFun = { 'e': e, 'data': data, 'wsOrigin': nomeList }
                     let retDevFun = await devFun(infDevFun)
                 } else if (data.other) { // OTHER
-                    console.log('OTHER', data.other)
+                    logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OTHER\n${data.other}` });
                 } else {
-                    console.log(`\nMENSAGEM DO WEBSCKET\n\n${param1}\n`)
+                    logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `MENSAGEM DO WEBSCKET\n${param1}` });
                 }
             }
         }

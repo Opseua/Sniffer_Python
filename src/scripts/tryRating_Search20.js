@@ -1,4 +1,4 @@
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function TryRating_Search20(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     try {
@@ -94,8 +94,8 @@ async function TryRating_Search20(inf) {
 
         // ### LOG FUN ###
         if (inf && inf.logFun) {
-            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
-            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; retFile = await file(infFile);
+            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }
+            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; file(infFile);
         }
     } catch (e) {
         let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });

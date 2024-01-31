@@ -3,7 +3,7 @@
 // retTryRating = await TryRating(infTryRating)
 // console.log(retTryRating)
 
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function TryRating(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
@@ -14,7 +14,7 @@ async function TryRating(inf) {
 
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
-            console.log(`#### ${platform} | /home`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` });
             gO.inf[platform] = {};
             gO.inf[platform]['log'] = [];
             await csf([gO.inf]);
@@ -23,7 +23,7 @@ async function TryRating(inf) {
 
         // #### TryRating | /survey
         if ((inf.url == `${platform}/survey`)) {
-            console.log(`#### ${platform} | /survey`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /survey` });
             if (inf.body !== 'NULL') {
                 let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, '');
                 let id = body.requestId
@@ -69,7 +69,7 @@ async function TryRating(inf) {
 
         // #### TryRating | /client_log [submit]
         if ((inf.url == `${platform}/client_log`)) {
-            console.log(`#### ${platform} | /client_log`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /client_log` });
             let json, body = JSON.parse(inf.body)
             let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0
             let tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
@@ -141,8 +141,8 @@ async function TryRating(inf) {
 
         // ### LOG FUN ###
         if (inf && inf.logFun) {
-            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
-            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; retFile = await file(infFile);
+            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }
+            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; file(infFile);
         }
     } catch (e) {
         let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });

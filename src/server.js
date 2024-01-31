@@ -1,14 +1,14 @@
 await import('./resources/@export.js');
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function server(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     if (catchGlobal) {
-        let errs = async (errC, ret) => { if (!ret.stop) { ret['stop'] = true; let retRegexE = await regexE({ 'e': errC, 'inf': inf, 'catchGlobal': true }) } };
+        let errs = async (errC, ret) => { if (!ret.stop) { ret['stop'] = true; regexE({ 'e': errC, 'inf': inf, 'catchGlobal': true }) } };
         if (typeof window !== 'undefined') { window.addEventListener('error', (errC) => errs(errC, ret)); window.addEventListener('unhandledrejection', (errC) => errs(errC, ret)) }
         else { process.on('uncaughtException', (errC) => errs(errC, ret)); process.on('unhandledRejection', (errC) => errs(errC, ret)) }
     }
     try {
-        let time = dateHour().res; console.log(`${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec}`, `server [Sniffer_Python]`, '\n');
+        logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `[Sniffer_Python]\n` });
 
         async function run() {
             let infConfigStorage, retConfigStorage, infFile, retFile; cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
@@ -93,12 +93,13 @@ async function server(inf) {
                         }
 
                         // ######################################################################
-                        if (!ret.complete) { console.log('SEND/GET CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('SEND/GET ALTERADA') }
-                    } else { console.log('OUTRO URL |', inf.url) }
+                        if (!ret.complete) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET CANCELADA` }); }
+                        else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET ALTERADA` }); }
+                    } else { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OUTRO URL | ${inf.url}` }) }
                 } catch (e) {
                     let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
                     ret['msg'] = retRegexE.res
-                    console.log(ret.msg)
+                    logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `${ret.msg}` })
                 };
                 return {
                     ...({ ret: ret.ret }),
@@ -230,11 +231,7 @@ async function server(inf) {
                         }
                     });
                 } catch (e) {
-                    (async () => {
-                        let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
-                        ret['msg'] = retRegexE.res
-                        console.log(ret.msg)
-                    })()
+                    regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
                 }
             }); sockReq.listen((portSocket), () => { });
             let sockRes = _net.createServer((socket) => { // ########### RESPONSE
@@ -251,23 +248,17 @@ async function server(inf) {
                         }
                     });
                 } catch (e) {
-                    (async () => {
-                        let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
-                        ret['msg'] = retRegexE.res
-                        console.log(ret.msg)
-                    })()
+                    regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
                 }
             }); sockRes.listen((portSocket + 1), () => { });
             // -------------------------------------------------------------------------------------------------
 
         }
-        await run()
+        run()
     }
     catch (e) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
-        ret['msg'] = retRegexE.res
-        console.log(ret.msg)
+        regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
     }
 }
-await server()
+server()
 

@@ -17,7 +17,7 @@ async function TryRating_Search20(inf) {
         retSniffer = JSON.parse(retSniffer)
         if (!('testQuestionInformation' in retSniffer.tasks[0].taskData)) {
             infNotification = {
-                'duration': 2, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
+                'e': e, 'duration': 2, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
                 'text': `Avaliar manualmente`,
             };
@@ -43,20 +43,19 @@ async function TryRating_Search20(inf) {
                 if (comentario) {
                     if (not) {
                         not = false
-                        infNotification =
-                        {
-                            'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'retInf': false,
+                        infNotification = {
+                            'e': e, 'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'retInf': false,
                             'title': `AGUARDE...`,
                             'text': `Traduzindo e alterando o comentário`,
                         };
                         retNotification = await notification(infNotification)
                     }
 
-                    let infTranslate1 = { 'source': 'auto', 'target': 'pt', 'text': comentario };
+                    let infTranslate1 = { 'e': e, 'source': 'auto', 'target': 'pt', 'text': comentario };
                     let retTranslate1 = await translate(infTranslate1);
                     comentario1 = retTranslate1.res
 
-                    let infChatGpt = { 'provider': 'ora.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
+                    let infChatGpt = { 'e': e, 'provider': 'ora.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
                     let retChatGpt = await chatGpt(infChatGpt)
                     if (!retChatGpt.ret) {
                         return ret
@@ -81,15 +80,14 @@ async function TryRating_Search20(inf) {
                 };
             }));
 
-            infNotification =
-            {
-                'duration': 2, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
+            infNotification = {
+                'e': e, 'duration': 2, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,
                 'text': `${JSON.stringify(res, null, 2)}`,
             };
             retNotification = await notification(infNotification)
 
-            await clipboard({ 'value': res })
+            await clipboard({ 'e': e, 'value': res })
         }
         ret['msg'] = `TRYRATING [Search20]: OK`;
         ret['ret'] = true;

@@ -1,3 +1,8 @@
+// let infTryRating, retTryRating
+// infTryRating = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
+// retTryRating = await TryRating(infTryRating)
+// console.log(retTryRating)
+
 let e = import.meta.url;
 async function TryRating(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
@@ -13,7 +18,7 @@ async function TryRating(inf) {
             gO.inf[platform] = {};
             gO.inf[platform]['log'] = [];
             await csf([gO.inf]);
-            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` })
+            await commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` })
         }
 
         // #### TryRating | /survey
@@ -35,7 +40,7 @@ async function TryRating(inf) {
                     'addGet': addGet
                 });
                 // await csf([gO.inf]);
-                await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
+                await commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
                 if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
                     let retTask
                     if (hitApp == 'QueryImageDeservingClassificatio') {
@@ -47,14 +52,14 @@ async function TryRating(inf) {
                     }
                 } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                     infNotification = {
-                        'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
+                        'e': e, 'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'BLIND, TEM A RESPOSTA!'
                     };
                     retNotification = await notification(infNotification);
-                    await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
+                    await clipboard({ 'e': e, 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
                 } else if (!body.tasks[0].metadata.created) {
                     infNotification = {
-                        'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
+                        'e': e, 'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'BLIND, NÃO TEM A RESPOSTA!'
                     };
                     retNotification = await notification(infNotification);
@@ -121,7 +126,7 @@ async function TryRating(inf) {
                         `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]
                     infNotification = {
-                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'e': e, 'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
                     retNotification = await notification(infNotification);

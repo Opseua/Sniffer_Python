@@ -1,3 +1,7 @@
+// let infEWOQ, retEWOQ
+// infEWOQ = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
+// retEWOQ = await EWOQ(infEWOQ)
+// console.log(retEWOQ)
 
 let e = import.meta.url;
 async function EWOQ(inf) {
@@ -15,7 +19,7 @@ async function EWOQ(inf) {
             gO.inf[platform]['log'] = [];
             gO.inf[platform]['token'] = {}
             await csf([gO.inf]);
-            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+            await commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
@@ -58,7 +62,7 @@ async function EWOQ(inf) {
                 } else {
                     textNot = ''
                 }
-                infNotification = { 'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
+                infNotification = { 'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
                 retNotification = await notification(infNotification);
             }
             // await csf([gO.inf]);
@@ -70,7 +74,7 @@ async function EWOQ(inf) {
             let body = JSON.parse(inf.body);
             if (body['1']) {
                 let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, '');
-                let retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body })
+                let retRegex = regex({ 'e': e, 'pattern': '":"locale","(.*?)"', 'text': inf.body })
                 let addGet = {
                     'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false,
                     '1': body['1'][0]['1'] ? true : false, '2': body['1'][0]['2'] ? true : false, '3': body['1'][0]['3'] ? true : false,
@@ -100,7 +104,7 @@ async function EWOQ(inf) {
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
             console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
             let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
-            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
+            await commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text
@@ -108,7 +112,7 @@ async function EWOQ(inf) {
                     gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                         text = body['1'][0]['11']['1'][0]['4']
-                        let infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text };
+                        let infTranslate = { 'e': e, 'source': 'auto', 'target': 'pt', 'text': text };
                         let retTranslate = await translate(infTranslate);
                         if (retTranslate.ret) {
                             text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}`
@@ -116,37 +120,37 @@ async function EWOQ(inf) {
                             text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`
                         }
                         infNotification = {
-                            'duration': 5, 'icon': './src/scripts/media/notification_1.png',
+                            'e': e, 'duration': 5, 'icon': './src/scripts/media/notification_1.png',
                             'title': `${platform} | TEM A RESPOSTA!`, 'text': text, 'retInf': false
                         };
                         retNotification = await notification(infNotification);
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']
                         infNotification = {
-                            'duration': 3, 'icon': './src/scripts/media/notification_2.png',
+                            'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_2.png',
                             'title': `${platform} | `, 'text': text
                         };
                         // retNotification = await notification(infNotification);
                         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
-                            let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body });
+                            let rg = regex({ 'e': e, 'pattern': 'embed/(.*?)?autoplay', 'text': value.body });
                             rg = rg.res['1'] ? rg.res['1'] : false
                             if (!rg) {
                                 infNotification = {
-                                    'duration': 3, 'icon': './src/scripts/media/notification_1.png',
+                                    'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_1.png',
                                     'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false
                                 };
                                 retNotification = await notification(infNotification);
                             } else {
                                 let infApi = { // ########## TYPE → json
-                                    'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`,
+                                    'e': e, 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`,
                                     'headers': { 'accept-language': 'application/json' }, 'body': {}
                                 };
                                 let retApi = await api(infApi);
-                                rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body });
+                                rg = regex({ 'e': e, 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body });
                                 rg = rg.res['1'] ? rg.res['1'] : false
                                 if (!rg) {
                                     infNotification = {
-                                        'duration': 3, 'icon': './src/scripts/media/notification_1.png',
+                                        'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_1.png',
                                         'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false
                                     };
                                     retNotification = await notification(infNotification);
@@ -156,7 +160,7 @@ async function EWOQ(inf) {
                                     let retDateHour = Number(time.tim) - 1296000 // 15 DIAS ATRÁS
                                     if (retDateHour > uploadDate) {
                                         infNotification = {
-                                            'duration': 3, 'icon': './src/scripts/media/notification_3.png',
+                                            'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_3.png',
                                             'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
                                         };
                                         retNotification = await notification(infNotification);
@@ -165,7 +169,7 @@ async function EWOQ(inf) {
                             }
                         }
                     };
-                    await clipboard({ 'value': text });
+                    await clipboard({ 'e': e, 'value': text });
                     // await csf([gO.inf]);
                 }
             }
@@ -185,7 +189,7 @@ async function EWOQ(inf) {
                     retFile = await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                     if (gO.inf[platform].token.path) {
                         retFile = await file({
-                            'action': 'change', 'path': gO.inf[platform].token.path,
+                            'e': e, 'action': 'change', 'path': gO.inf[platform].token.path,
                             'pathNew': gO.inf[platform].token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`)
                         });
                         gO.inf[platform].token.path = false
@@ -242,7 +246,7 @@ async function EWOQ(inf) {
                         `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]
                     infNotification = {
-                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'e': e, 'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
                     retNotification = await notification(infNotification);

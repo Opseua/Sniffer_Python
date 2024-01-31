@@ -24,70 +24,70 @@ async function server(inf) {
 
             let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe"`
             command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`
-            let retCommandLine = await commandLine({ 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
+            let retCommandLine = await commandLine({ 'e': e, 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
 
             async function sendGet(inf) {
                 let ret = { 'complete': true, res: {} }
                 try {
-                    // ret['res']['sendGet'] = inf.sendGet; if (!!arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
-                    ret['res']['sendGet'] = inf.sendGet; if (arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
+                    // ret['res']['sendGet'] = inf.sendGet; if (!!arrUrl.find(infRegex => regex({ 'e': e, 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
+                    ret['res']['sendGet'] = inf.sendGet; if (arrUrl.find(infRegex => regex({ 'e': e, 'simple': true, 'pattern': infRegex, 'text': inf.url }))) {
                         // ######################################################################
 
                         // #### NTFY | /home
-                        if ((inf.sendGet == 'send') && regex({ 'simple': true, 'pattern': arrUrl[0], 'text': inf.url })) {
+                        if ((inf.sendGet == 'send') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[0], 'text': inf.url })) {
                             ret['res']['body'] = inf.body.replace(/CASA/g, 'AAAAAAAA');
                         }
 
                         // #### EWOQ | /home
-                        if ((inf.sendGet == 'get') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
+                        if ((inf.sendGet == 'get') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[1], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'EWOQ'
                             let retEWOQ = EWOQ({ 'platform': platform, 'url': `${platform}/home`, 'body': inf.body })
                         }
 
                         // #### EWOQ | /GetTemplate_[1-SEND]
-                        if ((inf.sendGet == 'send') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
+                        if ((inf.sendGet == 'send') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'EWOQ'
                             let retEWOQ = EWOQ({ 'platform': platform, 'url': `${platform}/GetTemplate_[1-SEND]`, 'body': inf.body })
                         }
 
                         // #### EWOQ | /GetTemplate_[2-GET]
-                        if ((inf.sendGet == 'get') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
+                        if ((inf.sendGet == 'get') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[2], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'EWOQ'
                             let retEWOQ = EWOQ({ 'platform': platform, 'url': `${platform}/GetTemplate_[2-GET]`, 'body': inf.body })
                         }
 
                         // #### EWOQ | /GetNewTasks
-                        if ((inf.sendGet == 'get') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': inf.url })) {
+                        if ((inf.sendGet == 'get') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[3], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'EWOQ'
                             let retEWOQ = EWOQ({ 'platform': platform, 'url': `${platform}/GetNewTasks`, 'body': inf.body })
                         }
 
                         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
-                        if ((inf.sendGet == 'send') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': inf.url })) {
+                        if ((inf.sendGet == 'send') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[4], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'EWOQ'
                             let retEWOQ = EWOQ({ 'platform': platform, 'url': `${platform}/RecordTaskRenderingLatency`, 'body': inf.body })
                         }
 
                         // #### EWOQ | /SubmitFeedback
-                        if ((inf.sendGet == 'send') && regex({ 'simple': true, 'pattern': arrUrl[5], 'text': inf.url })) {
+                        if ((inf.sendGet == 'send') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[5], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'EWOQ'
                             let retEWOQ = EWOQ({ 'platform': platform, 'url': `${platform}/SubmitFeedback`, 'body': inf.body })
                         }
 
                         // #### TryRating | /home
-                        if ((inf.sendGet == 'get') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': inf.url })) {
+                        if ((inf.sendGet == 'get') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[6], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'TryRating'
                             let retTryRating = TryRating({ 'platform': platform, 'url': `${platform}/home`, 'body': inf.body })
                         }
 
                         // #### TryRating | /survey
-                        if ((inf.sendGet == 'get') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
+                        if ((inf.sendGet == 'get') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[7], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'TryRating'
                             let retTryRating = TryRating({ 'platform': platform, 'url': `${platform}/survey`, 'body': inf.body })
                         }
 
                         // #### TryRating | /client_log [submit]
-                        if ((inf.sendGet == 'send') && regex({ 'simple': true, 'pattern': arrUrl[8], 'text': inf.url })) {
+                        if ((inf.sendGet == 'send') && regex({ 'e': e, 'simple': true, 'pattern': arrUrl[8], 'text': inf.url })) {
                             let platform = inf.platform ? inf.platform : 'TryRating'
                             let retTryRating = TryRating({ 'platform': platform, 'url': `${platform}/client_log`, 'body': inf.body })
                         }

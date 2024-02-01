@@ -18,8 +18,8 @@ async function EWOQ(inf) {
             gO.inf[platform] = {};
             gO.inf[platform]['log'] = [];
             gO.inf[platform]['token'] = {}
-            await csf([gO.inf]);
-            await commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+            // await csf([gO.inf]);
+            commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
@@ -63,7 +63,7 @@ async function EWOQ(inf) {
                     textNot = ''
                 }
                 infNotification = { 'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false }
-                retNotification = await notification(infNotification);
+                notification(infNotification);
             }
             // await csf([gO.inf]);
         }
@@ -104,7 +104,7 @@ async function EWOQ(inf) {
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]` });
             let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
-            await commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
+            commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text
@@ -123,14 +123,14 @@ async function EWOQ(inf) {
                             'e': e, 'duration': 5, 'icon': './src/scripts/media/notification_1.png',
                             'title': `${platform} | TEM A RESPOSTA!`, 'text': text, 'retInf': false
                         };
-                        retNotification = await notification(infNotification);
+                        notification(infNotification);
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']
                         infNotification = {
                             'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_2.png',
                             'title': `${platform} | `, 'text': text
                         };
-                        // retNotification = await notification(infNotification);
+                        // notification(infNotification);
                         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
                             let rg = regex({ 'e': e, 'pattern': 'embed/(.*?)?autoplay', 'text': value.body });
                             rg = rg.res['1'] ? rg.res['1'] : false
@@ -139,7 +139,7 @@ async function EWOQ(inf) {
                                     'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_1.png',
                                     'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false
                                 };
-                                retNotification = await notification(infNotification);
+                                notification(infNotification);
                             } else {
                                 let infApi = { // ########## TYPE → json
                                     'e': e, 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`,
@@ -153,7 +153,7 @@ async function EWOQ(inf) {
                                         'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_1.png',
                                         'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false
                                     };
-                                    retNotification = await notification(infNotification);
+                                    notification(infNotification);
                                 } else {
                                     let uploadDate = new Date(rg);
                                     uploadDate = Math.floor(uploadDate.getTime() / 1000);
@@ -163,13 +163,13 @@ async function EWOQ(inf) {
                                             'e': e, 'duration': 3, 'icon': './src/scripts/media/notification_3.png',
                                             'title': `${platform} | YouTube`, 'text': rg, 'retInf': false
                                         };
-                                        retNotification = await notification(infNotification);
+                                        notification(infNotification);
                                     }
                                 }
                             }
                         }
                     };
-                    await clipboard({ 'e': e, 'value': text });
+                    clipboard({ 'e': e, 'value': text });
                     // await csf([gO.inf]);
                 }
             }

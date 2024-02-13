@@ -51,7 +51,7 @@ async function EWOQ(inf) {
                     'b': [
                         'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
                         'GLSJobtypeTestTemplate', 'CQPremiumTask', 'UserInterestEvaluation', 'CQPremiumTask', 'AdTargetingEvaluation',
-                        'KeywordQueryRelevanceEvaluation',
+                        'KeywordQueryRelevanceEvaluation', 'GLSTriggering', 'VLAQuery',
                     ],
                     'r': ['SearchExperiencetoAdUsefulness']
                 }

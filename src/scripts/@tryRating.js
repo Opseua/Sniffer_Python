@@ -1,10 +1,10 @@
 // let infTryRating, retTryRating
 // infTryRating = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
-// retTryRating = await TryRating(infTryRating)
+// retTryRating = await ewoq(infTryRating)
 // console.log(retTryRating)
 
-let e = import.meta.url, ee = e
-async function TryRating(inf) {
+let e = import.meta.url;
+async function tryRating(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
         let platform = inf.platform ? inf.platform : 'Teste'
@@ -14,16 +14,16 @@ async function TryRating(inf) {
 
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` });
+            console.log(`#### ${platform} | /home`)
             gO.inf[platform] = {};
             gO.inf[platform]['log'] = [];
-            // await csf([gO.inf]);
-            commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` })
+            await csf([gO.inf]);
+            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` })
         }
 
         // #### TryRating | /survey
         if ((inf.url == `${platform}/survey`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /survey` });
+            console.log(`#### ${platform} | /survey`)
             if (inf.body !== 'NULL') {
                 let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, '');
                 let id = body.requestId
@@ -40,36 +40,36 @@ async function TryRating(inf) {
                     'addGet': addGet
                 });
                 // await csf([gO.inf]);
-                commandLine({ 'e': e, 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
+                await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
                 if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
                     let retTask
                     if (hitApp == 'QueryImageDeservingClassificatio') {
-                        TryRating_QueryImageDeservingClassification({ 'body': inf.body })
+                        retTask = await tryRating_QueryImageDeservingClassification({ 'body': inf.body })
                     } else if (hitApp == 'Search20') {
-                        TryRating_Search20({ 'body': inf.body })
+                        retTask = await tryRating_Search20({ 'body': inf.body })
                     } else if (hitApp == 'DrivingNavigation3DMaps') {
-                        TryRating_DrivingNavigation3DMaps({ 'body': inf.body })
+                        retTask = await tryRating_DrivingNavigation3DMaps({ 'body': inf.body })
                     }
                 } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                     infNotification = {
-                        'e': e, 'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
+                        'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'BLIND, TEM A RESPOSTA!'
                     };
-                    notification(infNotification);
-                    clipboard({ 'e': e, 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
+                    retNotification = await notification(infNotification);
+                    await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
                 } else if (!body.tasks[0].metadata.created) {
                     infNotification = {
-                        'e': e, 'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
+                        'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'BLIND, NÃO TEM A RESPOSTA!'
                     };
-                    notification(infNotification);
+                    retNotification = await notification(infNotification);
                 }
             }
         }
 
         // #### TryRating | /client_log [submit]
         if ((inf.url == `${platform}/client_log`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /client_log` });
+            console.log(`#### ${platform} | /client_log`)
             let json, body = JSON.parse(inf.body)
             let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0
             let tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0
@@ -126,10 +126,10 @@ async function TryRating(inf) {
                         `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]
                     infNotification = {
-                        'e': e, 'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     };
-                    notification(infNotification);
+                    retNotification = await notification(infNotification);
                     gO.inf[platform].log.splice(index, 1);
                     // await csf([gO.inf]);
                 }
@@ -141,8 +141,8 @@ async function TryRating(inf) {
 
         // ### LOG FUN ###
         if (inf && inf.logFun) {
-            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }
-            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; file(infFile);
+            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
+            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; retFile = await file(infFile);
         }
     } catch (e) {
         let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
@@ -156,7 +156,7 @@ async function TryRating(inf) {
 }
 
 if (eng) { // CHROME
-    window['TryRating'] = TryRating;
+    window['tryRating'] = tryRating;
 } else { // NODEJS
-    global['TryRating'] = TryRating;
+    global['tryRating'] = tryRating;
 }

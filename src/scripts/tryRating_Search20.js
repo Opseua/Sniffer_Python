@@ -56,8 +56,8 @@ async function tryRating_Search20(inf) {
                     let retTranslate1 = await translate(infTranslate1);
                     comentario1 = retTranslate1.res
 
-                    let infChatGpt = { 'provider': 'ora.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
-                    let retChatGpt = await chatGpt(infChatGpt)
+                    let infChatGpt = { 'provider': 'open.ai', 'input': `REWRITE THIS SENTENCE WITH OTHER WORDS, KEEPING THE SAME MEANING:\n\n ${comentario}` }
+                    let retChatGpt = await chat(infChatGpt)
                     if (!retChatGpt.ret) {
                         return ret
                     };

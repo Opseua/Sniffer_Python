@@ -95,8 +95,8 @@ async function server(inf) {
                         // ######################################################################
                         if (!ret.complete) { console.log('SEND/GET CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('SEND/GET ALTERADA') }
                     } else { console.log('OUTRO URL |', inf.url) }
-                } catch (e) {
-                    let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
+                } catch (err) {
+                    let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
                     ret['msg'] = retRegexE.res
                     console.log(ret.msg)
                 };
@@ -229,9 +229,9 @@ async function server(inf) {
                             }; g = ''; // LIMPAR BUFFER
                         }
                     });
-                } catch (e) {
+                } catch (err) {
                     (async () => {
-                        let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
+                        let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
                         ret['msg'] = retRegexE.res
                         console.log(ret.msg)
                     })()
@@ -250,9 +250,9 @@ async function server(inf) {
                             }; g = ''; // LIMPAR BUFFER
                         }
                     });
-                } catch (e) {
+                } catch (err) {
                     (async () => {
-                        let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
+                        let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
                         ret['msg'] = retRegexE.res
                         console.log(ret.msg)
                     })()
@@ -263,7 +263,7 @@ async function server(inf) {
         }
         await run()
     }
-    catch (e) {
+    catch (err) {
         let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
         ret['msg'] = retRegexE.res
         console.log(ret.msg)

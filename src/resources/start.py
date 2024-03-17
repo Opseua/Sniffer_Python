@@ -32,7 +32,7 @@ def run():
         full_pathJson = os.path.abspath(
             os.path.join(
                 script_dir,
-                f"{letter}:/ARQUIVOS/PROJETOS/Chrome_Extension/src/config.json",
+                f"{letter}:/ARQUIVOS/PROJETOS/Chrome_ExtensionOld/src/config.json",
             )
         ).replace("\\", "/")
         config = ""

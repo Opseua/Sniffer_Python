@@ -40,7 +40,7 @@ async function client(inf) {
                 let data = {};
                 try {
                     data = JSON.parse(param1)
-                } catch (e) { };
+                } catch (err) { };
                 if (data.fun) { // FUN
                     let infDevFun = { 'ea': e, 'data': data, 'wsOrigin': nomeList }
                     let retDevFun = await devFun(infDevFun)
@@ -54,8 +54,8 @@ async function client(inf) {
 
         ret['ret'] = true
         ret['msg'] = `CLIENT [Sniffer_Python]: OK`
-    } catch (e) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
+    } catch (err) {
+        let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
         ret['msg'] = retRegexE.res
     };
     if (!ret.ret) {

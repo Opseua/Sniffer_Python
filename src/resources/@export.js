@@ -1,5 +1,5 @@
 // FUNCTIONS
-await import('../../../Chrome_Extension/src/resources/@functions.js');
+await import('../../../Chrome_ExtensionOld/src/resources/@functions.js');
 
 // FUNÇÕES DESSE PROJETO
 await import('../scripts/@ewoq.js')

@@ -1,4 +1,4 @@
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function client(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     if (catchGlobal) {
@@ -7,7 +7,7 @@ async function client(inf) {
         else { process.on('uncaughtException', (errC) => errs(errC, ret)); process.on('unhandledRejection', (errC) => errs(errC, ret)) }
     }
     try {
-        let time = dateHour().res; console.log(`${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec}`, 'client [Sniffer_Python]');
+        let time = dateHour().res; logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `client [Sniffer_Python]` })
 
         // DEV - SEND
         let dev1 = devSend
@@ -45,9 +45,9 @@ async function client(inf) {
                     let infDevFun = { 'ea': e, 'data': data, 'wsOrigin': nomeList }
                     let retDevFun = await devFun(infDevFun)
                 } else if (data.other) { // OTHER
-                    console.log('OTHER', data.other)
+                    logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OTHER\n${data.other}` })
                 } else {
-                    console.log(`\nMENSAGEM DO WEBSCKET\n\n${param1}\n`)
+                    logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `MENSAGEM DO WEBSCKET\n${param1}` })
                 }
             }
         }

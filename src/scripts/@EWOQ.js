@@ -3,7 +3,7 @@
 // retEwoq = await ewoq(infEwoq)
 // console.log(retEwoq)
 
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function ewoq(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
@@ -14,7 +14,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
-            console.log(`#### ${platform} | /home`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` })
             gO.inf[platform] = {};
             gO.inf[platform]['log'] = [];
             gO.inf[platform]['token'] = {}
@@ -24,7 +24,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /GetTemplate_[1-SEND]
         if ((inf.url == `${platform}/GetTemplate_[1-SEND]`)) {
-            console.log(`#### ${platform} | /GetTemplate_[1-SEND]`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetTemplate_[1-SEND]` })
             let tk = JSON.parse(inf.body)['1'];
             gO.inf[platform].token['lastToken'] = tk;
             gO.inf[platform].token[tk] = false
@@ -32,7 +32,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /GetTemplate_[2-GET]
         if ((inf.url == `${platform}/GetTemplate_[2-GET]`)) {
-            console.log(`#### ${platform} | /GetTemplate_[2-GET]`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetTemplate_[2-GET]` })
             let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             if (hitApp.length > 0) {
                 hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, '');
@@ -71,7 +71,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /GetNewTasks
         if ((inf.url == `${platform}/GetNewTasks`)) {
-            console.log(`#### ${platform} | /GetNewTasks`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetNewTasks` })
             let body = JSON.parse(inf.body);
             if (body['1']) {
                 let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, '');
@@ -103,7 +103,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
-            console.log(`#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]` })
             let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
             await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` })
             for (let [index, value] of gO.inf[platform].log.entries()) {
@@ -178,7 +178,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /SubmitFeedback
         if ((inf.url == `${platform}/SubmitFeedback`)) {
-            console.log(`#### ${platform} | /SubmitFeedback`)
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /SubmitFeedback` })
             let json, body = JSON.parse(inf.body);
             let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
             for (let [index, value] of gO.inf[platform].log.entries()) {

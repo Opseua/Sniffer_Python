@@ -1,5 +1,5 @@
 await import('./resources/@export.js');
-let e = import.meta.url;
+let e = import.meta.url, ee = e
 async function server(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     if (catchGlobal) {
@@ -8,7 +8,7 @@ async function server(inf) {
         else { process.on('uncaughtException', (errC) => errs(errC, ret)); process.on('unhandledRejection', (errC) => errs(errC, ret)) }
     }
     try {
-        let time = dateHour().res; console.log(`${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec}`, `server [Sniffer_Python]`, '\n');
+        let time = dateHour().res; logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `server [Sniffer_Python]` })
 
         async function run() {
             let infConfigStorage, retConfigStorage, infFile, retFile; cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
@@ -93,12 +93,12 @@ async function server(inf) {
                         }
 
                         // ######################################################################
-                        if (!ret.complete) { console.log('SEND/GET CANCELADA') } else if ((ret.res) && (ret.res.body || ret.res.headers)) { console.log('SEND/GET ALTERADA') }
-                    } else { console.log('OUTRO URL |', inf.url) }
+                        if (!ret.complete) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET CANCELADA` }) }
+                        else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET ALTERADA` }) }
+                    } else { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OUTRO URL | ${inf.url}` }) }
                 } catch (err) {
                     let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
                     ret['msg'] = retRegexE.res
-                    console.log(ret.msg)
                 };
                 return {
                     ...({ ret: ret.ret }),
@@ -233,7 +233,6 @@ async function server(inf) {
                     (async () => {
                         let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
                         ret['msg'] = retRegexE.res
-                        console.log(ret.msg)
                     })()
                 }
             }); sockReq.listen((portSocket), () => { });
@@ -254,7 +253,6 @@ async function server(inf) {
                     (async () => {
                         let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
                         ret['msg'] = retRegexE.res
-                        console.log(ret.msg)
                     })()
                 }
             }); sockRes.listen((portSocket + 1), () => { });
@@ -266,7 +264,6 @@ async function server(inf) {
     catch (err) {
         let retRegexE = await regexE({ 'inf': inf, 'e': e, 'catchGlobal': false });
         ret['msg'] = retRegexE.res
-        console.log(ret.msg)
     }
 }
 await server()

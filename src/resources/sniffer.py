@@ -41,7 +41,7 @@ def console(*args):
     print(msg)
     if (console.counter + 1) % 100 == 0:
         os.system("cls" if os.name == "nt" else "clear")
-        print("CONSOLE LIMPO!")
+        print("CONSOLE LIMPO!\n")
     console.counter += 1
 
 

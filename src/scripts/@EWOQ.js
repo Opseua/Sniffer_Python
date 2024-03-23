@@ -51,7 +51,8 @@ async function ewoq(inf) {
                     'b': [
                         'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
                         'GLSJobtypeTestTemplate', 'CQPremiumTask', 'UserInterestEvaluation', 'CQPremiumTask', 'AdTargetingEvaluation',
-                        'KeywordQueryRelevanceEvaluation',
+                        'KeywordQueryRelevanceEvaluation', 'HonestAdsUBPPhishingCounterfeit', 'NewTaskOutline', 'RSSonCpilottaskv2',
+                        'SearchAdsEvaluationLandingPageOnly', 'LandingPagePreviewEvaluationSet1',
                     ],
                     'r': ['SearchExperiencetoAdUsefulness', 'SearchExperiencetoAdUsefulnessLandingPageOnly',]
                 }

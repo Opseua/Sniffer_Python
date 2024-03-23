@@ -31,15 +31,15 @@ async function tryRating_Search20(inf) {
                 let idTask = [v.surveyKeys['193']];
                 let resultado = null, nome = null, endereco = null, fechado = null, relevance = null, nameAccurracy = null, addressAccurracy = null, pinAccurracy = null, comentario = null
                 let comentario1, comentario2
-                try { resultado = index + 1 } catch (err) { };
-                try { nome = v.value.name } catch (err) { };
-                try { endereco = v.value.address[0] } catch (err) { };
-                try { fechado = testQuestionInformation['Closed-DNE'][idTask].closed_dne.value ? 'SIM' : 'NAO' } catch (err) { };
-                try { relevance = testQuestionInformation.Relevance[idTask].Relevance[0].label } catch (err) { };
-                try { nameAccurracy = testQuestionInformation.Data[idTask].Name[0].value } catch (err) { };
-                try { addressAccurracy = testQuestionInformation.Data[idTask].Address[0].value } catch (err) { };
-                try { pinAccurracy = testQuestionInformation.Data[idTask].Pin[0].value } catch (err) { };
-                try { comentario = resultList[index].comments } catch (err) { };
+                try { resultado = index + 1 } catch (catchErr) { };
+                try { nome = v.value.name } catch (catchErr) { };
+                try { endereco = v.value.address[0] } catch (catchErr) { };
+                try { fechado = testQuestionInformation['Closed-DNE'][idTask].closed_dne.value ? 'SIM' : 'NAO' } catch (catchErr) { };
+                try { relevance = testQuestionInformation.Relevance[idTask].Relevance[0].label } catch (catchErr) { };
+                try { nameAccurracy = testQuestionInformation.Data[idTask].Name[0].value } catch (catchErr) { };
+                try { addressAccurracy = testQuestionInformation.Data[idTask].Address[0].value } catch (catchErr) { };
+                try { pinAccurracy = testQuestionInformation.Data[idTask].Pin[0].value } catch (catchErr) { };
+                try { comentario = resultList[index].comments } catch (catchErr) { };
                 if (comentario) {
                     if (not) {
                         not = false
@@ -99,8 +99,8 @@ async function tryRating_Search20(inf) {
             let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
             infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; retFile = await file(infFile);
         }
-    } catch (err) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
+    } catch (catchErr) {
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
         ret['msg'] = retRegexE.res
     };
     return {

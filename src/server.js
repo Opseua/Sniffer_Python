@@ -96,8 +96,8 @@ async function server(inf) {
                         if (!ret.complete) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET CANCELADA` }) }
                         else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET ALTERADA` }) }
                     } else { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OUTRO URL | ${inf.url}` }) }
-                } catch (err) {
-                    let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
+                } catch (catchErr) {
+                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
                     ret['msg'] = retRegexE.res
                 };
                 return {
@@ -229,9 +229,9 @@ async function server(inf) {
                             }; g = ''; // LIMPAR BUFFER
                         }
                     });
-                } catch (err) {
+                } catch (catchErr) {
                     (async () => {
-                        let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
+                        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
                         ret['msg'] = retRegexE.res
                     })()
                 }
@@ -249,9 +249,9 @@ async function server(inf) {
                             }; g = ''; // LIMPAR BUFFER
                         }
                     });
-                } catch (err) {
+                } catch (catchErr) {
                     (async () => {
-                        let retRegexE = await regexE({ 'inf': inf, 'e': err, 'catchGlobal': false });
+                        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
                         ret['msg'] = retRegexE.res
                     })()
                 }

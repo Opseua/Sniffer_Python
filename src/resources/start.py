@@ -1,22 +1,35 @@
-# with open("./parametros.txt", "w") as file: # 'a' adiciona, 'w' limpa
+"""IGNORE"""
+
+# pylint: disable=W0612
+# pylint: disable=C0103
+# pylint: disable=C0301
+# pylint: disable=R1732
+# pylint: disable=R1702
+# pylint: disable=R0914
+# pylint: disable=R0915
+# pylint: disable=R0912
+
+# with open("./parametros.txt", "w", encoding="utf-8") as file: # 'a' adiciona, 'w' limpa
 #     file.write(f"AAA")
-#     print('OK')
+#     console('OK')
 
 # 'start.py' e 'sniffer.py'
 from urllib.parse import urlparse
 import json
+
 import os
 import time
-import re
 import datetime
 import locale
 
 # 'start.py'
-import psutil
 import winreg
 import subprocess
-import requests
 import sys
+
+# → NECESSÁRIO REINSTALAR AO ATUALIZAR O PYTHON | pip install pylint (não precisa importar)
+import psutil  # INSTALADO
+import requests  # INSTALADO
 
 # LETRA DO TERMINAL
 letter = os.path.dirname(os.path.realpath(__file__))[0]
@@ -24,7 +37,21 @@ letter = os.path.dirname(os.path.realpath(__file__))[0]
 locale.setlocale(locale.LC_TIME, "pt_BR")
 
 
+def console(*args):
+    """IGNORE"""
+    msg = " ".join(str(arg) for arg in args)
+    print(msg)
+    if (console.counter + 1) % 100 == 0:
+        os.system("cls" if os.name == "nt" else "clear")
+        print("CONSOLE LIMPO!\n")
+    console.counter += 1
+
+
+console.counter = 0
+
+
 def run():
+    """IGNORE"""
     try:
         # PEGAR DADOS DO config.json
         script_dir = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
@@ -36,7 +63,7 @@ def run():
             )
         ).replace("\\", "/")
         config = ""
-        with open(full_pathJson, "r") as file:
+        with open(full_pathJson, "r", encoding="utf-8") as file:
             config = json.load(file)
 
         # DEFINIR VARIÁVEIS
@@ -52,7 +79,7 @@ def run():
             [f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))]
         )
         # COMANDO DE LINHA PARA INICIAR O MITMPROXY
-        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{full_path}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
         os.system("cls" if os.name == "nt" else "clear")
         securityPass = config["webSocket"]["securityPass"]
 
@@ -64,7 +91,7 @@ def run():
             devSend = devices[1]["name"]
             url = "http://" + str(wsHostLocal) + ":" + str(wsPort) + "/" + str(devSend)
             payload = inf
-            response = requests.post(url, json=payload)
+            requests.post(url, json=payload, timeout=10)
 
         def checkProcess2():
             api(
@@ -121,21 +148,23 @@ def run():
             subprocess.Popen(
                 f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Stopwatch/Stopwatch.exe"'
             )
-            # print('PROCESSO INICIADO 2')
+            # console('PROCESSO INICIADO 2')
             time.sleep(3)
             while True:
                 processos = psutil.process_iter(["cmdline"])
                 indiceArr = -1
+
                 for indice, proc in enumerate(processos):
                     cmdline = proc.info["cmdline"]
                     if cmdline is not None:
                         cmdline_str = " ".join(cmdline)
-                        if "nodeSniffer_Python.exe" in cmdline_str:
-                            indiceArr = indice
-                            # print(f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}")
+                        if "Sniffer_Python_server.exe" in cmdline_str:
+                            # indiceArr = indice
+                            # err = f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}"
+                            # console(err)
                             break
                 if indiceArr == -1:
-                    # print('NAO 2')
+                    # console('NAO 2')
                     api(
                         {
                             "fun": [
@@ -177,8 +206,9 @@ def run():
                         if cmdline is not None:
                             cmdline_str = " ".join(cmdline)
                             if "sniffer.py" in cmdline_str:
-                                # print(f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}")
-                                # print('PROCESSO ENCERRADO 2')
+                                err = f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}"
+                                # console(err)
+                                # console('PROCESSO ENCERRADO 2')
                                 proc.terminate()
                                 break
                     break
@@ -193,17 +223,18 @@ def run():
                     cmdline_str = " ".join(cmdline)
                     if "sniffer.py" in cmdline_str:
                         indiceArr = indice
-                        # print(f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}")
+                        # err = f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}"
+                        # console(err)
                         proc.terminate()
-                        # print('PROCESSO ENCERRADO 1')
+                        # console('PROCESSO ENCERRADO 1')
                         checkProcess2()
                         break
             if indiceArr == -1:
-                # print('NAO 1')
+                # console('NAO 1')
                 checkProcess2()
 
         checkProcess1()
-    except Exception as e:
+    except ImportError as exceptErr:
         # DESATIVAR O PROXY DO WINDOWS
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
@@ -216,10 +247,10 @@ def run():
         winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, "")
         winreg.CloseKey(key)
         subprocess.Popen("taskkill /IM Stopwatch.exe /F")
-        err = f'"ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
+        err = '"ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
         console(err)
         subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
-        subprocess.Popen("taskkill /IM nodeSniffer_Python.exe /F")
+        subprocess.Popen("taskkill /IM Sniffer_Python_server.exe /F")
 
         # DATA E HORA ATUAL
         current_datetime = datetime.datetime.now()
@@ -232,8 +263,8 @@ def run():
         file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         # SALVAR ERRO NO TXT
-        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-        with open(file_name, "a") as file:
+        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+        with open(file_name, "a", encoding="utf-8") as file:
             file.write(err)
         # ENCERRAR SCRIPT PYTHON
         sys.exit()

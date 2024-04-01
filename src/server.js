@@ -22,7 +22,7 @@ async function server(inf) {
             }
             runFun1()
 
-            let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python-3.11.1.amd64/python.exe"`
+            let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/python.exe"`
             command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`
             let retCommandLine = await commandLine({ 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
 

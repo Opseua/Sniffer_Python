@@ -1,3 +1,14 @@
+"""IGNORE"""
+
+# pylint: disable=C0103
+# pylint: disable=C0301
+# pylint: disable=W0621
+# pylint: disable=R1732
+# pylint: disable=R1702
+# pylint: disable=R0914
+# pylint: disable=R0915
+# pylint: disable=R0912
+
 # 'start.py' e 'sniffer.py'
 from urllib.parse import urlparse
 import json
@@ -8,14 +19,15 @@ import datetime
 import locale
 
 # 'sniffer.py'
-from mitmproxy import http
-import socket
 import base64
+import socket
 import io
 import gzip
-import brotli
 import zlib
 import subprocess
+import brotli
+from mitmproxy import http
+
 
 # LETRA DO TERMINAL
 letter = os.path.dirname(os.path.realpath(__file__))[0]
@@ -28,7 +40,7 @@ full_pathJson = os.path.abspath(
     os.path.join(script_dir, "../../../Chrome_ExtensionOld/src/config.json")
 )
 config = ""
-with open(full_pathJson, "r") as file:
+with open(full_pathJson, "r", encoding="utf-8") as file:
     config = json.load(file)
 portSocket = config["sniffer"]["portSocket"]
 bufferSocket = config["sniffer"]["bufferSocket"]
@@ -37,6 +49,7 @@ arrUrl = config["sniffer"]["arrUrl"]
 
 
 def console(*args):
+    """IGNORE"""
     msg = " ".join(str(arg) for arg in args)
     print(msg)
     if (console.counter + 1) % 100 == 0:
@@ -49,6 +62,7 @@ console.counter = 0
 
 
 def rgxMat(a, b):
+    """IGNORE"""
     c = re.escape(b).replace(r"\*", ".*")
     return re.match(f"^{c}$", a) is not None
 
@@ -60,8 +74,8 @@ try:
     sockReq.connect(("127.0.0.1", (portSocket)))
     sockRes.connect(("127.0.0.1", (portSocket + 1)))
     send_data = b""
-except Exception as e:
-    err = f'"ALERTA: PYTHON sniffer.py" "ERRO AO SE CONECTAR NO SOCKET JS 1"'
+except ImportError as exceptErr:
+    err = '"ALERTA: PYTHON sniffer.py" "ERRO AO SE CONECTAR NO SOCKET JS 1"'
     console(err)
     subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
 
@@ -76,15 +90,15 @@ except Exception as e:
     file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
     os.makedirs(os.path.dirname(file_name), exist_ok=True)
     # SALVAR ERRO NO TXT
-    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-    with open(file_name, "a") as file:
+    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+    with open(file_name, "a", encoding="utf-8") as file:
         file.write(err)
 
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
+    """Function printing python version."""
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
     if regex is not None:
-        content = None
         objReq = None
         if not flow.request.content:
             reqBody, typeOk, compress = "NULL", "utf-8", "NULL"
@@ -93,7 +107,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             if type1 and ";" in type1:
                 try:
                     typeOk = type1.split("; ")[1].split("=")[1]
-                except Exception as e:
+                except ImportError:
                     typeOk = "utf-8"
             else:
                 typeOk = "utf-8"
@@ -103,7 +117,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                     gzipped_content = io.BytesIO(flow.request.content)
                     decompressed_content = gzip.GzipFile(fileobj=gzipped_content).read()
                     reqBody = decompressed_content.decode(typeOk)
-                except Exception as e:
+                except ImportError:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
             elif "deflate" in compress:
                 try:
@@ -111,19 +125,19 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                         flow.request.content, wbits=zlib.MAX_WBITS | 16
                     )
                     reqBody = decompressed_content.decode(typeOk)
-                except Exception as e:
+                except ImportError:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
             elif "br" in compress:
                 try:
                     decoded_data = brotli.decompress(flow.request.content)
                     reqBody = decoded_data.decode(typeOk)
-                except Exception as e:
+                except ImportError:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
             else:
                 compress = "NULL"
                 try:
                     reqBody = flow.request.content.decode(typeOk, errors="ignore")
-                except Exception as e:
+                except ImportError:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
         objReq = {
             "sendGet": "send",
@@ -141,11 +155,11 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             sendB64Req = base64.b64encode(sendSockReq.encode("utf-8"))
             for i in range(0, len(sendB64Req), bufferSocket):
                 part = sendB64Req[i : i + bufferSocket]
-                sent = sockReq.send(part)
+                sockReq.send(part)
             sockReq.send("#fim#".encode("utf-8"))
             # console('SOCKET REQUISICAO [SEND]: OK')
-        except Exception as e:
-            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET REQUISICAO [SEND]: ERRO"'
+        except ImportError as exceptErr:
+            err = '"ALERTA: PYTHON sniffer.py" "SOCKET REQUISICAO [SEND]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
 
@@ -162,8 +176,8 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             )
             os.makedirs(os.path.dirname(file_name), exist_ok=True)
             # SALVAR ERRO NO TXT
-            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-            with open(file_name, "a") as file:
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+            with open(file_name, "a", encoding="utf-8") as file:
                 file.write(err)
             raise
         # SOCKET REQUISICAO [GET]
@@ -205,8 +219,8 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                     else:
                         console("REQ CANCELADA")
                         flow.kill()
-                except Exception as e:
-                    err = f'"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR REQ: ERRO"'
+                except ImportError as exceptErr:
+                    err = '"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR REQ: ERRO"'
                     console(err)
                     subprocess.Popen(
                         f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}'
@@ -223,13 +237,13 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                     file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
                     os.makedirs(os.path.dirname(file_name), exist_ok=True)
                     # SALVAR ERRO NO TXT
-                    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-                    with open(file_name, "a") as file:
+                    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+                    with open(file_name, "a", encoding="utf-8") as file:
                         file.write(err)
                     flow.kill()
                     raise
-        except Exception as e:
-            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET REQ [GET]: ERRO"'
+        except ImportError as exceptErr:
+            err = '"ALERTA: PYTHON sniffer.py" "SOCKET REQ [GET]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
 
@@ -246,8 +260,8 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             )
             os.makedirs(os.path.dirname(file_name), exist_ok=True)
             # SALVAR ERRO NO TXT
-            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-            with open(file_name, "a") as file:
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+            with open(file_name, "a", encoding="utf-8") as file:
                 file.write(err)
             flow.kill()
             raise
@@ -257,9 +271,9 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
 
 
 def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
+    """Function printing python version."""
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
     if regex is not None:
-        content = None
         objRes = None
         if not flow.response.content:
             resBody, typeOk, compress = "NULL", "utf-8", "NULL"
@@ -268,7 +282,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             if type1 and ";" in type1:
                 try:
                     typeOk = type1.split("; ")[1].split("=")[1]
-                except Exception as e:
+                except ImportError:
                     typeOk = "utf-8"
             else:
                 typeOk = "utf-8"
@@ -278,7 +292,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     gzipped_content = io.BytesIO(flow.response.content)
                     decompressed_content = gzip.GzipFile(fileobj=gzipped_content).read()
                     resBody = decompressed_content.decode(typeOk)
-                except Exception as e:
+                except ImportError:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
             elif "deflate" in compress:
                 try:
@@ -286,19 +300,19 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                         flow.response.content, wbits=zlib.MAX_WBITS | 16
                     )
                     resBody = decompressed_content.decode(typeOk)
-                except Exception as e:
+                except ImportError:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
             elif "br" in compress:
                 try:
                     decoded_data = brotli.decompress(flow.response.content)
                     resBody = decoded_data.decode(typeOk)
-                except Exception as e:
+                except ImportError:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
             else:
                 compress = "NULL"
                 try:
                     resBody = flow.response.content.decode(typeOk, errors="ignore")
-                except Exception as e:
+                except ImportError:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
         objRes = {
             "sendGet": "get",
@@ -317,11 +331,11 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             sendB64Res = base64.b64encode(sendSockRes.encode("utf-8"))
             for i in range(0, len(sendB64Res), bufferSocket):
                 part = sendB64Res[i : i + bufferSocket]
-                sent = sockRes.send(part)
+                sockRes.send(part)
             sockRes.send("#fim#".encode("utf-8"))
             # console('SOCKET RESPONSE [SEND]: OK')
-        except Exception as e:
-            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET RESPONSE [SEND]: ERRO"'
+        except ImportError as exceptErr:
+            err = '"ALERTA: PYTHON sniffer.py" "SOCKET RESPONSE [SEND]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
 
@@ -338,10 +352,9 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             )
             os.makedirs(os.path.dirname(file_name), exist_ok=True)
             # SALVAR ERRO NO TXT
-            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-            with open(file_name, "a") as file:
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+            with open(file_name, "a", encoding="utf-8") as file:
                 file.write(err)
-            pass
         # SOCKET RESPONSE [GET]
         try:
             getSockRes = ""
@@ -384,8 +397,8 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     else:
                         console("RES CANCELADO")
                         flow.kill()
-                except Exception as e:
-                    err = f'"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR RES: ERRO"'
+                except ImportError as exceptErr:
+                    err = '"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR RES: ERRO"'
                     console(err)
                     subprocess.Popen(
                         f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}'
@@ -402,12 +415,12 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
                     os.makedirs(os.path.dirname(file_name), exist_ok=True)
                     # SALVAR ERRO NO TXT
-                    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-                    with open(file_name, "a") as file:
+                    err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+                    with open(file_name, "a", encoding="utf-8") as file:
                         file.write(err)
                     flow.kill()
-        except Exception as e:
-            err = f'"ALERTA: PYTHON sniffer.py" "SOCKET RES [GET]: ERRO"'
+        except ImportError as exceptErr:
+            err = '"ALERTA: PYTHON sniffer.py" "SOCKET RES [GET]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
 
@@ -424,8 +437,8 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             )
             os.makedirs(os.path.dirname(file_name), exist_ok=True)
             # SALVAR ERRO NO TXT
-            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
-            with open(file_name, "a") as file:
+            err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+            with open(file_name, "a", encoding="utf-8") as file:
                 file.write(err)
             flow.kill()
     else:

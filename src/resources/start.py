@@ -1,22 +1,19 @@
 """IGNORE"""
 
-# pylint: disable=W0612
-# pylint: disable=C0103
-# pylint: disable=C0301
-# pylint: disable=R1732
-# pylint: disable=R1702
+# pylint: disable=W0718
 # pylint: disable=R0914
 # pylint: disable=R0915
-# pylint: disable=R0912
+# pylint: disable=R1732
+# pylint: disable=C0103
+# pylint: disable=C0301
 
-# with open("./parametros.txt", "w", encoding="utf-8") as file: # 'a' adiciona, 'w' limpa
+# with open("./parametros.txt", "w") as file: # 'a' adiciona, 'w' limpa
 #     file.write(f"AAA")
-#     console('OK')
+#     print('OK')
 
 # 'start.py' e 'sniffer.py'
 from urllib.parse import urlparse
 import json
-
 import os
 import time
 import datetime
@@ -26,10 +23,8 @@ import locale
 import winreg
 import subprocess
 import sys
-
-# → NECESSÁRIO REINSTALAR AO ATUALIZAR O PYTHON | pip install pylint (não precisa importar)
-import psutil  # INSTALADO
-import requests  # INSTALADO
+import psutil
+import requests
 
 # LETRA DO TERMINAL
 letter = os.path.dirname(os.path.realpath(__file__))[0]
@@ -153,13 +148,12 @@ def run():
             while True:
                 processos = psutil.process_iter(["cmdline"])
                 indiceArr = -1
-
                 for indice, proc in enumerate(processos):
                     cmdline = proc.info["cmdline"]
                     if cmdline is not None:
                         cmdline_str = " ".join(cmdline)
-                        if "Sniffer_Python_server.exe" in cmdline_str:
-                            # indiceArr = indice
+                        if "nodeSniffer_Python_server.exe" in cmdline_str:
+                            indiceArr = indice
                             # err = f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}"
                             # console(err)
                             break
@@ -206,7 +200,7 @@ def run():
                         if cmdline is not None:
                             cmdline_str = " ".join(cmdline)
                             if "sniffer.py" in cmdline_str:
-                                err = f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}"
+                                # err = f"ID→ {proc.pid} | COMMAND LINE→ {cmdline_str}"
                                 # console(err)
                                 # console('PROCESSO ENCERRADO 2')
                                 proc.terminate()
@@ -234,7 +228,7 @@ def run():
                 checkProcess2()
 
         checkProcess1()
-    except ImportError as exceptErr:
+    except Exception as e:
         # DESATIVAR O PROXY DO WINDOWS
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
@@ -250,7 +244,7 @@ def run():
         err = '"ALERTA: PYTHON start.py" "Ocorreu um erro [DESATIVADO]"'
         console(err)
         subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
-        subprocess.Popen("taskkill /IM Sniffer_Python_server.exe /F")
+        subprocess.Popen("taskkill /IM nodeSniffer_Python_server.exe /F")
 
         # DATA E HORA ATUAL
         current_datetime = datetime.datetime.now()
@@ -263,7 +257,7 @@ def run():
         file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         # SALVAR ERRO NO TXT
-        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
+        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
         with open(file_name, "a", encoding="utf-8") as file:
             file.write(err)
         # ENCERRAR SCRIPT PYTHON

@@ -29,10 +29,13 @@ rem TESTES!!!
 rem msg * "[2_SCRIPT.bat] arg1: !arg1! - project: !project! - outrosAdd: !outrosAdd! - fileScript: !fileScript!" & exit
 
 rem #####################################################################
+rem →→→
+set "restartOnStop=RESTART_NOT"
+rem →→→
 rem                   BAT PM2JLIST                                                  AÇÃO WINDOW | PROJECT OUTROSADD    | ARQUIVO    | QUEM EXECUTOU
-rem call "!letra!:\ARQUIVOS\PROJETOS\Chrome_Extension\src\scripts\BAT\pm2JList.bat" "!arg1!_WINTP1" "!project!@!outrosAdd!" "!fileScript!" "SCRIPT"
+rem call "!letra!:\ARQUIVOS\PROJETOS\Chrome_Extension\src\scripts\BAT\pm2JList.bat" "!arg1!_WINTP1!restartOnStop!" "!project!@!outrosAdd!" "!fileScript!" "SCRIPT"
 rem                   BAT PROCESSKEEP                                                    AÇÃO WINDOW | PROJECT OUTROSADD    | ARQUIVO    | QUEM EXECUTOU
-call "!letra!:\ARQUIVOS\PROJETOS\Chrome_Extension\src\scripts\BAT\processKeep.bat" "!arg1!_WINTP3" "!project!@!outrosAdd!" "!fileScript!" "SCRIPT"
+call "!letra!:\ARQUIVOS\PROJETOS\Chrome_Extension\src\scripts\BAT\processKeep.bat" "!arg1!_WINTP3!restartOnStop!" "!project!@!outrosAdd!" "!fileScript!" "SCRIPT"
 set "ret=!ret2!"
 
 exit

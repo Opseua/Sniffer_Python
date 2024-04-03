@@ -3,6 +3,7 @@
 # pylint: disable=C0103
 # pylint: disable=C0301
 # pylint: disable=W0621
+# pylint: disable=W0718
 # pylint: disable=R1732
 # pylint: disable=R1702
 # pylint: disable=R0914
@@ -74,7 +75,7 @@ try:
     sockReq.connect(("127.0.0.1", (portSocket)))
     sockRes.connect(("127.0.0.1", (portSocket + 1)))
     send_data = b""
-except ImportError as exceptErr:
+except Exception as exceptErr:
     err = '"ALERTA: PYTHON sniffer.py" "ERRO AO SE CONECTAR NO SOCKET JS 1"'
     console(err)
     subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
@@ -96,7 +97,7 @@ except ImportError as exceptErr:
 
 
 def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
-    """Function printing python version."""
+    """IGNORE"""
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
     if regex is not None:
         objReq = None
@@ -107,7 +108,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
             if type1 and ";" in type1:
                 try:
                     typeOk = type1.split("; ")[1].split("=")[1]
-                except ImportError:
+                except Exception:
                     typeOk = "utf-8"
             else:
                 typeOk = "utf-8"
@@ -117,7 +118,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                     gzipped_content = io.BytesIO(flow.request.content)
                     decompressed_content = gzip.GzipFile(fileobj=gzipped_content).read()
                     reqBody = decompressed_content.decode(typeOk)
-                except ImportError:
+                except Exception:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
             elif "deflate" in compress:
                 try:
@@ -125,19 +126,19 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                         flow.request.content, wbits=zlib.MAX_WBITS | 16
                     )
                     reqBody = decompressed_content.decode(typeOk)
-                except ImportError:
+                except Exception:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
             elif "br" in compress:
                 try:
                     decoded_data = brotli.decompress(flow.request.content)
                     reqBody = decoded_data.decode(typeOk)
-                except ImportError:
+                except Exception:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
             else:
                 compress = "NULL"
                 try:
                     reqBody = flow.request.content.decode(typeOk, errors="ignore")
-                except ImportError:
+                except Exception:
                     reqBody = flow.request.content.decode("utf-8", errors="ignore")
         objReq = {
             "sendGet": "send",
@@ -158,7 +159,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                 sockReq.send(part)
             sockReq.send("#fim#".encode("utf-8"))
             # console('SOCKET REQUISICAO [SEND]: OK')
-        except ImportError as exceptErr:
+        except Exception as exceptErr:
             err = '"ALERTA: PYTHON sniffer.py" "SOCKET REQUISICAO [SEND]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
@@ -219,7 +220,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                     else:
                         console("REQ CANCELADA")
                         flow.kill()
-                except ImportError as exceptErr:
+                except Exception as exceptErr:
                     err = '"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR REQ: ERRO"'
                     console(err)
                     subprocess.Popen(
@@ -242,7 +243,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
                         file.write(err)
                     flow.kill()
                     raise
-        except ImportError as exceptErr:
+        except Exception as exceptErr:
             err = '"ALERTA: PYTHON sniffer.py" "SOCKET REQ [GET]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
@@ -271,7 +272,7 @@ def request(flow: http.HTTPFlow) -> None:  # ################ REQUEST
 
 
 def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
-    """Function printing python version."""
+    """IGNORE"""
     regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
     if regex is not None:
         objRes = None
@@ -282,7 +283,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
             if type1 and ";" in type1:
                 try:
                     typeOk = type1.split("; ")[1].split("=")[1]
-                except ImportError:
+                except Exception:
                     typeOk = "utf-8"
             else:
                 typeOk = "utf-8"
@@ -292,7 +293,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     gzipped_content = io.BytesIO(flow.response.content)
                     decompressed_content = gzip.GzipFile(fileobj=gzipped_content).read()
                     resBody = decompressed_content.decode(typeOk)
-                except ImportError:
+                except Exception:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
             elif "deflate" in compress:
                 try:
@@ -300,19 +301,19 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                         flow.response.content, wbits=zlib.MAX_WBITS | 16
                     )
                     resBody = decompressed_content.decode(typeOk)
-                except ImportError:
+                except Exception:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
             elif "br" in compress:
                 try:
                     decoded_data = brotli.decompress(flow.response.content)
                     resBody = decoded_data.decode(typeOk)
-                except ImportError:
+                except Exception:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
             else:
                 compress = "NULL"
                 try:
                     resBody = flow.response.content.decode(typeOk, errors="ignore")
-                except ImportError:
+                except Exception:
                     resBody = flow.response.content.decode("utf-8", errors="ignore")
         objRes = {
             "sendGet": "get",
@@ -334,7 +335,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                 sockRes.send(part)
             sockRes.send("#fim#".encode("utf-8"))
             # console('SOCKET RESPONSE [SEND]: OK')
-        except ImportError as exceptErr:
+        except Exception as exceptErr:
             err = '"ALERTA: PYTHON sniffer.py" "SOCKET RESPONSE [SEND]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')
@@ -397,7 +398,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     else:
                         console("RES CANCELADO")
                         flow.kill()
-                except ImportError as exceptErr:
+                except Exception as exceptErr:
                     err = '"ALERTA: PYTHON sniffer.py" "ALTERAR/CANCELAR RES: ERRO"'
                     console(err)
                     subprocess.Popen(
@@ -419,7 +420,7 @@ def response(flow: http.HTTPFlow) -> None:  # ################ RESPONSE
                     with open(file_name, "a", encoding="utf-8") as file:
                         file.write(err)
                     flow.kill()
-        except ImportError as exceptErr:
+        except Exception as exceptErr:
             err = '"ALERTA: PYTHON sniffer.py" "SOCKET RES [GET]: ERRO"'
             console(err)
             subprocess.Popen(f'"{letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe" {err}')

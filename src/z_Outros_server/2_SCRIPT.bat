@@ -20,7 +20,7 @@ rem Exemplo 2: # WebScraper # criar a copia do nodeExe: 'nodeWebScraper_serverJu
 rem MODE →→→ 'PM2' (RESTART [SIM]) / 'CMD' (RESTART [SIM]) / 'LEGACY' (RESTART [NAO]) / 'ALWAYSUP' (RESTART [SIM]) # PROJECT | OUTROSADD | ARQUIVO SCRIPT
 for /f "tokens=1,2,3,4,5,6 delims=\" %%a in ("!local!") do ( set "project=%%d" & set "outrosAdd=%%f" ) & set "replace="
 set "outrosAdd=!outrosAdd:z_Outros_=%replace%!" & set "scriptType=ERRO"
-set "mode=CMD" & set "root=!letra!:\ARQUIVOS\PROJETOS" & set "fileScript=!root!\!project!\src\!outrosAdd!.js" & cd\ & !letra!: & cd !root!\!project!
+set "mode=LEGACY" & set "root=!letra!:\ARQUIVOS\PROJETOS" & set "fileScript=!root!\!project!\src\!outrosAdd!.js" & cd\ & !letra!: & cd !root!\!project!
 rem #### ↑↑↑↑↑↑↑↑↑ ########################################################## (NAO SUBIR OS 'if'!!!)
 if "!mode!"=="PM2" ( set "scriptType=processPm2JList" )
 if "!mode!"=="CMD" ( set "scriptType=processCmdKeep" )

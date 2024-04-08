@@ -38,7 +38,7 @@ locale.setlocale(locale.LC_TIME, "pt_BR")
 script_dir = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.abspath(os.path.join(script_dir, ""))
 full_pathJson = os.path.abspath(
-    os.path.join(script_dir, "../../../Chrome_ExtensionOld/src/config.json")
+    os.path.join(script_dir, "../../../Chrome_Extension/src/config.json")
 )
 config = ""
 with open(full_pathJson, "r", encoding="utf-8") as file:

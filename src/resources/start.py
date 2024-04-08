@@ -54,7 +54,7 @@ def run():
         full_pathJson = os.path.abspath(
             os.path.join(
                 script_dir,
-                f"{letter}:/ARQUIVOS/PROJETOS/Chrome_ExtensionOld/src/config.json",
+                f"{letter}:/ARQUIVOS/PROJETOS/Chrome_Extension/src/config.json",
             )
         ).replace("\\", "/")
         config = ""
@@ -62,6 +62,13 @@ def run():
             config = json.load(file)
 
         # DEFINIR VARIÁVEIS
+        server = config["webSocket"]["server"]["2"]
+        wsHostLoc = server["host"]
+        wsPort = server["port"]
+        devices = config["webSocket"]["devices"]
+        master = devices[0]["master"]
+        slave = devices[1]["name"]
+        devSend = f"{wsHostLoc}:{wsPort}/?roo={master}_{slave}"
         portMitm = config["sniffer"]["portMitm"]
         arrUrl = config["sniffer"]["arrUrl"]
         arrHost = [
@@ -79,43 +86,44 @@ def run():
         securityPass = config["webSocket"]["securityPass"]
 
         def api(inf):
-            server = config["webSocket"]["server"]["2"]
-            wsHostLocal = server["host"]
-            wsPort = server["port"]
-            devices = config["webSocket"]["devices"]
-            devSend = devices[1]["name"]
-            url = "http://" + str(wsHostLocal) + ":" + str(wsPort) + "/" + str(devSend)
+            url = f"http://{devSend}"
             payload = inf
             requests.post(url, json=payload, timeout=10)
 
         def checkProcess2():
             api(
                 {
-                    "fun": [
-                        {
-                            "securityPass": securityPass,
-                            "retInf": False,
-                            "name": "notification",
-                            "par": {
-                                "duration": 3,
-                                "icon": "./src/scripts/media/notification_1.png",
-                                "title": "SNIFFER",
-                                "text": "Ativado",
+                    "destination": f"{devSend}",
+                    "messageId": True,
+                    "buffer": False,
+                    "partesRestantes": 0,
+                    "message": {
+                        "fun": [
+                            {
+                                "securityPass": securityPass,
+                                "retInf": False,
+                                "name": "notification",
+                                "par": {
+                                    "duration": 3,
+                                    "icon": "./src/scripts/media/notification_1.png",
+                                    "title": "SNIFFER",
+                                    "text": "Ativado",
+                                },
                             },
-                        },
-                        {
-                            "securityPass": securityPass,
-                            "retInf": False,
-                            "name": "chromeActions",
-                            "par": {"action": "badge", "color": [25, 255, 71, 255]},
-                        },
-                        {
-                            "securityPass": securityPass,
-                            "retInf": False,
-                            "name": "chromeActions",
-                            "par": {"action": "badge", "text": "PYTH"},
-                        },
-                    ]
+                            {
+                                "securityPass": securityPass,
+                                "retInf": False,
+                                "name": "chromeActions",
+                                "par": {"action": "badge", "color": [25, 255, 71, 255]},
+                            },
+                            {
+                                "securityPass": securityPass,
+                                "retInf": False,
+                                "name": "chromeActions",
+                                "par": {"action": "badge", "text": "PYTH"},
+                            },
+                        ]
+                    },
                 }
             )
             # ATIVAR PROXY DO WINDOWS
@@ -126,14 +134,13 @@ def run():
                 winreg.KEY_WRITE,
             )
             winreg.SetValueEx(
-                key, "ProxyServer", 0, winreg.REG_SZ, "127.0.0.1:" + str(portMitm)
+                key, "ProxyServer", 0, winreg.REG_SZ, f"127.0.0.1:{portMitm}"
             )
-            # ignorar hosts → → 'Servidor WebSocket Web', 'Servidor WebSocket Local', 'Facebook', 'WhatsApp Desktop'
+            # ignorar hosts → → 'Servidor WebSocket Web', 'Servidor WebSocket Loc', 'Facebook', 'WhatsApp Desktop'
             server = config["webSocket"]["server"]["1"]
             wsHostWeb = server["host"]
             server = config["webSocket"]["server"]["2"]
-            wsHostLocal = server["host"]
-            ignoreHosts = f"{wsHostWeb};{wsHostLocal};*fb*;*whatsapp*"
+            ignoreHosts = f"{wsHostWeb};{wsHostLoc};*fb*;*whatsapp*"
             winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, f"{ignoreHosts}")
             winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
             winreg.CloseKey(key)
@@ -228,7 +235,7 @@ def run():
                 checkProcess2()
 
         checkProcess1()
-    except Exception as e:
+    except Exception as exceptErr:
         # DESATIVAR O PROXY DO WINDOWS
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER,
@@ -257,7 +264,7 @@ def run():
         file_name = f"log/Python/{current_datetimeMon}/{current_datetimeDay}_err.txt"
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         # SALVAR ERRO NO TXT
-        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(e)}\n\n"
+        err = f"{current_datetimeHou}.{current_datetimeMin}.{current_datetimeSec}.{current_datetimeMil}\n{err}\n{str(exceptErr)}\n\n"
         with open(file_name, "a", encoding="utf-8") as file:
             file.write(err)
         # ENCERRAR SCRIPT PYTHON

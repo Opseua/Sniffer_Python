@@ -17,11 +17,8 @@ async function server(inf) {
             retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage } else { retConfigStorage = retConfigStorage.res };
             let portSocket = retConfigStorage.portSocket, bufferSocket = retConfigStorage.bufferSocket, arrUrl = retConfigStorage.arrUrl
 
-            // client
-            async function runFun1() {
-                await import('./client.js');
-            }
-            runFun1()
+            // CLIENT (NÃO POR COMO 'await'!!!)
+            client({ 'e': e })
 
             let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/python.exe"`
             command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`

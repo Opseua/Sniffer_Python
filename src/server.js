@@ -107,7 +107,7 @@ async function server(inf) {
 
             // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-            // var platform = 'EWOQ_teste' // ################################ EWOQ
+            // let platform = 'EWOQ_teste' // ################################ EWOQ
             // // #### EWOQ | /home
             // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/EWOQ/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
             // retFile = await file(infFile);
@@ -164,7 +164,7 @@ async function server(inf) {
 
             // await new Promise(resolve => { setTimeout(resolve, 5000) })
 
-            // var platform = 'TryRating_teste' // ################################ TryRating
+            // let platform = 'TryRating_teste' // ################################ TryRating
             // // #### TryRating | /home
             // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/1-GET_##_VAZIO_##.txt` }
             // retFile = await file(infFile);
@@ -173,7 +173,7 @@ async function server(inf) {
             // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
             // // #### TryRating | /survey
-            // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/2-GET_SearchTerms.txt` }
+            // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/z_teste/TryRating/#_SEND-GET_#/2-GET_Search20_BLIND.txt` }
             // retFile = await file(infFile);
             // await sendGet({ 'platform': `${platform}`, 'sendGet': 'get', 'url': arrUrl[7], 'body': retFile.res })
 

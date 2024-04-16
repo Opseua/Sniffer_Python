@@ -118,37 +118,31 @@ def run():
         def checkProcess2():
             api(
                 {
-                    "destination": f"{devSend}",
-                    "messageId": True,
-                    "buffer": False,
-                    "partesRestantes": 0,
-                    "message": {
-                        "fun": [
-                            {
-                                "securityPass": securityPass,
-                                "retInf": False,
-                                "name": "notification",
-                                "par": {
-                                    "duration": 3,
-                                    "icon": "./src/scripts/media/notification_1.png",
-                                    "title": "SNIFFER",
-                                    "text": "Ativado",
-                                },
+                    "fun": [
+                        {
+                            "securityPass": securityPass,
+                            "retInf": False,
+                            "name": "notification",
+                            "par": {
+                                "duration": 3,
+                                "icon": "./src/scripts/media/notification_1.png",
+                                "title": "SNIFFER",
+                                "text": "Ativado",
                             },
-                            {
-                                "securityPass": securityPass,
-                                "retInf": False,
-                                "name": "chromeActions",
-                                "par": {"action": "badge", "color": [25, 255, 71, 255]},
-                            },
-                            {
-                                "securityPass": securityPass,
-                                "retInf": False,
-                                "name": "chromeActions",
-                                "par": {"action": "badge", "text": "PYTH"},
-                            },
-                        ]
-                    },
+                        },
+                        {
+                            "securityPass": securityPass,
+                            "retInf": False,
+                            "name": "chromeActions",
+                            "par": {"action": "badge", "color": [25, 255, 71, 255]},
+                        },
+                        {
+                            "securityPass": securityPass,
+                            "retInf": False,
+                            "name": "chromeActions",
+                            "par": {"action": "badge", "text": "PYTH"},
+                        },
+                    ]
                 }
             )
             # ATIVAR PROXY DO WINDOWS
@@ -190,31 +184,25 @@ def run():
                     # console('NAO 2')
                     api(
                         {
-                            "destination": f"{devSend}",
-                            "messageId": True,
-                            "buffer": False,
-                            "partesRestantes": 0,
-                            "message": {
-                                "fun": [
-                                    {
-                                        "securityPass": securityPass,
-                                        "retInf": False,
-                                        "name": "notification",
-                                        "par": {
-                                            "duration": 3,
-                                            "icon": "./src/scripts/media/notification_2.png",
-                                            "title": "SNIFFER",
-                                            "text": "Desativado",
-                                        },
+                            "fun": [
+                                {
+                                    "securityPass": securityPass,
+                                    "retInf": False,
+                                    "name": "notification",
+                                    "par": {
+                                        "duration": 3,
+                                        "icon": "./src/scripts/media/notification_2.png",
+                                        "title": "SNIFFER",
+                                        "text": "Desativado",
                                     },
-                                    {
-                                        "securityPass": securityPass,
-                                        "retInf": False,
-                                        "name": "chromeActions",
-                                        "par": {"action": "badge", "text": ""},
-                                    },
-                                ]
-                            },
+                                },
+                                {
+                                    "securityPass": securityPass,
+                                    "retInf": False,
+                                    "name": "chromeActions",
+                                    "par": {"action": "badge", "text": ""},
+                                },
+                            ]
                         }
                     )
                     # DESATIVAR O PROXY DO WINDOWS
@@ -282,25 +270,19 @@ def run():
         subprocess.Popen("taskkill /IM nodeSniffer_Python_server.exe /F")
         api(
             {
-                "destination": f"{devSend}",
-                "messageId": True,
-                "buffer": False,
-                "partesRestantes": 0,
-                "message": {
-                    "fun": [
-                        {
-                            "securityPass": securityPass,
-                            "retInf": False,
-                            "name": "notification",
-                            "par": {
-                                "duration": 3,
-                                "icon": "./src/scripts/media/notification_3.png",
-                                "title": "ALERTA: PYTHON start.py",
-                                "text": "Ocorreu um erro [DESATIVADO]",
-                            },
-                        }
-                    ]
-                },
+                "fun": [
+                    {
+                        "securityPass": securityPass,
+                        "retInf": False,
+                        "name": "notification",
+                        "par": {
+                            "duration": 3,
+                            "icon": "./src/scripts/media/notification_3.png",
+                            "title": "ALERTA: PYTHON start.py",
+                            "text": "Ocorreu um erro [DESATIVADO]",
+                        },
+                    }
+                ]
             }
         )
 

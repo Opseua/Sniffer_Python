@@ -3,7 +3,7 @@
 // retTryRating = await ewoq(infTryRating)
 // console.log(retTryRating)
 
-let e = import.meta.url, ee = e
+let e = import.meta.url, ee = e;
 async function tryRating(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {

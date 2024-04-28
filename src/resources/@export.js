@@ -20,3 +20,6 @@ let retGetPath = await getPath({ 'e': new Error(), 'devChildren': devChildren })
 await import('../scripts/@ewoq.js')
 await import('../scripts/@tryRating.js')
 await import('../scripts/tryRating_Search20.js');
+
+// FUNÇÕES DE OUTRO PROJETO
+// await import('../../../Chrome_Extension/src/resources/completeJudge.js');

@@ -15,11 +15,13 @@ let retGetPath = await getPath({ 'e': new Error(), 'devChildren': devChildren })
 // console.log('devMaster:', globalWindow.devMaster, '|', 'devSlave:', globalWindow.devSlave, '|', 'devChildren:', globalWindow.devChildren)
 // console.log('devSend:', globalWindow.devSend)
 // console.log('devGet:', globalWindow.devGet)
+// console.log('conf:', globalWindow.conf)
+// console.log('root:', globalWindow.root)
+// console.log('functions:', globalWindow.functions)
+// console.log('project:', globalWindow.project)
 
 // FUNÇÕES DESSE PROJETO
 await import('../scripts/@ewoq.js')
 await import('../scripts/@tryRating.js')
 await import('../scripts/tryRating_Search20.js');
 
-// FUNÇÕES DE OUTRO PROJETO
-// await import('../../../Chrome_Extension/src/resources/completeJudge.js');

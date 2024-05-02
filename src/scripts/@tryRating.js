@@ -85,8 +85,8 @@ async function tryRating(inf) {
                             tasksQtdHitApp += value.qtd; tasksSecHitApp += value.sec
                             if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) { tasksQtdHitAppLast += value.qtd; tasksSecHitAppLast += value.sec }
                         }
-                    }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': secToHour(tasksSec).res }
-                    json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': secToHour(tasksSecHitApp).res }
+                    }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': dateHour(tasksSec).res }
+                    json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': dateHour(tasksSecHitApp).res }
                     infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
                     retConfigStorage = await configStorage(infConfigStorage);
                     infConfigStorage = {
@@ -98,12 +98,12 @@ async function tryRating(inf) {
                         tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec
                     }; let notText = [
                         `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')}`,
-                        `TEMPO: ${secToHour(tasksSecMon).res}`,
+                        `TEMPO: ${dateHour(tasksSecMon).res}`,
                         `🔵 QTD: ${tasksQtd.toString().padStart(4, '0')}`,
-                        `TEMPO: ${secToHour(tasksSec).res}`,
+                        `TEMPO: ${dateHour(tasksSec).res}`,
                         `🔵 QTD: ${tasksQtdHitApp.toString().padStart(4, '0')}`,
-                        `TEMPO: ${secToHour(tasksSecHitApp).res}`,
-                        `MÉDIO: ${secToHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+                        `TEMPO: ${dateHour(tasksSecHitApp).res}`,
+                        `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
                     ]; infNotification = {
                         'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`

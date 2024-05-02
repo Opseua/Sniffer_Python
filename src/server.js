@@ -3,11 +3,6 @@ await import('./resources/@export.js');
 let e = import.meta.url, ee = e;
 async function serverRun(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
-    if (catchGlobal) {
-        let errs = async (errC, ret) => { if (!ret.stop) { ret['stop'] = true; regexE({ 'e': errC, 'inf': inf, 'catchGlobal': true }) } };
-        if (typeof window !== 'undefined') { window.addEventListener('error', (errC) => errs(errC, ret)); window.addEventListener('unhandledrejection', (errC) => errs(errC, ret)) }
-        else { process.on('uncaughtException', (errC) => errs(errC, ret)); process.on('unhandledRejection', (errC) => errs(errC, ret)) }
-    }
     try {
         logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `**************** SERVER ****************` })
 
@@ -94,7 +89,7 @@ async function serverRun(inf) {
                     else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET ALTERADA` }) }
                 } else { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OUTRO URL | ${inf.url}` }) }
             } catch (catchErr) {
-                let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
+                let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
                 ret['msg'] = retRegexE.res
             };
             return {
@@ -228,7 +223,7 @@ async function serverRun(inf) {
                 });
             } catch (catchErr) {
                 (async () => {
-                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
+                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
                     ret['msg'] = retRegexE.res
                 })()
             }
@@ -248,7 +243,7 @@ async function serverRun(inf) {
                 });
             } catch (catchErr) {
                 (async () => {
-                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
+                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
                     ret['msg'] = retRegexE.res
                 })()
             }
@@ -256,7 +251,7 @@ async function serverRun(inf) {
         // -------------------------------------------------------------------------------------------------
     }
     catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
         ret['msg'] = retRegexE.res
     }
 }

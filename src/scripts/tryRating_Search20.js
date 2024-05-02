@@ -94,11 +94,6 @@ async function tryRating_Search20(inf) {
         ret['msg'] = `TRYRATING [Search20]: OK`;
         ret['ret'] = true;
 
-        // ### LOG FUN ###
-        if (inf && inf.logFun) {
-            let infFile = { 'e': e, 'action': 'write', 'functionLocal': false, 'logFun': new Error().stack, 'path': 'AUTO', }, retFile
-            infFile['rewrite'] = false; infFile['text'] = { 'inf': inf, 'ret': ret }; retFile = await file(infFile);
-        }
     } catch (catchErr) {
         let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, 'catchGlobal': false });
         ret['msg'] = retRegexE.res

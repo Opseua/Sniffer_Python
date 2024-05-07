@@ -3,6 +3,16 @@
 // retTryRating = await ewoq(infTryRating)
 // console.log(retTryRating)
 
+// ### Search20 (Task com julgamentos únicos [TASK ID: igual])
+// tasks[0].taskData.resultSet.resultList[1].value.name
+// tasks[0].taskData.resultSet.resultList[2].value.name
+// tasks[0].taskData.resultSet.resultList[1].value.name
+
+// ### SearchAdsRelevance (Task com julgamentos separados [TASK ID: diferente])
+// tasks[0].taskData.query
+// tasks[1].taskData.query
+// tasks[2].taskData.query
+
 let e = import.meta.url, ee = e;
 async function tryRating(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
@@ -39,11 +49,12 @@ async function tryRating(inf) {
                 });
                 // await csf([gO.inf]);
                 await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
-                if (['QueryImageDeservingClassification', 'Search20', 'DrivingNavigation3DMaps'].includes(hitApp)) {
-                    let retTask
-                    if (hitApp == 'QueryImageDeservingClassificatio') { retTask = await tryRating_QueryImageDeservingClassification({ 'body': inf.body }) }
-                    else if (hitApp == 'Search20') { retTask = await tryRating_Search20({ 'body': inf.body }) }
-                    else if (hitApp == 'DrivingNavigation3DMaps') { retTask = await tryRating_DrivingNavigation3DMaps({ 'body': inf.body }) }
+                if (hitApp == 'QueryImageDeservingClassification') {
+                    await tryRating_QueryImageDeservingClassification({ 'body': inf.body })
+                } else if (hitApp == 'Search20') {
+                    await tryRating_Search20({ 'body': inf.body })
+                } else if (hitApp == 'DrivingNavigation3DMaps') {
+                    await tryRating_DrivingNavigation3DMaps({ 'body': inf.body })
                 } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
                     infNotification = {
                         'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
@@ -76,7 +87,7 @@ async function tryRating(inf) {
                     let blind = JSON.parse(value.body).tasks[0].metadata.created ? false : true
                     json.tasks.push({
                         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
-                        'qtd': value.qtd, 'sec': dif, 'blind': blind, 'id': value.id,
+                        'qtd': value.qtd, 'sec': dif, 'tasksHour': dateHour(dif).res, 'blind': blind, 'id': value.id,
                         'addGet': value.addGet
                     }); if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
                     for (let [index, value] of json.tasks.entries()) {

@@ -14,7 +14,7 @@ async function serverRun(inf) {
         // CLIENT (NÃO POR COMO 'await'!!!)
         client({ 'e': e })
 
-        let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/python.exe"`
+        let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/pythonSniffer_Python_server.exe"`;
         command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/resources/start.py"`
         let retCommandLine = await commandLine({ 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
 

@@ -106,7 +106,9 @@ def run():
             [f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))]
         )
         # COMANDO DE LINHA PARA INICIAR O MITMPROXY
-        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{fullPath}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+        # command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{fullPath}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+        command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/pythonSniffer_Python_server.exe" "{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{fullPath}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
+
         os.system("cls" if os.name == "nt" else "clear")
         securityPass = configWebSocket["securityPass"]
 
@@ -167,7 +169,7 @@ def run():
                 f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Stopwatch/Stopwatch.exe"'
             )
             # console('PROCESSO INICIADO 2')
-            time.sleep(3)
+            # time.sleep(3)
             while True:
                 processos = psutil.process_iter(["cmdline"])
                 indiceArr = -1
@@ -229,7 +231,7 @@ def run():
                                 proc.terminate()
                                 break
                     break
-                time.sleep(3)
+                time.sleep(1)
 
         def checkProcess1():
             processos = psutil.process_iter(["cmdline"])

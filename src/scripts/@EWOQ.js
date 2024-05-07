@@ -146,7 +146,7 @@ async function ewoq(inf) {
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                     else { json = retConfigStorage.res }; let dif = Number(time.tim) - value.tim; let blind = false; json.tasks.push({
                         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
-                        'qtd': value.qtd, 'sec': dif, 'blind': blind, 'id': value.id,
+                        'qtd': value.qtd, 'sec': dif, 'tasksHour': dateHour(dif).res, 'blind': blind, 'id': value.id,
                         'addGet': value.addGet
                     }); if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour };
                     for (let [index, value] of json.tasks.entries()) {

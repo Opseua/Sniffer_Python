@@ -55,11 +55,13 @@ async function tryRating(inf) {
                     await tryRating_Search20({ 'body': inf.body })
                 } else if (hitApp == 'DrivingNavigation3DMaps') {
                     await tryRating_DrivingNavigation3DMaps({ 'body': inf.body })
-                } else if (hasKey({ 'key': 'testQuestionInformation', 'obj': body }).res) {
+                } else if (inf.body.includes(`{"serializedAnswer":{"`) || inf.body.includes(`{"serializedAnswer":[`)) {
                     infNotification = {
                         'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                         'title': `${platform} | AVISO`, 'text': 'BLIND, TEM A RESPOSTA!'
-                    }; retNotification = await notification(infNotification); await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
+                    }; retNotification = await notification(infNotification); // await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
+                    let retJudgesGetResponse = await judgesGetResponse({ 'e': e, 'json': inf.body })
+                    await clipboard({ 'e': e, 'value': retJudgesGetResponse.ret ? retJudgesGetResponse.res : retJudgesGetResponse.msg });
                 } else if (!body.tasks[0].metadata.created) {
                     infNotification = {
                         'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
@@ -114,7 +116,7 @@ async function tryRating(inf) {
                         `TEMPO: ${dateHour(tasksSec).res}`,
                         `🔵 QTD: ${tasksQtdHitApp.toString().padStart(4, '0')}`,
                         `TEMPO: ${dateHour(tasksSecHitApp).res}`,
-                        `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+                        `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
                         'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`

@@ -172,7 +172,7 @@ async function ewoq(inf) {
                         `TEMPO: ${dateHour(tasksSec).res}`,
                         `🔵 QTD: ${tasksQtdHitApp.toString().padStart(4, '0')}`,
                         `TEMPO: ${dateHour(tasksSecHitApp).res}`,
-                        `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast).toFixed(0)).res.substring(3, 8)}`
+                        `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
                         'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`

@@ -22,7 +22,10 @@ let retGetPath = await getPath({ 'e': new Error(), 'devChildren': devChildren })
 // console.log('project:', globalWindow.project)
 
 // FUNÇÕES DESSE PROJETO
-await import('../scripts/@ewoq.js')
-await import('../scripts/@tryRating.js')
+await import('./ewoq.js')
+await import('./judgesGetResponse.js')
+await import('./tryRating.js')
+
+// SCRIPTS DESSE PROJETO
 await import('../scripts/tryRating_Search20.js');
 

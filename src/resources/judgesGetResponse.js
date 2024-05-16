@@ -65,7 +65,7 @@ async function judgesGetResponse(inf) {
         }
 
         function inserirChavesSeparadoras(objeto) {
-            let novoObjeto = {}; let contador = 1; let add = `#############################################`; novoObjeto[`${add}_${contador}_${add}`] = 'x'; contador++;
+            let novoObjeto = {}; let contador = 1; let add = `######################################`; novoObjeto[`${add}_${contador}_${add}`] = 'x'; contador++;
             for (let chave in objeto) { novoObjeto[chave] = objeto[chave]; if (typeof objeto[chave] === 'object' && !Array.isArray(objeto[chave])) { novoObjeto[`${add}_${contador}_${add}`] = 'x'; contador++; } }; return novoObjeto;
         }; respostas = inserirChavesSeparadoras(respostas)
 

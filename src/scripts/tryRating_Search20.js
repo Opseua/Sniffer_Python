@@ -20,8 +20,7 @@ async function tryRating_Search20(inf) {
                 'duration': 2, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
                 'title': `NÃO TEM A RESPOSTA`,
                 'text': `Avaliar manualmente`,
-            };
-            retNotification = await notification(infNotification)
+            }; // retNotification = await notification(infNotification)
         }
         else {
             let resultList = retSniffer.tasks[0].taskData.resultSet.resultList;
@@ -42,14 +41,11 @@ async function tryRating_Search20(inf) {
                 try { comentario = resultList[index].comments } catch (catchErr) { };
                 if (comentario) {
                     if (not) {
-                        not = false
-                        infNotification =
-                        {
+                        not = false; infNotification = {
                             'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'retInf': false,
                             'title': `AGUARDE...`,
                             'text': `Traduzindo e alterando o comentário`,
-                        };
-                        retNotification = await notification(infNotification)
+                        }; retNotification = await notification(infNotification)
                     }
 
                     let infTranslate1 = { 'source': 'auto', 'target': 'pt', 'text': comentario };
@@ -81,13 +77,11 @@ async function tryRating_Search20(inf) {
                 };
             }));
 
-            infNotification =
-            {
+            infNotification = {
                 'duration': 2, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
                 'title': `CONCLUÍDO: na área de transferência`,
                 'text': `${JSON.stringify(res, null, 2)}`,
-            };
-            retNotification = await notification(infNotification)
+            }; retNotification = await notification(infNotification)
 
             await clipboard({ 'value': res })
         }

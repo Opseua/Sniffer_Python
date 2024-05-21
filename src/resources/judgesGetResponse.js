@@ -2,8 +2,7 @@
 
 // let infJudgesGetResponse, retJudgesGetResponse 
 // infJudgesGetResponse = { 'e': e, 'json': JSON.stringify(jsonOk) }
-// retJudgesGetResponse = await judgesGetResponse(infJudgesGetResponse)
-// console.log(retJudgesGetResponse)
+// retJudgesGetResponse = await judgesGetResponse(infJudgesGetResponse); console.log(retJudgesGetResponse)
 
 let e = import.meta.url, ee = e;
 async function judgesGetResponse(inf) {

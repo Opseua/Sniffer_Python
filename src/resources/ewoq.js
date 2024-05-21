@@ -1,7 +1,6 @@
 // let infEwoq, retEwoq
 // infEwoq = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
-// retEwoq = await ewoq(infEwoq)
-// console.log(retEwoq)
+// retEwoq = await ewoq(infEwoq); console.log(retEwoq)
 
 let e = import.meta.url, ee = e;
 async function ewoq(inf) {

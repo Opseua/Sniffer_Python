@@ -44,7 +44,7 @@ async function ewoq(inf) {
                     ], 'r': ['SearchExperiencetoAdUsefulness', 'SearchExperiencetoAdUsefulnessLandingPageOnly',]
                 }; if (textNot.b.includes(hitApp)) { textNot = '[B] ' } else if (textNot.r.includes(hitApp)) { textNot = '[R] ' } else { textNot = '' }
                 infNotification = {
-                    'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`,
+                    'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`,
                     'text': `${textNot}${hitApp}`, 'retInf': false
                 }; retNotification = await notification(infNotification);
             } // await csf([gO.inf]);
@@ -94,7 +94,7 @@ async function ewoq(inf) {
                     } else {
                         text = body['1'][0]['10']['1'][0]['2'];
                         infNotification = {
-                            'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | `,
+                            'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | `,
                             'text': text
                         }; // retNotification = await notification(infNotification);
                         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {

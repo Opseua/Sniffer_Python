@@ -68,7 +68,7 @@ async function tryRating(inf) {
                 } else {
                     // NNÃO É BLIND
                     infNotification = {
-                        'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`,
+                        'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`,
                         'text': 'Avaliar manualmente'
                     }; retNotification = await notification(infNotification);
                 }
@@ -122,7 +122,7 @@ async function tryRating(inf) {
                         `TEMPO: ${dateHour(tasksSecHitApp).res}`,
                         `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
-                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     }; retNotification = await notification(infNotification); gO.inf[platform].log.splice(index, 1);  // await csf([gO.inf]);
                 }

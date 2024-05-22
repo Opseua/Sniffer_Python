@@ -126,7 +126,7 @@ def run():
                             "retInf": False,
                             "name": "notification",
                             "par": {
-                                "duration": 3,
+                                "duration": 2,
                                 "icon": "./src/scripts/media/notification_1.png",
                                 "title": "SNIFFER",
                                 "text": "Ativado",
@@ -192,7 +192,7 @@ def run():
                                     "retInf": False,
                                     "name": "notification",
                                     "par": {
-                                        "duration": 3,
+                                        "duration": 2,
                                         "icon": "./src/scripts/media/notification_2.png",
                                         "title": "SNIFFER",
                                         "text": "Desativado",
@@ -278,7 +278,7 @@ def run():
                         "retInf": False,
                         "name": "notification",
                         "par": {
-                            "duration": 3,
+                            "duration": 5,
                             "icon": "./src/scripts/media/notification_3.png",
                             "title": "ALERTA: PYTHON start.py",
                             "text": "Ocorreu um erro [DESATIVADO]",

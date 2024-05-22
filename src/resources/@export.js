@@ -3,7 +3,6 @@ let devC = new Error().stack.split('\n'); devC = devC[devC.length - 1]; let devC
 if (typeof window !== 'undefined') { devChildren = await new Promise((resolve) => { chrome.identity.getProfileUserInfo(function (u) { resolve(u.email) }) }) }
 
 // @functions
-// await import('../../../Chrome_Extension/src/resources/@functions.js');
 await import(`../../../${process.env.fileChrome_Extension.split('PROJETOS\\')[1]}/src/resources/@functions.js`);
 
 // DEFINIR → LETTER | ROOT | FUNCTION | PROJECT | FILE | LINE
@@ -21,11 +20,12 @@ let retGetPath = await getPath({ 'e': new Error(), 'devChildren': devChildren })
 // console.log('functions:', globalWindow.functions)
 // console.log('project:', globalWindow.project)
 
-// FUNÇÕES DESSE PROJETO
-await import('./ewoq.js')
-await import('./judgesGetResponse.js')
-await import('./tryRating.js')
+
+// PLATAFORMAS DESSE PROJETO
+await import('../platforms/ewoq.js')
+await import('../platforms/tryRating.js')
 
 // SCRIPTS DESSE PROJETO
-await import('../scripts/tryRating_Search20.js');
+await import('../scripts/tryRatingGetResponse.js');
+
 

@@ -26,7 +26,7 @@ async function tryRating(inf) {
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` })
-            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; await csf([gO.inf]);
+            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; // await csf([gO.inf]);
             await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` })
         }
 
@@ -45,26 +45,31 @@ async function tryRating(inf) {
                     'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`,
                     'qtd': 1, 'id': id, 'body': inf.body, 'path': retLog.res,
                     'addGet': addGet
-                });
-                // await csf([gO.inf]);
+                }); // await csf([gO.inf]);
                 await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` })
-                if (hitApp == 'QueryImageDeservingClassification') {
-                    await tryRating_QueryImageDeservingClassification({ 'body': inf.body })
-                } else if (hitApp == 'Search20') {
-                    await tryRating_Search20({ 'body': inf.body })
-                } else if (hitApp == 'DrivingNavigation3DMaps') {
-                    await tryRating_DrivingNavigation3DMaps({ 'body': inf.body })
-                } else if (inf.body.includes(`{"serializedAnswer":{"`) || inf.body.includes(`{"serializedAnswer":[`)) {
-                    infNotification = {
-                        'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'retInf': false,
-                        'title': `${platform} | AVISO`, 'text': 'BLIND, TEM A RESPOSTA!'
-                    }; retNotification = await notification(infNotification); // await clipboard({ 'value': body.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer })
-                    let retJudgesGetResponse = await judgesGetResponse({ 'e': e, 'json': inf.body })
-                    await clipboard({ 'e': e, 'value': retJudgesGetResponse.ret ? retJudgesGetResponse.res : retJudgesGetResponse.msg });
+                if (inf.body.includes(`{"serializedAnswer":{"`) || inf.body.includes(`{"serializedAnswer":[`)) {
+                    // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
+                    let retHitAppGetResponse, notClip = {}; infNotification = {
+                        'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'retInf': false, 'title': `${platform} | BLIND`,
+                        'text': 'Tem a resposta!'
+                    }; retNotification = await notification(infNotification);
+                    if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ }
+                    else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body }); }
+                    notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
+                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`,
+                        'text': notClip.res
+                    }; retNotification = await notification(infNotification);
                 } else if (!body.tasks[0].metadata.created) {
+                    // BLIND, NÃO TEM A RESPOSTA
                     infNotification = {
-                        'duration': 5, 'icon': './src/scripts/media/notification_3.png', 'retInf': false,
-                        'title': `${platform} | AVISO`, 'text': 'BLIND, NÃO TEM A RESPOSTA!'
+                        'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`,
+                        'text': 'Não tem a resposta!'
+                    }; retNotification = await notification(infNotification);
+                } else {
+                    // NNÃO É BLIND
+                    infNotification = {
+                        'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`,
+                        'text': 'Avaliar manualmente'
                     }; retNotification = await notification(infNotification);
                 }
             }

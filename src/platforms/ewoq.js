@@ -88,17 +88,20 @@ async function ewoq(inf) {
                         text = body['1'][0]['11']['1'][0]['4']; let infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text }; let retTranslate = await translate(infTranslate);
                         if (retTranslate.ret) { text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}` }
                         else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` }; infNotification = {
-                            'duration': 5, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | TEM A RESPOSTA!`,
-                            'text': text, 'retInf': false
-                        }; retNotification = await notification(infNotification);
+                            'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`,
+                            'text': 'Tem a resposta!', 'retInf': false
+                        }; retNotification = await notification(infNotification); await clipboard({ 'value': text });
                     } else {
-                        text = body['1'][0]['10']['1'][0]['2']; infNotification = { 'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | `, 'text': text };
-                        // retNotification = await notification(infNotification);
+                        text = body['1'][0]['10']['1'][0]['2'];
+                        infNotification = {
+                            'duration': 3, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | `,
+                            'text': text
+                        }; // retNotification = await notification(infNotification);
                         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
                             let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body }); rg = rg.res['1'] ? rg.res['1'] : false
                             if (!rg) {
                                 infNotification = {
-                                    'duration': 3, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`,
+                                    'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`,
                                     'text': 'ID não encontrado', 'retInf': false
                                 }; retNotification = await notification(infNotification);
                             } else {
@@ -106,14 +109,14 @@ async function ewoq(inf) {
                                 let retApi = await api(infApi); rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body }); rg = rg.res['1'] ? rg.res['1'] : false
                                 if (!rg) {
                                     infNotification = {
-                                        'duration': 3, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`,
+                                        'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`,
                                         'text': 'Data não encontrada', 'retInf': false
                                     }; retNotification = await notification(infNotification);
                                 } else {
                                     let uploadDate = new Date(rg); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000 // 15 DIAS ATRÁS
                                     if (retDateHour > uploadDate) {
                                         infNotification = {
-                                            'duration': 3, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`,
+                                            'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`,
                                             'text': rg, 'retInf': false
                                         }; retNotification = await notification(infNotification);
                                     }

@@ -15,7 +15,10 @@ async function tryRatingGetResponse(inf) {
             else if (retGetTaskType === 'tasks') { obj.tasks.forEach(task => { responses.push(task.taskData); }); }; return { 'type': retGetTaskType, 'tasks': responses };
         }
 
-        function getValue(inf) { let { obj } = inf; for (let key of ['name', 'query', 'chave1', 'chave2']) { if (obj[key] !== undefined) { return [obj[key]]; } }; return []; }
+        function getValue(inf) {
+            let { obj } = inf; for (let key of ['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'chave1', 'chave2']) { if (obj[key] !== undefined) { return [obj[key]]; } }
+            for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ obj: obj[key] }); if (value.length > 0) { return value; } } }; return [];
+        }
 
         function filterKeyValue(inf) {
             let { obj, search, eArray } = inf; let result = eArray ? [] : {}; for (let key in obj) {
@@ -34,32 +37,29 @@ async function tryRatingGetResponse(inf) {
         }
 
         // PEGAR AS TAREFAS
-        let responses = {}; if (body.includes(`{"serializedAnswer":{"`) || body.includes(`{"serializedAnswer":[`)) {
-            let obj = JSON.parse(body)
-            let retGetTasks = getTasks({ 'obj': obj })
-            for (let [index, value] of retGetTasks.tasks.entries()) {
-                let taskId = retGetTasks.type == 'resultList' ? value.surveyKeys['193'] : ''
-                value = retGetTasks.type == 'tasks' ? value : value.value
-                let retGetValue = getValue({ 'obj': value }); retGetValue = retGetValue.length == 0 ? 'SEM_IDENTIFICACAO' : retGetValue[0]
-                if (retGetTasks.type == 'resultList') {
-                    value = filterKeyValue({ 'obj': obj, 'search': taskId })
-                }
-                let retGetPathObj = getPathObj({ 'obj': value });
-                if (JSON.stringify(retGetPathObj) !== '{}') {
-                    retGetPathObj = JSON.stringify(retGetPathObj)
-                    retGetPathObj = retGetPathObj.replace(/testQuestionInformation.answer.serializedAnswer./g, '')
-                    retGetPathObj = retGetPathObj.replace(new RegExp(`${retGetValue}`, 'g'), '');
-                    retGetPathObj = retGetPathObj.replace(new RegExp(`${taskId}`, 'g'), '');
-                    retGetPathObj = retGetPathObj.replace(new RegExp(`},"`, 'g'), '},"aaa":"aa","');
-                    retGetPathObj = JSON.parse(retGetPathObj)
-                    responses[retGetValue] = retGetPathObj
+        let responses = {}; if (body.includes(`{"serializedAnswer":{"`)) {
+            let obj = JSON.parse(body); let retGetTasks = getTasks({ 'obj': obj }); for (let [index, value] of retGetTasks.tasks.entries()) {
+                let res = retGetTasks.type == 'tasks' ? value : value.value; let taskId = 'SEM_IDENTIFICACAO'; if (retGetTasks.type == 'resultList') {
+                    if (value.surveyKeys) {
+                        let serializedAnswer = JSON.stringify(obj.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer)
+                        for (let [index1, value1] of Object.keys(value.surveyKeys).entries()) { if (serializedAnswer.includes(value.surveyKeys[value1])) { taskId = value.surveyKeys[value1]; break }; }
+                    }
+                }; let retGetValue = getValue({ 'obj': res }); retGetValue = retGetValue.length == 0 ? 'SEM_IDENTIFICACAO' : retGetValue[0]
+                if (retGetTasks.type == 'resultList') { res = filterKeyValue({ 'obj': obj, 'search': taskId }) }
+                let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res }))
+                if (retGetPathObj !== '{}') {
+                    retGetPathObj = retGetPathObj.replace(/testQuestionInformation.answer.serializedAnswer./g, '');
+                    retGetPathObj = retGetPathObj.replace(new RegExp(`${retGetValue}\\.`, 'g'), '');
+                    retGetPathObj = retGetPathObj.replace(new RegExp(`${taskId}\\.`, 'g'), '');
+                    retGetPathObj = JSON.parse(retGetPathObj);
+                    responses[`${retGetValue} [${Math.random().toString(36).substring(2, 5)}]`] = retGetPathObj
                 }
             };
         }
 
         function insertSeparator(inf) {
             let { obj } = inf; let objNew = {}; let qtd = 1; let keys = Object.keys(obj); if (keys.length > 0) {
-                let add = `####################################`; objNew[`${add}_${qtd}_${add}`] = 'x'; qtd++; keys.forEach((key, index) => {
+                let add = `###################################`; objNew[`${add}_${qtd}_${add}`] = 'x'; qtd++; keys.forEach((key, index) => {
                     objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { objNew[`${add}_${qtd}_${add}`] = 'x'; qtd++; }
                 });
             } return objNew;

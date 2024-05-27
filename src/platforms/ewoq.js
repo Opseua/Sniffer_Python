@@ -168,11 +168,11 @@ async function ewoq(inf) {
                     retConfigStorage = await configStorage(infConfigStorage);
                     for (let nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec }
                     let notText = [
-                        `🟢 QTD: ${tasksQtdMon.toString().padStart(4, '0')}`,
+                        `🟢 QTD: ${tasksQtdMon.toString().padStart(3, '0')}`,
                         `TEMPO: ${dateHour(tasksSecMon).res}`,
-                        `🔵 QTD: ${tasksQtd.toString().padStart(4, '0')}`,
+                        `🔵 QTD: ${tasksQtd.toString().padStart(3, '0')}`,
                         `TEMPO: ${dateHour(tasksSec).res}`,
-                        `🔵 QTD: ${tasksQtdHitApp.toString().padStart(4, '0')}`,
+                        `🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')}`,
                         `TEMPO: ${dateHour(tasksSecHitApp).res}`,
                         `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {

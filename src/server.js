@@ -21,6 +21,7 @@ async function serverRun(inf) {
 
             try {
                 let { sendGet, url, body, platform } = inf; ret['res']['sendGet'] = sendGet; if (arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': url }))) {
+                    if (!platform) { platform = url.includes('ewoq') ? 'EWOQ' : url.includes('tryrating') ? 'TryRating' : 'NAO_IDENTIFICADO' }
                     // ######################################################################
 
                     // #### NTFY | /home

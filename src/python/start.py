@@ -95,6 +95,7 @@ def run():
         # SNIFFER
         configSniffer = config["sniffer"]
         portMitm = configSniffer["portMitm"]
+        hostsIgnore = configSniffer["hostsIgnore"]
         arrUrl = configSniffer["arrUrl"]
         arrHost = [
             urlparse(url).hostname
@@ -106,7 +107,6 @@ def run():
             [f'--allow-hosts "{hostname}"' for hostname in list(set(arrHost))]
         )
         # COMANDO DE LINHA PARA INICIAR O MITMPROXY
-        # command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{fullPath}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
         command = f'"{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/pythonSniffer_Python_server.exe" "{letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/Scripts/mitmdump.exe" --quiet --anticache --ssl-insecure -s "{fullPath}\\sniffer.py" --mode regular@{portMitm} {arrHost}'
 
         os.system("cls" if os.name == "nt" else "clear")
@@ -158,7 +158,7 @@ def run():
                 key, "ProxyServer", 0, winreg.REG_SZ, f"127.0.0.1:{portMitm}"
             )
             # ignorar hosts → → 'Servidor WebSocket Web', 'Servidor WebSocket Loc', 'Facebook', 'WhatsApp Desktop'
-            ignoreHosts = f"{hostLoc};{hostWeb};*fb*;*whatsapp*"
+            ignoreHosts = f"{hostLoc};{hostWeb};{hostsIgnore}"
             winreg.SetValueEx(key, "ProxyOverride", 0, winreg.REG_SZ, f"{ignoreHosts}")
             winreg.SetValueEx(key, "ProxyEnable", 0, winreg.REG_DWORD, 1)
             winreg.CloseKey(key)

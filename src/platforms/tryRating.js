@@ -105,11 +105,11 @@ async function tryRating(inf) {
                     retConfigStorage = await configStorage(infConfigStorage); for (let nameKey in retConfigStorage.res) {
                         judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec
                     }; let notText = [
-                        `🟢 QTD: ${judgesQtdMon.toString().padStart(4, '0')}`,
+                        `🟢 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`,
                         `TEMPO: ${dateHour(judgesSecMon).res}`,
-                        `🔵 QTD: ${judgesQtd.toString().padStart(4, '0')}`,
+                        `🔵 QTD: ${judgesQtd.toString().padStart(3, '0')}`,
                         `TEMPO: ${dateHour(judgesSec).res}`,
-                        `🔵 QTD: ${judgesQtdHitApp.toString().padStart(4, '0')}`,
+                        `🔵 QTD: ${judgesQtdHitApp.toString().padStart(3, '0')}`,
                         `TEMPO: ${dateHour(judgesSecHitApp).res}`,
                         `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {

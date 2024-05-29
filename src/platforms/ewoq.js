@@ -8,7 +8,7 @@ async function ewoq(inf) {
     try {
         let platform = inf.platform ? inf.platform : 'Teste'; let infConfigStorage, retConfigStorage, infFile, retFile, infNotification, retNotification, retLog
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
-        let other = { 'default': { 'lastHour': 1200 } }
+        retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform]
 
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
@@ -35,15 +35,7 @@ async function ewoq(inf) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
                         retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
                     }
-                }; let textNot = {
-                    'b': [
-                        'YouTubeVideoInappropriatenessEvaluation', 'YouTubeAdRelevanceEvaluation', 'SearchExperiencetoProductUsefulness',
-                        'GLSJobtypeTestTemplate', 'CQPremiumTask', 'UserInterestEvaluation', 'CQPremiumTask', 'AdTargetingEvaluation',
-                        'KeywordQueryRelevanceEvaluation', 'HonestAdsUBPPhishingCounterfeit', 'NewTaskOutline', 'RSSonCpilottaskv2',
-                        'SearchAdsEvaluationLandingPageOnly', 'LandingPagePreviewEvaluationSet1',
-                    ], 'r': ['SearchExperiencetoAdUsefulness', 'SearchExperiencetoAdUsefulnessLandingPageOnly',]
-                }; if (textNot.b.includes(hitApp)) { textNot = '[B] ' } else if (textNot.r.includes(hitApp)) { textNot = '[R] ' } else { textNot = '' }
-                infNotification = {
+                }; let textNot = other[hitApp] ? `${other[hitApp].not} ` : ''; infNotification = {
                     'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`,
                     'text': `${textNot}${hitApp}`, 'retInf': false
                 }; retNotification = await notification(infNotification);

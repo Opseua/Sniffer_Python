@@ -18,18 +18,17 @@ async function tryRating(inf) {
     try {
         let platform = inf.platform ? inf.platform : 'Teste'; let infConfigStorage, retConfigStorage, infFile, retFile, infNotification, retNotification, retLog
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
-        let other = { 'default': { 'lastHour': 1800 }, 'QueryImageDeservingClassification': { 'lastHour': 600 }, 'audiocaptioning': { 'lastHour': 600 }, 'PhotoSearchSatisfaction': { 'lastHour': 600 }, }
+        retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform]
 
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` })
-            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` }) // await csf([gO.inf]);
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = [];
+            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7]"` }) // await csf([gO.inf]);
         }
 
         // #### TryRating | /survey
         if ((inf.url == `${platform}/survey`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /survey` })
-            if (inf.body !== 'NULL') {
+            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /survey` }); if (inf.body !== 'NULL') {
                 let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId
                 retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body })
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
@@ -46,28 +45,18 @@ async function tryRating(inf) {
                 }); await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F7][SHIFT+F8]"` });// await csf([gO.inf]);
                 if (inf.body.includes(`{"serializedAnswer":{"`)) {
                     // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
-                    let retHitAppGetResponse, notClip = {}; infNotification = {
-                        'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'retInf': false, 'title': `${platform} | BLIND`,
-                        'text': 'Tem a resposta!'
-                    }; retNotification = await notification(infNotification);
+                    let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });
                     if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ }
                     else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body }); }
                     notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
-                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`,
-                        'text': notClip.res
-                    }; retNotification = await notification(infNotification);
+                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
+                    }; await notification(infNotification);
                 } else if (!body.tasks[0].metadata.created) {
                     // BLIND, NÃO TEM A RESPOSTA
-                    infNotification = {
-                        'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`,
-                        'text': 'Não tem a resposta!'
-                    }; retNotification = await notification(infNotification);
+                    await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' });
                 } else {
                     // NNÃO É BLIND
-                    infNotification = {
-                        'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`,
-                        'text': 'Avaliar manualmente'
-                    }; retNotification = await notification(infNotification);
+                    await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' });
                 }
             }
         }
@@ -82,7 +71,7 @@ async function tryRating(inf) {
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (judgeId == value.judgeId) {
                     retFile = await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-                    infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` }; retConfigStorage = await configStorage(infConfigStorage);
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {} }, 'judges': [] } } else { json = retConfigStorage.res };
                     let dif = Number(time.tim) - value.tim; json.judges.push({
                         'hitApp': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
@@ -95,23 +84,12 @@ async function tryRating(inf) {
                         }
                     }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksBlinds': tasksBlinds, 'judgesQtd': judgesQtd, 'judgesSec': judgesSec, 'judgesHour': dateHour(judgesSec).res, }
                     json.inf.hitApp[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksBlinds': tasksBlindsHitApp, 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'tasksHour': dateHour(judgesSecHitApp).res, }
-                    infConfigStorage = { 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json }
-                    retConfigStorage = await configStorage(infConfigStorage);
-                    infConfigStorage = {
-                        'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set',
-                        'key': `DIA_${time.day}`, 'value': json.inf
-                    }; retConfigStorage = await configStorage(infConfigStorage);
-                    infConfigStorage = { 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` }
-                    retConfigStorage = await configStorage(infConfigStorage); for (let nameKey in retConfigStorage.res) {
-                        judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec
-                    }; let notText = [
-                        `🟢 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`,
-                        `TEMPO: ${dateHour(judgesSecMon).res}`,
-                        `🔵 QTD: ${judgesQtd.toString().padStart(3, '0')}`,
-                        `TEMPO: ${dateHour(judgesSec).res}`,
-                        `🔵 QTD: ${judgesQtdHitApp.toString().padStart(3, '0')}`,
-                        `TEMPO: ${dateHour(judgesSecHitApp).res}`,
-                        `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json });
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf });
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` });
+                    for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec }; let notText = [
+                        `🟢 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🔵 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`,
+                        `🔵 QTD: ${judgesQtdHitApp.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecHitApp).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
                         'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`

@@ -1,12 +1,14 @@
+let eng = typeof window !== 'undefined'; let gloWin = eng ? window : global; gloWin['eng'] = eng; // [true] CHROME | [false] NODEJS
+function startupFun(b, c) { let a = c - b; let s = Math.floor(a / 1000); let m = a % 1000; let f = m.toString().padStart(3, '0'); return `${s}.${f}` }; let startup = new Date();
 await import('./resources/@export.js');
 
 let e = import.meta.url, ee = e;
 async function serverRun(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     try {
-        logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `**************** SERVER ****************` })
+        logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]` })
 
-        let infConfigStorage, retConfigStorage, infFile, retFile; cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
+        let infConfigStorage, retConfigStorage, infFile, retFile; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         infConfigStorage = { 'e': e, 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage }
         else { retConfigStorage = retConfigStorage.res }; let portSocket = retConfigStorage.portSocket, bufferSocket = retConfigStorage.bufferSocket, arrUrl = retConfigStorage.arrUrl
 
@@ -14,11 +16,10 @@ async function serverRun(inf) {
         client({ 'e': e })
 
         let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/pythonSniffer_Python_server.exe"`; command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/python/start.py"`
-        let retCommandLine = await commandLine({ 'awaitFinish': false, 'command': command }); if (!retCommandLine.ret) { return }
+        commandLine({ 'awaitFinish': false, 'command': command });
 
         async function sendGet(inf) {
             let ret = { 'complete': true, res: {} }
-
             try {
                 let { sendGet, url, body, platform } = inf; ret['res']['sendGet'] = sendGet; if (arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': url }))) {
                     if (!platform) { platform = url.includes('ewoq') ? 'EWOQ' : url.includes('tryrating') ? 'TryRating' : 'NAO_IDENTIFICADO' }

@@ -16,7 +16,7 @@ async function tryRatingGetResponse(inf) {
         }
 
         function getValue(inf) {
-            let { obj } = inf; for (let key of ['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'keyword', 'chave1', 'chave2']) { if (obj[key] !== undefined) { return [obj[key]]; } }
+            let { obj } = inf; for (let key of ['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'keyword', 'pref_name', 'chave1', 'chave2']) { if (obj[key] !== undefined) { return [obj[key]]; } }
             for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ obj: obj[key] }); if (value.length > 0) { return value; } } }; return [];
         }
 

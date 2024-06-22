@@ -13,7 +13,7 @@ async function ewoq(inf) {
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; // await csf([gO.inf]);
-            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1]"` })
+            await commandLine({ 'command': `${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F1]` })
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
@@ -60,7 +60,7 @@ async function ewoq(inf) {
         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]` }); let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
-            await commandLine({ 'command': `"${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs" "[SHIFT+F1][SHIFT+F2]"` }); for (let [index, value] of gO.inf[platform].log.entries()) {
+            await commandLine({ 'command': `${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F1][SHIFT+F2]` }); for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
@@ -129,18 +129,9 @@ async function ewoq(inf) {
         ret['ret'] = true;
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
-        ret['msg'] = retRegexE.res
-    };
-    return {
-        ...({ ret: ret.ret }),
-        ...(ret.msg && { msg: ret.msg }),
-        ...(ret.res && { res: ret.res }),
-    };
-}
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res
+    }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
+};
 
-if (eng) { // CHROME
-    window['ewoq'] = ewoq;
-} else { // NODEJS
-    global['ewoq'] = ewoq;
-}
+// CHROME | NODEJS
+(eng ? window : global)['ewoq'] = ewoq;

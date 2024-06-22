@@ -87,18 +87,9 @@ async function tryRatingGetResponse(inf) {
         }
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
-        ret['msg'] = retRegexE.res
-    };
-    return {
-        ...({ ret: ret.ret }),
-        ...(ret.msg && { msg: ret.msg }),
-        ...(ret.res && { res: ret.res }),
-    };
-}
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res
+    }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
+};
 
-if (eng) { // CHROME
-    window['tryRatingGetResponse'] = tryRatingGetResponse;
-} else { // NODEJS
-    global['tryRatingGetResponse'] = tryRatingGetResponse;
-}
+// CHROME | NODEJS
+(eng ? window : global)['tryRatingGetResponse'] = tryRatingGetResponse;

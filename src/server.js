@@ -14,8 +14,8 @@ async function serverRun(inf) {
         // CLIENT (NÃO POR COMO 'await'!!!)
         client({ 'e': e })
 
-        let command = `"${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/pythonSniffer_Python_server.exe"`; command = `${command} "${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/python/start.py"`
-        commandLine({ 'awaitFinish': false, 'command': command });
+        let command = `ESCREVER_COMAND TERMINAL=${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python ${letter}:/ARQUIVOS/WINDOWS/PORTABLE_Python/python/pythonSniffer_Python_server.exe`;
+        command = `${command} ${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/python/start.py`; commandLine({ 'awaitFinish': false, 'command': command });
 
         async function sendGet(inf) {
             let ret = { 'complete': true, res: {} }

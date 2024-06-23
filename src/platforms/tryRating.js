@@ -23,7 +23,7 @@ async function tryRating(inf) {
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = [];
-            await commandLine({ 'command': `${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F7]` }) // await csf([gO.inf]);
+            await commandLine({ 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F7]` }) // await csf([gO.inf]);
         }
 
         // #### TryRating | /survey
@@ -42,7 +42,7 @@ async function tryRating(inf) {
                 gO.inf[platform].log.push({
                     'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': tasksQtd, 'tasksBlind': tasksBlind, 'judgeId': judgeId, 'judgesQtd': 1, 'tasksType': tasksType,
                     'addGet': addGet, 'body': inf.body, 'path': retLog.res,
-                }); await commandLine({ 'command': `${letter}:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F7][SHIFT+F8]` });// await csf([gO.inf]);
+                }); await commandLine({ 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F7][SHIFT+F8]` });// await csf([gO.inf]);
                 if (inf.body.includes(`{"serializedAnswer":{"`)) {
                     // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
                     let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });

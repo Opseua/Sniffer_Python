@@ -26,6 +26,8 @@ import io
 import gzip
 import zlib
 import subprocess
+
+# → PRECISA SER INSTALADO pip install brotli mitmproxy
 import brotli
 from mitmproxy import http
 

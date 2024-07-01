@@ -23,6 +23,8 @@ import locale
 import winreg
 import subprocess
 import sys
+
+# → PRECISA SER INSTALADO pip install psutil requests
 import psutil
 import requests
 

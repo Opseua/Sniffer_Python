@@ -7,7 +7,7 @@ async function serverRun(inf) {
     try {
         logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]` })
 
-        let infConfigStorage, retConfigStorage, infFile, retFile; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
+        let infConfigStorage, retConfigStorage; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         infConfigStorage = { 'e': e, 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage }
         else { retConfigStorage = retConfigStorage.res }; let portSocket = retConfigStorage.portSocket, bufferSocket = retConfigStorage.bufferSocket, arrUrl = retConfigStorage.arrUrl
 

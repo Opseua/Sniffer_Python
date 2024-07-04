@@ -65,14 +65,8 @@ async function serverRun(inf) {
                     else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `SEND/GET ALTERADA` }) }
                 } else { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `OUTRO URL | ${url}` }) }
             } catch (catchErr) {
-                let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
-                ret['msg'] = retRegexE.res
-            };
-            return {
-                ...({ ret: ret.ret }),
-                ...(ret.msg && { msg: ret.msg }),
-                ...(ret.res && { res: ret.res }),
-            };
+                let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
+            }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
         }
 
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -173,10 +167,7 @@ async function serverRun(inf) {
                     }
                 });
             } catch (catchErr) {
-                (async () => {
-                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
-                    ret['msg'] = retRegexE.res
-                })()
+                (async () => { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; })()
             }
         }); sockReq.listen((portSocket), () => { });
         let sockRes = _net.createServer((socket) => { // ########### RESPONSE
@@ -191,17 +182,13 @@ async function serverRun(inf) {
                     }
                 });
             } catch (catchErr) {
-                (async () => {
-                    let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
-                    ret['msg'] = retRegexE.res
-                })()
+                (async () => { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; })()
             }
         }); sockRes.listen((portSocket + 1), () => { });
         // -------------------------------------------------------------------------------------------------
     }
     catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, });
-        ret['msg'] = retRegexE.res
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
     }
 }
 // TODAS AS FUNÇÕES PRIMÁRIAS DO 'server.js' / 'serverC6.js' / 'serverJsf.js' DEVEM SE CHAMAR 'serverRun'!!!

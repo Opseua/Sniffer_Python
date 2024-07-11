@@ -30,7 +30,7 @@ async function tryRating(inf) {
         if ((inf.url == `${platform}/survey`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /survey` }); if (inf.body !== 'NULL') {
                 let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId
-                retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body })
+                retLog = await log({ 'e': e, 'folder': `Registros/${platform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body })
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created) ? true : false; let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1
@@ -66,7 +66,8 @@ async function tryRating(inf) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /client_log` })
             let json, body = JSON.parse(inf.body); let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
             let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0; let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0;
-            let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId; retLog = await log({ 'e': e, 'folder': `${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
+            let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
+            retLog = await log({ 'e': e, 'folder': `Registros/${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
             await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (judgeId == value.judgeId) {

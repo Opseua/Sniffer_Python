@@ -71,42 +71,42 @@ async function serverRun(inf) {
         // ################################################################ EWOQ
         // let platform = 'EWOQ_teste' 
         // // | /home
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/1-GET_##_VAZIO_##.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/1-GET_##_VAZIO_##.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'get', 'url': arrUrl[1], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /GetNewTasks
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/4-GET_HonestAds.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/4-GET_HonestAds.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'get', 'url': arrUrl[3], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /GetTemplate_[1-SEND]
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/2-SEND_template_HonestAds.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/2-SEND_template_HonestAds.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'send', 'url': arrUrl[2], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /GetTemplate_[2-GET]
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/3-GET_template_HonestAds.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/3-GET_template_HonestAds.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'get', 'url': arrUrl[2], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /GetNewTasks
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/4-GET_HonestAds_2.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/4-GET_HonestAds_2.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'get', 'url': arrUrl[3], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /RecordTaskRenderingLatency [task 100% loaded] 
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/5-SEND_RecordTaskRendering.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/5-SEND_RecordTaskRendering.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'send', 'url': arrUrl[4], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /SubmitFeedback
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/6-SEND_HonestAds.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/6-SEND_HonestAds.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'send', 'url': arrUrl[5], 'body': retFile.res })
         // await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         // // | /SubmitFeedback
-        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/EWOQ/6-SEND_HonestAds_2.txt` }
+        // infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/EWOQ/6-SEND_HonestAds_2.txt` }
         // retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'send', 'url': arrUrl[5], 'body': retFile.res })
 
         // await new Promise(resolve => { setTimeout(resolve, 5000) })
@@ -127,15 +127,15 @@ async function serverRun(inf) {
         // ]; for (let [index, value] of hitApps.entries()) {
         //     let fileBlindResp = blindResp.includes('BLIND_NAO') ? 'BLIND_NAO' : blindResp.includes('RESP_NAO') ? 'RESP_NAO' : blindResp.includes('RESP_SIM') ? 'RESP_SIM' : 'NAO_ENCONTRADO'; if (value.file.includes(fileBlindResp)) {
         //         // | /home
-        //         infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/TryRating/${value.hitApp}/1-GET_##_VAZIO_##.txt` }
+        //         infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/TryRating/${value.hitApp}/1-GET_##_VAZIO_##.txt` }
         //         retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'get', 'url': arrUrl[6], 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         //         // | /survey
-        //         infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/TryRating/${value.hitApp}/2-GET_${fileBlindResp}.txt` }
+        //         infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/TryRating/${value.hitApp}/2-GET_${fileBlindResp}.txt` }
         //         retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'get', 'url': arrUrl[7], 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
 
         //         // | /client_log [submit]
-        //         infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Registros/z_teste/TryRating/${value.hitApp}/3-SEND_${fileBlindResp}.txt` }
+        //         infFile = { 'e': e, 'action': 'read', 'path': `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/TryRating/${value.hitApp}/3-SEND_${fileBlindResp}.txt` }
         //         retFile = await file(infFile); await funReqRes({ 'platform': `${platform}`, 'reqRes': 'send', 'url': arrUrl[8], 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
         //     }
         // }

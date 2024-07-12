@@ -82,7 +82,7 @@ def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
     subprocess.Popen(
-        f'{background_2} {batProxy} PROCESS_KILL_ALL+PROXY_OFF+BADGE_NOTIFICATION_OFF #1# {letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe "PYTHON: ERRO" "{message}"'
+        f'{background_2} " {batProxy} PROCESS_KILL_ALL+PROXY_OFF+BADGE_NOTIFICATION_OFF & {letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe "PYTHON: ERRO" "{message}" "'
     )
     # ENCERRAR SCRIPT
     # os._exit(1)

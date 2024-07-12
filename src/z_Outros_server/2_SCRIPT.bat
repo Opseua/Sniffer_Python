@@ -28,7 +28,7 @@ tasklist /fi "ImageName eq node!project!_!outrosAdd!.exe" /fo csv 2>NUL | find /
 if "%ERRORLEVEL%"=="0"  ( set "ret=TRUE" ) else ( set "ret=FALSE" )
 
 rem ESTA RODANDO [NAO]
-if "!ret!"=="FALSE" ( if "!arg1!"=="!arg1:OFF=!" ( !2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\python\pythonSniffer_Python_server.exe !root!\!project!\src\python\snifferNew.py ) )
+if "!ret!"=="FALSE" ( if "!arg1!"=="!arg1:OFF=!" ( !2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\python\pythonSniffer_Python_server.exe !root!\!project!\src\python\sniffer.py ) )
 
 rem ESTA RODANDO [SIM]
 if "!ret!"=="TRUE" ( !2_BACKGROUND! !letra!:\ARQUIVOS\PROJETOS\Sniffer_Python\src\scripts\BAT\PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat PROCESS_KILL_ONLY_PYTHON+PROXY_OFF+BADGE_NOTIFICATION_OFF )

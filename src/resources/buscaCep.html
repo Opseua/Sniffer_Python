@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="D:/ARQUIVOS/WINDOWS/BAT/z_ICONES/correios.ico" type="image/x-icon">
+    <title>Buscar endereço</title>
+</head>
+
+<body>
+    <div id="input-section">
+        <input type="text" id="address-input" placeholder="Digite o endereço ou CEP"> <button
+            onclick="getAddress()">CONSULTAR</button>
+    </div>
+    <table id="result-table">
+        <thead>
+            <tr>
+                <th>Endereços (0)</th>
+                <th>Bairro</th>
+                <th>Município</th>
+                <th>UF</th>
+                <th>CEP</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // CHAMAR A FUNÇÃO AO PRESSIONAR O ENTER
+        document.getElementById('address-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') { getAddress(); } });
+
+        // DEFINIR ÁREA DE TRANSFERÊNCIA
+        function clipboardSet(address) { navigator.clipboard.writeText(address).then(() => { }, (catchErr) => { console.log(`CLIPBOARD SET: ERRO | ${catchErr}`); }); }
+
+        // PEGAR O SECURITY PASS
+        let securityPass = 'aaa'; async function getSecurityPass(inf) {
+            let ret = { 'ret': false }; try {
+                let url = 'http://127.0.0.1:8889/?act=getSecurityPass&roo=&mes='; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, }); if (!retFetch.ok) {
+                    ret['msg'] = `FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO`;
+                } else { let data = await retFetch.text(); ret['res'] = { 'securityPass': data, }; ret['msg'] = `FETCH [GET SECURITY PASS]: OK`; ret['ret'] = true; }
+            } catch (catchErr) { ret['msg'] = 'GET SECURITY PASS: ERRO | TRYCATCH'; console.log(catchErr) }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
+        }
+
+        // LER O TXT DO NOTEBOOK
+        async function readText(inf) {
+            let ret = { 'ret': false };
+            try {
+                // PEGAR O SECURITY PASS
+                let retGetSecurityPass = await getSecurityPass(); if (!retGetSecurityPass.ret) { ret = retGetSecurityPass; alert(ret.msg); return ret }; securityPass = retGetSecurityPass.res.securityPass;
+
+                let url = 'http://127.0.0.1:8889/?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER'; let retFetch = await fetch(url, {
+                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
+                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/correios.txt`, } }]
+                    })
+                }); if (!retFetch.ok) { ret['msg'] = `FETCH [READ TEXT]: ERRO | AO FAZER REQUISIÇÃO`; } else {
+                    let data = await retFetch.text(); data = atob(data); let dataOk = data.replace(/(\r\n|\n|\r)/gm, ''); let token = [...dataOk.matchAll(/app-check-token: (.*?)content-type: /g)].map(match => match[1])[0];
+                    let cookie = [...dataOk.matchAll(/cookie: (.*?)charset/g)].map(match => match[1])[0];  // console.log(data, '\n', token, '\n', cookie,)
+
+                    ret['res'] = { 'token': token, 'cookie': cookie };
+                    ret['msg'] = `FETCH [READ TEXT]: OK`;
+                    ret['ret'] = true;
+                }
+            } catch (catchErr) {
+                ret['msg'] = 'READ TEXT: ERRO | TRYCATCH'; console.log(catchErr)
+            }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
+        }
+
+        // CONSULTAR ENDEREÇO
+        let token = false; async function getAddress() {
+            let ret = { 'ret': false };
+            try {
+                // PEGAR VALOR DO IMPUT
+                let input = document.getElementById('address-input').value.trim();
+
+                // CHECAR SE ALGO FOI INPUTADO
+                if (!input) { ret['msg'] = `GET ADDRESS: ERRO | NENHUM VALOR INSERIDO`; alert(ret.msg); return ret }
+
+                // SUBSTITUIR: DIVISOR DE COLUNAS
+                input = input.replace(/	/g, ',');
+
+                // PESQUISAR APENAS PELO CEP SE A CONSULTA FOR 'Endereço + CEP'
+                let matchCep = input.match(/(\d{5}-?\d{3})/g); input = matchCep ? matchCep[0] : input
+
+                // SUBSTITUIR: HÍFEN DO CEP (SE O IMPUT FOR CEP)
+                if (/^\d{5}-\d{3}$/.test(input)) { input = input.replace(/\D/g, ''); }
+
+                // PEGAR O TOKEN
+                if (!token) { let retReadText = await readText(); if (!retReadText.ret) { ret = retReadText; alert(ret.msg); return ret }; token = retReadText.res.token; }
+
+                // DEFINIR CABEÇALHO DOS RESULTADOS
+                let tbody = document.querySelector('#result-table tbody'); tbody.innerHTML = '';
+
+                // CONSULTAR O ENDEREÇO
+                let url = 'http://127.0.0.1:8889/?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER'; let retFetch = await fetch(url, {
+                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
+                        'fun': [{
+                            'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': {
+                                'method': 'GET', 'url': `https://proxyapp.correios.com.br/v1/busca-correios/rapida?texto=${input}&tipoCep=TODOS&inicio=0&fim=50`,
+                                'headers': { 'Content-Type': 'application/json', 'User-Agent': 'Dart/3.3 (dart:io)', 'app-check-token': `${token}` }
+                            }
+                        }]
+                    })
+                }); if (!retFetch.ok) {
+                    ret['msg'] = `FETCH [API SERVER]: ERRO | AO FAZER REQUISIÇÃO`; alert(ret.msg);
+                } else {
+                    let data = await retFetch.text(); data = JSON.parse(data); if (data.code == 403) { ret['msg'] = `GET ADDRESS: ERRO | TOKEN INVÁLIDO`; alert(ret.msg); return ret }; if (data.code == 404) {
+                        ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = document.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>'; tbody.appendChild(row);
+                        document.querySelector('#result-table th:first-child').textContent = `Endereços (0)`; // alert(ret.msg);
+                    } else {
+                        let enderecos = JSON.parse(data.body).enderecos; if (enderecos.length > 0) {
+                            document.querySelector('#result-table th:first-child').textContent = `Endereços (${enderecos.length})`; enderecos.forEach(endereco => {
+                                let row = document.createElement('tr'); let html = ''; let logradouro = endereco.logradouro || ''; let complemento = endereco.complemento ? ` ${endereco.complemento}` : ''
+                                logradouro = `${logradouro}${complemento}`; let bairro = endereco.bairro || ''; let localidade = endereco.localidade || ''; let uf = endereco.uf || ''
+                                let cep = endereco.cep.replace(/(\d{5})(\d{3})/, "$1-$2");
+                                let clipboard = `${logradouro == '' ? '' : `${logradouro} - `}${bairro == '' ? '' : `${bairro}, `}${localidade == '' ? '' : `${localidade} - `}`
+                                clipboard = `${clipboard}${uf == '' ? '' : `${uf}, `}${cep == '' ? '' : `${cep}`}`; html += `<td><span class="copy-icon" onclick="clipboardSet('${clipboard}')">📋 ${logradouro}</span></td>`;
+                                html += `<td>${bairro}</td>`; html += `<td>${localidade}</td>`; html += `<td>${uf}</td>`; html += `<td>${cep}</td>`; row.innerHTML = html; tbody.appendChild(row);
+                            });
+                        }
+                    }
+
+                    ret['msg'] = `GET ADDRESS: OK`;
+                    ret['ret'] = true;
+                }
+            } catch (catchErr) {
+                ret['msg'] = 'GET ADDRESS: ERRO | TRYCATCH'; alert(ret.msg); console.log(catchErr)
+            }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
+        }
+
+    </script>
+</body>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin-top: 100px;
+            margin-left: 100px;
+            margin-right: 100px;
+            background-color: #121212;
+            color: #ccc;
+        }
+
+        #input-section {
+            display: flex;
+            align-items: center;
+            /* Alinhamento vertical central */
+            margin-bottom: 20px;
+        }
+
+        #address-input {
+            flex: 1;
+            /* Ocupa todo o espaço disponível */
+            padding: 8px;
+            /* Espaçamento interno */
+            font-size: 14px;
+            /* Tamanho da fonte */
+            margin-right: 10px;
+            /* Espaço à direita do input */
+        }
+
+        #consultar-button {
+            margin-left: 10px;
+            /* Espaço à esquerda do botão */
+            padding: 8px 20px;
+            /* Espaçamento interno do botão */
+            cursor: pointer;
+            background-color: #007bff;
+            /* Cor de fundo do botão */
+            color: white;
+            /* Cor do texto do botão */
+            border: none;
+            /* Remove a borda */
+            border-radius: 4px;
+            /* Borda arredondada */
+            font-size: 14px;
+            /* Tamanho da fonte */
+        }
+
+        #consultar-button:hover {
+            background-color: #0056b3;
+            /* Cor de fundo do botão ao passar o mouse */
+        }
+
+        #result-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #333;
+            /* Cor de fundo mais escura para a tabela */
+            table-layout: auto;
+            /* Deixe o navegador decidir a largura das colunas */
+        }
+
+        #result-table th,
+        #result-table td {
+            border: 1px solid #555;
+            /* Bordas mais escuras */
+            padding: 8px;
+            /* Espaçamento interno */
+            color: #ccc;
+            /* Cor do texto mais clara */
+            white-space: nowrap;
+            /* Impede que o texto quebre para a próxima linha */
+            overflow: hidden;
+            /* Esconde qualquer conteúdo que não caiba na célula */
+            text-overflow: ellipsis;
+            /* Mostra "..." para indicar que há mais conteúdo oculto */
+        }
+
+        #result-table th {
+            background-color: #555;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        #result-table tbody tr:nth-child(odd) {
+            background-color: rgb(46, 46, 46);
+            /* Cor para linhas ímpares */
+        }
+
+        #result-table tbody tr:nth-child(even) {
+            background-color: #555;
+            /* Cor para linhas pares */
+        }
+
+        .copy-icon {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+</html>

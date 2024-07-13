@@ -55,7 +55,7 @@
                     })
                 }); if (!retFetch.ok) { ret['msg'] = `FETCH [READ TEXT]: ERRO | AO FAZER REQUISIÇÃO`; } else {
                     let data = await retFetch.text(); data = atob(data); let dataOk = data.replace(/(\r\n|\n|\r)/gm, ''); let token = [...dataOk.matchAll(/app-check-token: (.*?)content-type: /g)].map(match => match[1])[0];
-                    let cookie = [...dataOk.matchAll(/cookie: (.*?)charset/g)].map(match => match[1])[0];  // console.log(data, '\n', token, '\n', cookie,)
+                    let cookie = [...dataOk.matchAll(/cookie: (.*?)charset/g)].map(match => match[1])[0]; // console.log(data, '\n', token, '\n', cookie,)
 
                     ret['res'] = { 'token': token, 'cookie': cookie };
                     ret['msg'] = `FETCH [READ TEXT]: OK`;

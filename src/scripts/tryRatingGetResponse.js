@@ -8,18 +8,22 @@ async function tryRatingGetResponse(inf) {
     try {
         let { body } = inf;
 
+        // TAREFAS: IDENTIFICAR TIPO ('resultList'/'tasks')
         function getTaskType(inf) { let { obj } = inf; if (obj.tasks && Array.isArray(obj.tasks)) { if (obj.tasks[0].taskData.resultSet) { return 'resultList'; } else { return 'tasks'; } } else { return 'unknown'; } }
 
+        // TAREFAS: PEGAR CONTEÚDO
         function getTasks(inf) {
             let { obj } = inf; let retGetTaskType = getTaskType({ 'obj': obj }); let responses = []; if (retGetTaskType === 'resultList') { obj.tasks[0].taskData.resultSet.resultList.forEach(item => { responses.push(item); }); }
             else if (retGetTaskType === 'tasks') { obj.tasks.forEach(task => { responses.push(task.taskData); }); }; return { 'type': retGetTaskType, 'tasks': responses };
         }
 
+        // TAREFAS: PEGAR VALOR DA CHAVE
         function getValue(inf) {
-            let { obj } = inf; for (let key of ['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'keyword', 'pref_name', 'chave1', 'chave2']) { if (obj[key] !== undefined) { return [obj[key]]; } }
-            for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ obj: obj[key] }); if (value.length > 0) { return value; } } }; return [];
+            let { obj, keysSearch } = inf; for (let key of keysSearch) { if (obj[key] !== undefined) { return [obj[key]]; } };
+            for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ 'obj': obj[key], 'keysSearch': keysSearch }); if (value.length > 0) { return value; } } }; return [];
         }
 
+        // FILTRAR CHAVE
         function filterKeyValue(inf) {
             let { obj, search, eArray } = inf; let result = eArray ? [] : {}; for (let key in obj) {
                 if (typeof obj[key] === 'object' && key !== search) {
@@ -28,6 +32,7 @@ async function tryRatingGetResponse(inf) {
             }; return result;
         }
 
+        // CRIAR PATH GENÉRICO DO VALOR DA CHAVE
         function getPathObj(inf) {
             let { obj } = inf; let path = inf.path ? inf.path : ''; let paths = {}; for (let key in obj) {
                 let newPath = `${path}.${key}`; if (key === 'value') { if (Array.isArray(obj[key])) { paths[newPath.substring(1)] = [...new Set(obj[key])]; } else { paths[newPath.substring(1)] = [obj[key]]; } }
@@ -44,27 +49,25 @@ async function tryRatingGetResponse(inf) {
                         let serializedAnswer = JSON.stringify(obj.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer)
                         for (let [index1, value1] of Object.keys(value.surveyKeys).entries()) { if (serializedAnswer.includes(value.surveyKeys[value1])) { taskId = value.surveyKeys[value1]; break }; }
                     }
-                }; let retGetValue = getValue({ 'obj': res }); retGetValue = retGetValue.length == 0 ? 'SEM_IDENTIFICACAO' : retGetValue[0]
-                if (retGetTasks.type == 'resultList') { res = filterKeyValue({ 'obj': obj, 'search': taskId }) }
-                let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res }))
-                if (retGetPathObj !== '{}') {
-                    retGetPathObj = retGetPathObj.replace(/testQuestionInformation.answer.serializedAnswer./g, '');
-                    retGetPathObj = retGetPathObj.replace(new RegExp(`${retGetValue}\\.`, 'g'), '');
-                    retGetPathObj = retGetPathObj.replace(new RegExp(`${taskId}\\.`, 'g'), '');
-                    retGetPathObj = JSON.parse(retGetPathObj);
-                    responses[`${retGetValue} [${Math.random().toString(36).substring(2, 5)}]`] = retGetPathObj
+                }; let keysValue = ''; for (let [index, value] of [['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'keyword', 'pref_name', 'chave1', 'chave2'], ['address',],].entries()) {
+                    let retGetValue = getValue({ 'obj': res, 'keysSearch': value }); keysValue = retGetValue.length == 0 ? `${keysValue}SEM_IDENTIFICACAO = ` : `${keysValue}${retGetValue[0]} = `
+                }; if (retGetTasks.type == 'resultList') { res = filterKeyValue({ 'obj': obj, 'search': taskId }) }; let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res })); if (retGetPathObj !== '{}') {
+                    retGetPathObj = retGetPathObj.replace(/testQuestionInformation.answer.serializedAnswer./g, ''); retGetPathObj = retGetPathObj.replace(new RegExp(`${keysValue} \\.`, 'g'), '');
+                    retGetPathObj = retGetPathObj.replace(new RegExp(`${taskId} \\.`, 'g'), ''); retGetPathObj = JSON.parse(retGetPathObj); responses[`${keysValue} [${Math.random().toString(36).substring(2, 5)}]`] = retGetPathObj
                 }
             };
         }
 
+        // INSERIR SEPARADOR DE TAREFAS
         function insertSeparator(inf) {
             let { obj } = inf; let objNew = {}; let qtd = 1; let keys = Object.keys(obj); if (keys.length > 0) {
-                let add = `###################################`; objNew[`${add}_${qtd}_${add}`] = 'x'; qtd++; keys.forEach((key, index) => {
-                    objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { objNew[`${add}_${qtd}_${add}`] = 'x'; qtd++; }
+                let add = `###################################`; objNew[`${add}_${qtd}_${add} `] = 'x'; qtd++; keys.forEach((key, index) => {
+                    objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { objNew[`${add}_${qtd}_${add} `] = 'x'; qtd++; }
                 });
             } return objNew;
         }; responses = insertSeparator({ 'obj': responses })
 
+        // AGRUPAR VALORES
         function agroupValues(inf) {
             let { obj } = inf; let objNew = {}; for (let keyMain in obj) {
                 let rootVal = obj[keyMain]; if (typeof rootVal === 'object') {

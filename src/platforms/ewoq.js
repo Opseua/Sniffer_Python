@@ -7,7 +7,7 @@ async function ewoq(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
         let platform = inf.platform ? inf.platform : 'Teste'; let retConfigStorage, infNotification, retLog
-        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`
+        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
         retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform]
 
         // #### EWOQ | /home
@@ -26,11 +26,11 @@ async function ewoq(inf) {
             logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetTemplate_[2-GET]` }); let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             if (hitApp.length > 0) {
                 hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
-                retLog = await log({ 'e': e, 'folder': `Plataformas/${platform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body }); gO.inf[platform].token['path'] = retLog.res;
+                retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body }); gO.inf[platform].token['path'] = retLog.res;
                 for (let [index, value] of gO.inf[platform].log.entries()) {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'e': e, 'folder': `Plataformas/${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
+                        retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 }; let textNot = other[hitApp] ? `${other[hitApp].not} ` : '';
                 await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false });
@@ -51,7 +51,7 @@ async function ewoq(inf) {
                 }); for (let [index, value] of gO.inf[platform].log.entries()) {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
                         let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'e': e, 'folder': `Plataformas/${platform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
+                        retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
                     }
                 }
             } // await csf([gO.inf]);
@@ -93,12 +93,12 @@ async function ewoq(inf) {
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour; let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];
-                    retLog = await log({ 'e': e, 'folder': `Plataformas/${platform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
+                    retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
                     await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
                     await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) }); if (gO.inf[platform].token.path) {
                         await file({ 'action': 'change', 'path': gO.inf[platform].token.path, 'pathNew': gO.inf[platform].token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) });
                         gO.inf[platform].token.path = false
-                    }; retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
+                    }; retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                     else { json = retConfigStorage.res }; let dif = Number(time.tim) - value.tim; let blind = false; json.tasks.push({
                         'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
@@ -109,9 +109,9 @@ async function ewoq(inf) {
                         }
                     }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksSec': tasksSec, 'tasksHour': dateHour(tasksSec).res }
                     json.inf.taskName[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksSec': tasksSecHitApp, 'tasksHour': dateHour(tasksSecHitApp).res }
-                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json });
-                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf });
-                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${platform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` });
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json });
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf });
+                    retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` });
                     for (let nameKey in retConfigStorage.res) { tasksQtdMon += retConfigStorage.res[nameKey].reg.tasksQtd; tasksSecMon += retConfigStorage.res[nameKey].reg.tasksSec }
                     let notText = [
                         `🟢 QTD: ${tasksQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSecMon).res}`, `🔵 QTD: ${tasksQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSec).res}`,

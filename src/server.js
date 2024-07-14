@@ -147,7 +147,7 @@ async function serverRun(inf) {
 
 
         // -------------------------------------------------------------------------------------------------
-        let scEr = false; function socketErr(socket, err) { socket.on('error', (err) => { if (!scEr) { scEr = true; try { serverSocketErr } catch (catchErr) { /* regexE({ 'inf': inf, 'e': catchErr }) */ } } }) }
+        let scEr = false; function socketErr(socket, err) { socket.on('error', (err) => { if (!scEr) { scEr = true; try { serverSocketErr } catch (catchErr) { esLintIgnore = catchErr; } }; esLintIgnore = err }); esLintIgnore = err; }
         let sockReq = _net.createServer((socket) => { // ########### REQUEST
             try {
                 socketErr(socket, 'REQUEST'); let g = ''; socket.on('data', async (chunk) => {

@@ -44,6 +44,7 @@ sockRes = None  # fun → MITMPROXY REQ/RES
 arrUrl = None  # fun → MITMPROXY REQ/RES
 background_2 = f"{letter}:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/2_BACKGROUND.exe"
 batProxy = f"{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/scripts/BAT/PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat"
+fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 
 
 # CONSOLE
@@ -82,10 +83,10 @@ def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
     subprocess.Popen(
-        f'{background_2} "{batProxy} PROCESS_KILL_ALL+PROXY_OFF+BADGE_NOTIFICATION_OFF & {letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe "PYTHON: ERRO" "{message}""'
+        f'{background_2} "{batProxy} PROCESS_KILL_ALL+PROXY_OFF+BADGE_NOTIFICATION_OFF & {letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe #1#PYTHON: ERRO#1# #1#{message}#1#"'
     )
     # ENCERRAR SCRIPT
-    # os._exit(1)
+    os._exit(1)
 
 
 try:
@@ -117,10 +118,7 @@ try:
         os.system("cls")
         # LER O CONFIG E DEFINIR AS VARIÁVEIS
         locale.setlocale(locale.LC_TIME, "pt_BR")
-        scriptDir = os.path.dirname(os.path.abspath(__file__))
-        fullPathJson = os.path.abspath(
-            os.path.join(scriptDir, "../../../Chrome_Extension/src/config.json")
-        )
+        fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")
         config = ""
         with open(fullPathJson, "r", encoding="utf-8") as file:
             config = json.load(file)
@@ -134,7 +132,13 @@ try:
         sockReq = tryConnectSocket(tryConnectSocketReq, portSocket)
         sockRes = tryConnectSocket(tryConnectSocketRes, portSocket + 1)
         # MITMPROXY: INICIAR
-        options = Options(listen_host="127.0.0.1", listen_port=portMitm)
+        options = Options(
+            listen_host="127.0.0.1",
+            listen_port=portMitm,
+            # MANTER APENAS O HOST
+            allow_hosts=[urlparse(url).netloc for url in arrUrl],
+            ssl_insecure=True,
+        )
         m = DumpMaster(options, with_termlog=False, with_dumper=False)
         m.addons.add(*addons)
         try:
@@ -151,7 +155,7 @@ try:
     class URLLogger:
         def request(self, flow: http.HTTPFlow) -> None:
             """IGNORE"""
-            global bufferSocket, sockReq, sockRes, arrUrl
+            global bufferSocket, sockReq, arrUrl
             regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
             if regex is not None:
                 objReq = None
@@ -292,9 +296,11 @@ try:
         # MITMPROXY: RES
         def response(self, flow: http.HTTPFlow) -> None:
             """IGNORE"""
-            global bufferSocket, sockReq, sockRes, arrUrl
+            global bufferSocket, sockRes, arrUrl
             regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
             if regex is not None:
+                # DISABILITAR CACHE
+                flow.response.headers["Cache-Control"] = "no-store, max-age=0"
                 objRes = None
                 if not flow.response.content:
                     resBody, typeOk, compress = "NULL", "utf-8", "NULL"
@@ -443,6 +449,6 @@ try:
 
 # CHECAR ERROS
 except Exception as exceptErr:
-    print("a")
     errAll(exceptErr)
     notifyAndConsole("CÓDIGO INTEIRO")
+    os._exit(1)

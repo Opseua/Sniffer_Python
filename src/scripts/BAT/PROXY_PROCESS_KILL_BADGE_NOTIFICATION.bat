@@ -29,6 +29,7 @@ rem ENCERRAR PROCESSO [Python e NodeJS]
 if not "!arg1!"=="!arg1:PROCESS_KILL_ALL=!" (
 	!2_BACKGROUND! taskkill /IM pythonSniffer_Python_server.exe /F
 	!2_BACKGROUND! taskkill /IM nodeSniffer_Python_server.exe /F
+
 )
 
 rem ENCERRAR PROCESSO [Stopwatch]

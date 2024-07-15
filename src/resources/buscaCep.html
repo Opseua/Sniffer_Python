@@ -102,7 +102,7 @@
                         }]
                     })
                 }); if (!retFetch.ok) {
-                    ret['msg'] = `FETCH [API SERVER]: ERRO | AO FAZER REQUISIÇÃO`; alert(ret.msg);
+                    ret['msg'] = `FETCH [API SERVER]: ERRO | AO FAZER REQUISIÇÃO`; alert(ret.msg); window.location.reload(); // → RECARREGAR A PÁGINA
                 } else {
                     let data = await retFetch.text(); data = JSON.parse(data); if (data.code == 403) { ret['msg'] = `GET ADDRESS: ERRO | TOKEN INVÁLIDO`; alert(ret.msg); return ret }; if (data.code == 404) {
                         ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = document.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>'; tbody.appendChild(row);

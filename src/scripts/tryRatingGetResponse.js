@@ -60,11 +60,8 @@ async function tryRatingGetResponse(inf) {
 
         // INSERIR SEPARADOR DE TAREFAS
         function insertSeparator(inf) {
-            let { obj } = inf; let objNew = {}; let qtd = 1; let keys = Object.keys(obj); if (keys.length > 0) {
-                let add = `###################################`; objNew[`${add}_${qtd}_${add} `] = 'x'; qtd++; keys.forEach((key, index) => {
-                    objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { objNew[`${add}_${qtd}_${add} `] = 'x'; qtd++; }
-                });
-            } return objNew;
+            let { obj } = inf; let objNew = {}; let qtd = 1; let add = '###################################'; function adSe() { objNew[`${add}_${qtd}_${add}`] = 'x'; objNew[`_${qtd}`] = '.'; qtd++; }; let keys = Object.keys(obj);
+            if (keys.length > 0) { adSe(); keys.forEach((key, index) => { objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { adSe(); } }); }; return objNew;
         }; responses = insertSeparator({ 'obj': responses })
 
         // AGRUPAR VALORES
@@ -84,6 +81,10 @@ async function tryRatingGetResponse(inf) {
         if (Object.keys(responses).length == 0) {
             ret['msg'] = `TRYRATING GET RESPONSE: ERRO | NENHUMA RESPOSTA ENCONTRADA`;
         } else {
+            // REMOVER CAMINHO DESNECESSÁRIO DO PATH JSON
+            let text = JSON.stringify(responses); let replace = ['tasks.0.taskData.', '.[X].value', '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\./g'];
+            replace.forEach(s => { if (s.includes('/g')) { s = s.replace('/g', '') } else { s = s.replace(/[*.+?^${}()|[\]\\]/g, '\\$&') }; text = text.replace(new RegExp(s, 'g'), ''); }); responses = JSON.parse(text)
+
             ret['res'] = responses;
             ret['msg'] = `TRYRATING GET RESPONSE: OK`;
             ret['ret'] = true;

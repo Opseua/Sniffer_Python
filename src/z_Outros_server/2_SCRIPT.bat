@@ -31,7 +31,7 @@ rem ESTA RODANDO [NAO]
 if "!ret!"=="FALSE" ( 
 	if "!arg1!"=="!arg1:OFF=!" ( 
 		taskkill /IM pythonSniffer_Python_server.exe /F
-		if  "!arg1!"=="!arg1:VIEW=!" (
+		if "!arg1!"=="!arg1:VIEW=!" (
 			!2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
 		) else (
 			start "pythonSniffer_Python_server_sniffer.py" !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py

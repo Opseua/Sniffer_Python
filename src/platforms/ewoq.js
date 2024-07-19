@@ -12,18 +12,18 @@ async function ewoq(inf) {
 
         // #### EWOQ | /home
         if ((inf.url == `${platform}/home`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; // await csf([gO.inf]);
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; // await csf([gO.inf]);
             await commandLine({ 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F1]` })
         }
 
         // #### EWOQ | /GetTemplate_[1-SEND]
         if ((inf.url == `${platform}/GetTemplate_[1-SEND]`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetTemplate_[1-SEND]` }); let tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /GetTemplate_[1-SEND]` }); let tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
         }
 
         // #### EWOQ | /GetTemplate_[2-GET]
         if ((inf.url == `${platform}/GetTemplate_[2-GET]`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetTemplate_[2-GET]` }); let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /GetTemplate_[2-GET]` }); let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
             if (hitApp.length > 0) {
                 hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
                 retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body }); gO.inf[platform].token['path'] = retLog.res;
@@ -39,7 +39,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /GetNewTasks
         if ((inf.url == `${platform}/GetNewTasks`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /GetNewTasks` }); let body = JSON.parse(inf.body);
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /GetNewTasks` }); let body = JSON.parse(inf.body);
             if (body['1']) {
                 let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); let retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body }); let addGet = {
                     'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false, '1': body['1'][0]['1'] ? true : false, '2': body['1'][0]['2'] ? true : false,
@@ -59,7 +59,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
         if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]` }); let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]` }); let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
             await commandLine({ 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F1][SHIFT+F2]` }); for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
@@ -88,7 +88,7 @@ async function ewoq(inf) {
 
         // #### EWOQ | /SubmitFeedback
         if ((inf.url == `${platform}/SubmitFeedback`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /SubmitFeedback` }); let json, body = JSON.parse(inf.body); let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /SubmitFeedback` }); let json, body = JSON.parse(inf.body); let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour; let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];

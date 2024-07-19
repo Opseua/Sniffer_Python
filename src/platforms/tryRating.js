@@ -22,13 +22,13 @@ async function tryRating(inf) {
 
         // #### TryRating | /home
         if ((inf.url == `${platform}/home`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = [];
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = [];
             await commandLine({ 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [SHIFT+F7]` }) // await csf([gO.inf]);
         }
 
         // #### TryRating | /survey
         if ((inf.url == `${platform}/survey`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /survey` }); if (inf.body !== 'NULL') {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /survey` }); if (inf.body !== 'NULL') {
                 let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId
                 retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body })
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
@@ -63,7 +63,7 @@ async function tryRating(inf) {
 
         // #### TryRating | /client_log [submit]
         if ((inf.url == `${platform}/client_log`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `#### ${platform} | /client_log` })
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /client_log` })
             let json, body = JSON.parse(inf.body); let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
             let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0; let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0;
             let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;

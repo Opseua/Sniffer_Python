@@ -58,9 +58,9 @@ async function serverRun(inf) {
                     }
 
                     // ######################################################################
-                    if (!ret.complete) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `JS → SEND/GET CANCELADA` }) }
-                    else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `JS → SEND/GET ALTERADA` }) }
-                } else { logConsole({ 'e': e, 'ee': ee, 'write': false, 'msg': `JS → OUTRO URL | ${url}` }) }
+                    if (!ret.complete) { logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `JS → SEND/GET CANCELADA` }) }
+                    else if ((ret.res) && (ret.res.body || ret.res.headers)) { logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `JS → SEND/GET ALTERADA` }) }
+                } else { logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `JS → OUTRO URL | ${url}` }) }
             } catch (catchErr) {
                 let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
             }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };

@@ -38,6 +38,8 @@ if "!ret!"=="FALSE" (
 			rem JANELA DO LOG POSICIONAR
 			!2_BACKGROUND! "timeout 3 > nul & !fileNircmdSetSize! pythonSniffer_Python_server_sniffer.py WINTP3"
 		)
+	) else ( 
+		!2_BACKGROUND! !letra!:\ARQUIVOS\PROJETOS\Sniffer_Python\src\scripts\BAT\PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat PROXY_OFF
 	)
 )
 

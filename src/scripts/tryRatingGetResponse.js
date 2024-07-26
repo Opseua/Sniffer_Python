@@ -9,7 +9,7 @@ async function tryRatingGetResponse(inf) {
         let { body } = inf;
 
         // TAREFAS: IDENTIFICAR TIPO ('resultList'/'tasks')
-        function getTaskType(inf) { let { obj } = inf; if (obj.tasks && Array.isArray(obj.tasks)) { if (obj.tasks[0].taskData.resultSet) { return 'resultList'; } else { return 'tasks'; } } else { return 'unknown'; } }
+        function getTaskType(inf) { let { obj } = inf; if (obj.tasks && Array.isArray(obj.tasks)) { if (obj.tasks[0].taskData.resultSet) { return 'resultList'; } else { return 'tasks'; } } else { return 'unknown'; } };
 
         // TAREFAS: PEGAR CONTEÚDO
         function getTasks(inf) {
@@ -62,21 +62,21 @@ async function tryRatingGetResponse(inf) {
         function insertSeparator(inf) {
             let { obj } = inf; let objNew = {}; let qtd = 1; let add = '###################################'; function adSe() { objNew[`${add}_${qtd}_${add}`] = 'x'; objNew[`_${qtd}`] = '.'; qtd++; }; let keys = Object.keys(obj);
             if (keys.length > 0) { adSe(); keys.forEach((key, index) => { objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { adSe(); } }); }; return objNew;
-        }; responses = insertSeparator({ 'obj': responses })
+        }; responses = insertSeparator({ 'obj': responses });
 
         // AGRUPAR VALORES
         function agroupValues(inf) {
             let { obj } = inf; let objNew = {}; for (let keyMain in obj) {
                 let rootVal = obj[keyMain]; if (typeof rootVal === 'object') {
                     objNew[keyMain] = {}; for (let subKey in rootVal) {
-                        let valor = rootVal[subKey]; let regex = /^(.*)\.(\d+)\.value$/; let match = subKey.match(regex); if (match) {
+                        let valor = rootVal[subKey]; let regex = /^(.*)\.value$/; let match = subKey.match(regex); if (match) {
                             let [, prefixo, /* indice */] = match; let subKeyNew = `${prefixo}.[X].value`; if (!objNew[keyMain][subKeyNew]) { objNew[keyMain][subKeyNew] = []; }
                             if (!objNew[keyMain][subKeyNew].includes(valor[0])) { objNew[keyMain][subKeyNew].push(valor[0]); }
                         }
                     }
                 } else { objNew[keyMain] = rootVal; }
             }; return objNew;
-        }; responses = agroupValues({ 'obj': responses })
+        }; responses = agroupValues({ 'obj': responses });
 
         if (Object.keys(responses).length == 0) {
             ret['msg'] = `TRYRATING GET RESPONSE: ERRO | NENHUMA RESPOSTA ENCONTRADA`;

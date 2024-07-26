@@ -1,80 +1,85 @@
-// let infTryRating, retTryRating
-// infTryRating = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
-// retTryRating = await ewoq(infTryRating); console.log(retTryRating)~
-
-// ### Search20 (Task com julgamentos únicos [TASK ID: igual])
-// tasks[0].taskData.resultSet.resultList[1].value.name
-// tasks[0].taskData.resultSet.resultList[2].value.name
-// tasks[0].taskData.resultSet.resultList[1].value.name
-
-// ### SearchAdsRelevance (Task com julgamentos separados [TASK ID: diferente])
-// tasks[0].taskData.query
-// tasks[1].taskData.query
-// tasks[2].taskData.query
+// let infOutlier, retOutlier
+// infOutlier = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
+// retOutlier = await ewoq(infOutlier); console.log(retOutlier)
 
 let e = import.meta.url, ee = e;
-async function tryRating(inf) {
+async function outlier(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
         let platform = inf.platform ? inf.platform : 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
         retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform.replace('_teste', '')]
 
-        /* [1] → INÍCIO */; urlCurrent = `/home`;
+        /* [1] → INÍCIO */; urlCurrent = `/en/expert`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21]` });
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); // await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F22]` });
             gO.inf[platform] = {}; gO.inf[platform]['log'] = []; // await csf([gO.inf]);
         }
 
-        /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
+        /* [2] → RECEBE A TASK */; urlCurrent = `/internal/v2/tasks/new_queue`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (inf.body !== 'NULL') {
-                await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21][F21]` });
-                let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; // await csf([gO.inf]);
+                // await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F22][F22]` });
+                let body = JSON.parse(inf.body)[0], hitApp = body.project.name; /* bpdy.project.taskerName */; hitApp = hitApp.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body._id
                 retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body });
-                // CAPTURAR TODAS AS TASKS DO JULGAMENTO
-                let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value] of body.tasks.entries()) {
-                    let blind = !(value?.metadata?.created); let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1
-                    tasksType = resultList > 0 ? 'resultList' : 'tasks'; tasksBlind += blind ? 1 : 0; tasksInf.push({
-                        'blind': blind, 'name': value.metadata.name, 'assetType': value.metadata.assetType, 'metadata': value.metadata.metadata, 'state': value.metadata.state,
-                        'createdBy': value.metadata.createdBy, 'created': value.metadata.created, 'storageType': value.metadata.storageType,
-                    })
-                }; let addGet = { 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': JSON.stringify(body.targetLocalIds), 'tasksInf': tasksInf, };
+                let tasksQtd = 1; let tasksBlind = false
+                let addGet = {
+                    'assignmentType': body.assignmentType, 'name': body.project.name, 'taskerName': body.project.taskerName, 'isBenchmarkingProject': body.project.isBenchmarkingProject,
+                    'usedForBenchmarkingFrequencies': body.project.usedForBenchmarkingFrequencies, 'isTest': body.project.isTest, 'createdAt': body.project.createdAt, 'updatedAt': body.project.updatedAt,
+                    'lastQualityQueueEmail': body.project.lastQualityQueueEmail, 'reviewLevel': body.reviewLevel
+                };
                 gO.inf[platform].log.push({
-                    'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': tasksQtd, 'tasksBlind': tasksBlind, 'judgeId': judgeId, 'judgesQtd': 1, 'tasksType': tasksType,
+                    'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': tasksQtd, 'tasksBlind': tasksBlind, 'judgeId': judgeId, 'judgesQtd': 1,
                     'addGet': addGet, 'body': inf.body, 'path': retLog.res,
-                }); if (inf.body.includes(`{"serializedAnswer":{"`)) {
-                    // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
-                    let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });
-                    if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ } else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body }); }
-                    notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
-                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
-                    }; await notification(infNotification);
-                } else if (!body.tasks[0].metadata.created) {
-                    // BLIND, NÃO TEM A RESPOSTA
-                    await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' });
-                } else {
-                    // NNÃO É BLIND
-                    await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' });
+                });
+            }
+        }
+
+        /* [3] → ENVIA O LINTER */; urlCurrent = `/internal/genai/runPerStepResponseLinter_[1-SEND]`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` });
+            let body = JSON.parse(inf.body);
+            let judgeId = body.assignmentId;
+            for (let [index, value] of gO.inf[platform].log.entries()) {
+                if (judgeId == value.judgeId) {
+                    let hitApp = value.hitApp
+                    retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_LINTER-${hitApp}.txt`, 'text': inf.body });
+                    gO.inf[platform].log[index]['lastLinters'] = gO.inf[platform].log[index].lastLinters ?? []; gO.inf[platform].log[index].lastLinters.push(retLog.res);
                 }
             }
         }
 
-        /* [3] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/client_log`;
+        /* [4] → RECEBE O LINTER */; urlCurrent = `/internal/genai/runPerStepResponseLinter_[2-GET]`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); let json, body = JSON.parse(inf.body); let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` });
+            for (let [index, value] of gO.inf[platform].log.entries()) {
+                let hitApp = value.hitApp;
+                retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_LINTER-${hitApp}.txt`, 'text': inf.body });
+                gO.inf[platform].log[index]['lastLinters'] = gO.inf[platform].log[index].lastLinters ?? []; gO.inf[platform].log[index].lastLinters.push(retLog.res);
+                break
+            }
+        }
+
+        /* [5] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `internal/complete/chat`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` });
+            let json, body = JSON.parse(inf.body); let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
             let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0; let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0;
-            let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
-            retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body }); pathNew = retLog.res; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1);
-            pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew }); for (let [index, value] of gO.inf[platform].log.entries()) {
+            let judgeId = body.task_id;
+            for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (judgeId == value.judgeId) {
-                    pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1);
-                    pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': pathNew })
+                    let hitApp = value.hitApp
+                    retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body });
+                    gO.inf[platform].log[index]['lastLinters'] = gO.inf[platform].log[index].lastLinters ?? []; gO.inf[platform].log[index].lastLinters.push(retLog.res);
+                    gO.inf[platform].log[index].lastLinters.push(value.path);
+                    for (let [index1, value1] of gO.inf[platform].log[index].lastLinters.entries()) {
+                        pathNew = value1; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = value1.replace(pathNew, `OK/${pathNew}`); await file({ 'e': e, 'action': 'change', 'path': value1, 'pathNew': pathNew })
+                    }
                     retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {} }, 'judges': [] } } else { json = retConfigStorage.res };
                     let dif = Number(time.tim) - value.tim; json.judges.push({
                         'hitApp': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
-                        'judgesSec': dif, 'judgesHour': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'tasksType': value.tasksType, 'addGet': value.addGet,
+                        'judgesSec': dif, 'judgesHour': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'addGet': value.addGet,
                     }); if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }
                     for (let [index, value] of json.judges.entries()) {
                         tasksQtd += value.tasksQtd; judgesQtd += value.judgesQtd; judgesSec += value.judgesSec; tasksBlinds += value.tasksBlind; if (value.hitApp == hitApp) {
@@ -106,4 +111,4 @@ async function tryRating(inf) {
 };
 
 // CHROME | NODEJS
-(eng ? window : global)['tryRating'] = tryRating;
+(eng ? window : global)['outlier'] = outlier;

@@ -6,61 +6,62 @@ let e = import.meta.url, ee = e;
 async function ewoq(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
-        let platform = inf.platform ? inf.platform : 'Teste'; let retConfigStorage, infNotification, retLog
+        let platform = inf.platform ? inf.platform : 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
-        retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform]
+        retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform.replace('_teste', '')]
 
-        // #### EWOQ | /home
-        if ((inf.url == `${platform}/home`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /home` }); gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; // await csf([gO.inf]);
-            await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F1]` })
+        /* [1] → INÍCIO */; urlCurrent = `/home`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F20]` });
+            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; // await csf([gO.inf]);
         }
 
-        // #### EWOQ | /GetTemplate_[1-SEND]
-        if ((inf.url == `${platform}/GetTemplate_[1-SEND]`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /GetTemplate_[1-SEND]` }); let tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
-        }
-
-        // #### EWOQ | /GetTemplate_[2-GET]
-        if ((inf.url == `${platform}/GetTemplate_[2-GET]`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /GetTemplate_[2-GET]` }); let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/);
-            if (hitApp.length > 0) {
-                hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
-                retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body }); gO.inf[platform].token['path'] = retLog.res;
-                for (let [index, value] of gO.inf[platform].log.entries()) {
+        /* [2] → RECEBE A TASK */; urlCurrent = `/GetNewTasks`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); let body = JSON.parse(inf.body); if (body['1']) {
+                let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); let retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body }); let addGet = {
+                    'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false, '1': body['1'][0]['1'] ? true : false, '2': body['1'][0]['2'] ? true : false,
+                    '3': body['1'][0]['3'] ? true : false, '4': body['1'][0]['4'] ? true : false, '5': body['1'][0]['5'] ? true : false, '6': body['1'][0]['6'] ? true : false,
+                    '7': body['1'][0]['7'] ? true : false, '8': body['1'][0]['8'] ? true : false, '9': body['1'][0]['9'] ? true : false, '10': body['1'][0]['10'] ? true : false,
+                    '11': body['1'][0]['11'] ? true : false, '12': body['1'][0]['12'] ? true : false, '13': body['1'][0]['13'] ? true : false, '14': body['1'][0]['14'] ?? false,
+                }; retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_AINDA_NAO_IDENTIFICADO.txt`, 'text': inf.body }); gO.inf[platform].log.push({
+                    'hitApp': body['1'][0]['2']['1'], 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'qtd': 1, 'id': id, 'body': inf.body, 'token': body['1'][0]['2']['1'], 'path': retLog.res, 'addGet': addGet
+                }); for (let [index, value] of gO.inf[platform].log.entries()) {
                     if (gO.inf[platform].token.lastToken == value.hitApp) {
-                        hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
+                        let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp; pathNew = gO.inf[platform].log[index].path
+                        retFile = await file({ 'e': e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp) }); gO.inf[platform].log[index].path = retFile.res;
+                    }
+                }
+            } // await csf([gO.inf]);
+        }
+
+        /* [3] → SOLICITA O TEMPLATE */; urlCurrent = `/GetTemplate_[1-SEND]`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); let tk = JSON.parse(inf.body)['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false
+            retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_template_AINDA_NAO_IDENTIFICADO.txt`, 'text': inf.body }); gO.inf[platform]['lastTemplate'] = retLog.res
+        }
+
+        /* [4] → RECEBE O TEMPLATE */; urlCurrent = `/GetTemplate_[2-GET]`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/); if (hitApp.length > 0) {
+                hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
+                retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': inf.body }); gO.inf[platform].token['path'] = retLog.res; if (gO.inf[platform].lastTemplate) {
+                    pathNew = gO.inf[platform].lastTemplate; retFile = await file({ 'e': e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp) });
+                    gO.inf[platform].lastTemplate = false; gO.inf[platform].token['pathLastTemplate'] = retFile.res
+                }; for (let [index, value] of gO.inf[platform].log.entries()) {
+                    if (gO.inf[platform].token.lastToken == value.hitApp) {
+                        hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp; pathNew = gO.inf[platform].log[index].path
+                        retFile = await file({ 'e': e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp) }); gO.inf[platform].log[index].path = retFile.res
                     }
                 }; let textNot = other[hitApp] ? `${other[hitApp].not} ` : '';
                 await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false });
             } // await csf([gO.inf]);
         }
 
-        // #### EWOQ | /GetNewTasks
-        if ((inf.url == `${platform}/GetNewTasks`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /GetNewTasks` }); let body = JSON.parse(inf.body);
-            if (body['1']) {
-                let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); let retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body }); let addGet = {
-                    'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false, '1': body['1'][0]['1'] ? true : false, '2': body['1'][0]['2'] ? true : false,
-                    '3': body['1'][0]['3'] ? true : false, '4': body['1'][0]['4'] ? true : false, '5': body['1'][0]['5'] ? true : false, '6': body['1'][0]['6'] ? true : false,
-                    '7': body['1'][0]['7'] ? true : false, '8': body['1'][0]['8'] ? true : false, '9': body['1'][0]['9'] ? true : false, '10': body['1'][0]['10'] ? true : false,
-                    '11': body['1'][0]['11'] ? true : false, '12': body['1'][0]['12'] ? true : false, '13': body['1'][0]['13'] ? true : false, '14': body['1'][0]['14'] ? body['1'][0]['14'] : false,
-                }; gO.inf[platform].log.push({
-                    'hitApp': body['1'][0]['2']['1'], 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'qtd': 1, 'id': id, 'body': inf.body, 'token': body['1'][0]['2']['1'], 'addGet': addGet
-                }); for (let [index, value] of gO.inf[platform].log.entries()) {
-                    if (gO.inf[platform].token.lastToken == value.hitApp) {
-                        let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp
-                        retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': value.body }); gO.inf[platform].log[index]['path'] = retLog.res
-                    }
-                }
-            } // await csf([gO.inf]);
-        }
-
-        // #### EWOQ | /RecordTaskRenderingLatency [task 100% loaded] 
-        if ((inf.url == `${platform}/RecordTaskRenderingLatency`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /RecordTaskRenderingLatency [task 100% loaded]` }); let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, '')
-            await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F1][ALT+F2]` }); for (let [index, value] of gO.inf[platform].log.entries()) {
+        /* [5] → TASK 100% CARREGADA */; urlCurrent = `/RecordTaskRenderingLatency_[TASK_100%_LOADED]`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F20][F20]` });
+            let id = JSON.parse(inf.body)['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
@@ -69,11 +70,11 @@ async function ewoq(inf) {
                         await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'retInf': false }); await clipboard({ 'value': text });
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']; if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
-                            let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body }); rg = rg.res['1'] ? rg.res['1'] : false; if (!rg) {
+                            let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body }); rg = rg?.res?.['1'] ? rg.res['1'] : false; if (!rg) {
                                 await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false });
                             } else {
                                 let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json' }, 'body': {} };
-                                let retApi = await api(infApi); rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body }); rg = rg?.res['1'] ? rg.res['1'] : false
+                                let retApi = await api(infApi); rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body }); rg = rg?.res?.['1'] ? rg.res['1'] : false
                                 if (!rg) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false }); } else {
                                     let uploadDate = new Date(rg); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000 // 15 DIAS ATRÁS
                                     if (retDateHour > uploadDate) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, 'retInf': false }); }
@@ -85,16 +86,20 @@ async function ewoq(inf) {
             }
         }
 
-        // #### EWOQ | /SubmitFeedback
-        if ((inf.url == `${platform}/SubmitFeedback`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | /SubmitFeedback` }); let json, body = JSON.parse(inf.body); let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
+        /* [6] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/SubmitFeedback`;
+        if ((inf.url == `${platform}${urlCurrent}`)) {
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); let json, body = JSON.parse(inf.body); let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, '');
             for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour; let tasksQtdMon = 0, tasksSecMon = 0, hitApp = gO.inf[platform].token[value.token];
-                    retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body })
-                    await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': value.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) })
-                    await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': retLog.res.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) }); if (gO.inf[platform].token.path) {
-                        await file({ 'action': 'change', 'path': gO.inf[platform].token.path, 'pathNew': gO.inf[platform].token.path.replace(`DIA_${time.day}/`, `DIA_${time.day}/OK/`) }); gO.inf[platform].token.path = false
+                    retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': inf.body }); pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1);
+                    pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ 'e': e, 'action': 'change', 'path': value.path, 'pathNew': pathNew })
+                    pathNew = retLog.res; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`);
+                    await file({ 'e': e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew }); if (gO.inf[platform].token.path) {
+                        pathNew = gO.inf[platform].token.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = gO.inf[platform].token.path.replace(pathNew, `OK/${pathNew}`);
+                        await file({ 'e': e, 'action': 'change', 'path': gO.inf[platform].token.path, 'pathNew': pathNew }); gO.inf[platform].token.path = false
+                        pathNew = gO.inf[platform].token.pathLastTemplate; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = gO.inf[platform].token.pathLastTemplate.replace(pathNew, `OK/${pathNew}`);
+                        await file({ 'e': e, 'action': 'change', 'path': gO.inf[platform].token.pathLastTemplate, 'pathNew': pathNew }); gO.inf[platform].token.pathLastTemplate = false
                     }; retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
                     if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {} }, 'tasks': [] } }
                     else { json = retConfigStorage.res }; let dif = Number(time.tim) - value.tim; let blind = false; json.tasks.push({
@@ -121,7 +126,6 @@ async function ewoq(inf) {
         }
 
         ret['msg'] = `${platform}: OK`;
-        ret['res'] = `resposta aqui`;
         ret['ret'] = true;
 
     } catch (catchErr) {

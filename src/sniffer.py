@@ -151,7 +151,7 @@ try:
         except KeyboardInterrupt:
             m.shutdown()
 
-    # MITMPROXY: REQ
+    # MITMPROXY: REQ [SEND]
     class URLLogger:
         def request(self, flow: http.HTTPFlow) -> None:
             """IGNORE"""
@@ -211,7 +211,7 @@ try:
                                 "utf-8", errors="ignore"
                             )
                 objReq = {
-                    "reqRes": "req",
+                    "getSend": "send",
                     "method": flow.request.method,
                     "host": urlparse(flow.request.url).hostname,
                     "url": flow.request.url,
@@ -253,7 +253,7 @@ try:
                                 if len(retReq["res"]) > 1:
                                     newReq = {
                                         # EDITAVEL: NAO
-                                        "reqRes": retReq.get("res", {}).get("reqRes"),
+                                        "getSend": retReq.get("res", {}).get("getSend"),
                                         "method": retReq.get("res", {}).get("method"),
                                         "host": retReq.get("res", {}).get("host"),
                                         "url": retReq.get("res", {}).get("url"),
@@ -293,7 +293,7 @@ try:
                 # console('OUTRO URL REQ |', urlparse(flow.request.url).hostname)
                 pass
 
-        # MITMPROXY: RES
+        # MITMPROXY: RES [GET]
         def response(self, flow: http.HTTPFlow) -> None:
             """IGNORE"""
             global bufferSocket, sockRes, arrUrl
@@ -354,7 +354,7 @@ try:
                                 "utf-8", errors="ignore"
                             )
                 objRes = {
-                    "reqRes": "res",
+                    "getSend": "get",
                     "method": flow.request.method,
                     "host": urlparse(flow.request.url).hostname,
                     "url": flow.request.url,
@@ -396,7 +396,7 @@ try:
                                 if len(retRes["res"]) > 1:
                                     newRes = {
                                         # EDITAVEL: NAO
-                                        "reqRes": retRes.get("res", {}).get("reqRes"),
+                                        "getSend": retRes.get("res", {}).get("getSend"),
                                         "method": retRes.get("res", {}).get("method"),
                                         "host": retRes.get("res", {}).get("host"),
                                         "url": retRes.get("res", {}).get("url"),

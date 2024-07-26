@@ -23,6 +23,7 @@ async function functionGeneric(infOk) { let { name, inf, retInf } = infOk; let r
 
 // PLATAFORMAS DESSE PROJETO
 gloWin['ewoq'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'ewoq', 'path': '../platforms/ewoq.js', 'inf': inf }); };
+gloWin['outlier'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'outlier', 'path': '../platforms/outlier.js', 'inf': inf }); };
 gloWin['tryRating'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'tryRating', 'path': '../platforms/tryRating.js', 'inf': inf }); };
 
 // SCRIPTS DESSE PROJETO

@@ -112,7 +112,7 @@ try:
                 time.sleep(0.5)
 
     # SERVER
-    async def run():
+    async def serverRun():
         """IGNORE"""
         global bufferSocket, sockReq, sockRes, arrUrl
         os.system("cls")
@@ -142,7 +142,7 @@ try:
         m = DumpMaster(options, with_termlog=False, with_dumper=False)
         m.addons.add(*addons)
         try:
-            console(f"MITMPROXY RODANDO NA PORTA {portMitm}")
+            console(f"MITMPROXY RODANDO NA PORTA: {portMitm}")
             # PROXY: ATIVAR | ABRIR STOPWATCH
             subprocess.Popen(
                 f"{background_2} {batProxy} PROXY_ON+BADGE_NOTIFICATION_ON"
@@ -443,9 +443,9 @@ try:
 
     addons = [URLLogger()]
 
-    # INICIAR SCRIPT
+    # #### INICIAR SERVIDOR
     if __name__ == "__main__":
-        asyncio.run(run())
+        asyncio.run(serverRun())
 
 # CHECAR ERROS
 except Exception as exceptErr:

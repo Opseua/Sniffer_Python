@@ -13,18 +13,18 @@ rem set "timeNow=!timeNow:~0,-3!" & set "dia=!DATE:~0,2!" & set "mes=!DATE:~3,2!
 
 rem →→→ COMO USAR: Definir o 'mode'
 rem Exemplo 1: # WebScraper # criar a pasta: '.\src\z_Outros_serverC6' → o arquivo a ser executado sera o '.\src\serverC6.js'
-rem Exemplo 1: # WebScraper # criar a copia do nodeExe: 'nodeWebScraper_serverC6.exe'
+rem Exemplo 1: # WebScraper # criar a copia do programExe: 'nodeWebScraper_serverC6.exe'
 rem Exemplo 2: # WebScraper # criar a pasta: '.\src\z_Outros_serverJucesp' → o arquivo a ser executado sera o '.\src\serverJucesp.js'
-rem Exemplo 2: # WebScraper # criar a copia do nodeExe: 'nodeWebScraper_serverJucesp.exe'
+rem Exemplo 2: # WebScraper # criar a copia do programExe: 'nodeWebScraper_serverJucesp.exe'
 
 rem MODE →→→ 'CMD' (RESTART [SIM]) / 'LEGACY' (RESTART [NAO]) # PROJECT | OUTROSADD | ARQUIVO SCRIPT
 for /f "tokens=1,2,3,4,5,6 delims=\" %%a in ("!local!") do ( set "project=%%d" & set "outrosAdd=%%f" ) & set "replace="
-set "outrosAdd=!outrosAdd:z_Outros_=%replace%!" & set "scriptType=ERRO"
-set "mode=LEGACY" & set "root=!letra!:\ARQUIVOS\PROJETOS" & set "fileScript=!root!\!project!\src\!outrosAdd!.js" & cd\ & !letra!: & cd !root!\!project!
-rem #### ↑↑↑↑↑↑↑↑↑ ##########################################################
+set "outrosAdd=!outrosAdd:z_Outros_=%replace%!" & set "scriptType=ERRO" & set "ret=ERRO"
+set "mode=LEGACY" & set "programExe=node" & set "root=!letra!:\ARQUIVOS\PROJETOS" & set "fileScript=!root!\!project!\src\!outrosAdd!" & cd\ & !letra!: & cd !root!\!project!
+rem #### ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ ##########################################################
 
 rem CHECAR SE ESTA RODANDO
-tasklist /fi "ImageName eq node!project!_!outrosAdd!.exe" /fo csv 2>NUL | find /I "node!project!_!outrosAdd!.exe">NUL
+tasklist /fi "ImageName eq !programExe!!project!_!outrosAdd!.exe" /fo csv 2>NUL | find /I "!programExe!!project!_!outrosAdd!.exe">NUL
 if "%ERRORLEVEL%"=="0"  ( set "ret=TRUE" ) else ( set "ret=FALSE" )
 
 rem ESTA RODANDO [NAO]
@@ -32,9 +32,9 @@ if "!ret!"=="FALSE" (
 	if "!arg1!"=="!arg1:OFF=!" ( 
 		taskkill /IM pythonSniffer_Python_server.exe /F
 		if "!arg1!"=="!arg1:VIEW=!" (
-			!2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
+			!2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
 		) else (
-			start "pythonSniffer_Python_server_sniffer.py" !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
+			start "pythonSniffer_Python_server_sniffer.py" !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
 			rem JANELA DO LOG POSICIONAR
 			!2_BACKGROUND! "timeout 3 > nul & !fileNircmdSetSize! pythonSniffer_Python_server_sniffer.py WINTP3"
 		)
@@ -47,10 +47,9 @@ rem ESTA RODANDO [SIM]
 if "!ret!"=="TRUE" ( !2_BACKGROUND! !letra!:\ARQUIVOS\PROJETOS\Sniffer_Python\src\scripts\BAT\PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat PROCESS_KILL_ONLY_PYTHON+PROXY_OFF+BADGE_NOTIFICATION_OFF )
 
 rem  (NAO SUBIR OS 'if'!!!)
-if "!mode!"=="CMD" ( set "scriptType=processCmdKeep" )
-if "!mode!"=="LEGACY" ( set "scriptType=processCmdKeep" )
-if "!scriptType!" equ "ERRO" !fileMsg! "[!local!\!arquivo!]\n'mode' deve ser\n'CMD', 'LEGACY'" & exit
-endlocal & call "%fileChrome_Extension%\src\scripts\BAT\%scriptType%.bat" "%arg1%_WINTP2" "%project%@%outrosAdd%" "%fileScript%" "%mode%" "%ret%" & setlocal enabledelayedexpansion
+if "!mode!"=="CMD" ( set "scriptType=processCmdKeep" ) else ( if "!mode!"=="LEGACY" ( set "scriptType=processCmdKeep" ) )
+if "!scriptType!" equ "ERRO" !fileMsg! "[!local!\!arquivo!]\n\n'mode' deve ser\n'CMD', 'LEGACY'" & exit
+endlocal & call "%fileChrome_Extension%\src\scripts\BAT\%scriptType%.bat" "%arg1%_WINTP2" "%project%@%outrosAdd%" "%fileScript%" "%mode%" "%programExe%" "%ret%" & setlocal enabledelayedexpansion
 set "ret=%ret2%"
 rem #####################################################################
 
@@ -72,7 +71,6 @@ rem if "!ret!"=="FALSE" ( )
 
 exit
 exit
-
 
 
 

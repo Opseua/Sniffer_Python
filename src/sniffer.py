@@ -50,10 +50,10 @@ fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 # CONSOLE
 def console(*args):
     """IGNORE"""
-    print("PYTHON → " + " ".join(str(arg) for arg in args))
+    print("".join(str(arg) for arg in args))
     if (console.counter + 1) % 100 == 0:
         os.system("cls")
-        print("PYTHON → CONSOLE LIMPO!\n")
+        print("CONSOLE LIMPO!\n")
     console.counter += 1
 
 

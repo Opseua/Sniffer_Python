@@ -1,5 +1,3 @@
-"""IGNORE"""
-
 # pylint: disable=C0103
 # pylint: disable=C0301
 # pylint: disable=W0621
@@ -13,22 +11,21 @@
 # pylint: disable=W0603
 # pylint: disable=C0115
 # pylint: disable=R1710
+# pylint: disable=W0622
+# pylint: disable=C0410
+# pylint: disable=C0114
+# pylint: disable=C0116
+# ERRO DE IMPORT EM OUTRA PASTA
+# pylint: disable=E0401
+# ERRO DE IMPORT ANTES DE USAR A VARIÁVEL
+# pylint: disable=C0413
+# ERRO DE IMPORT 'datetime'
+# pylint: disable=E1101
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json
-import os
-import subprocess
-import time
-import re
-import datetime
-import locale
-import base64
-import socket
-import io
-import gzip
-import zlib
-import asyncio
+import json, os, subprocess, time, re, locale, base64, socket, io, gzip, zlib, asyncio
+from datetime import datetime
 
 # BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install brotli mitmproxy
 import brotli
@@ -49,7 +46,6 @@ fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 
 # CONSOLE
 def console(*args):
-    """IGNORE"""
     print("".join(str(arg) for arg in args))
     if (console.counter + 1) % 100 == 0:
         os.system("cls")
@@ -62,8 +58,7 @@ console.counter = 0
 
 # REGISTRAR ERROS
 def errAll(exceptErr):
-    """IGNORE"""
-    dateNow = datetime.datetime.now()
+    dateNow = datetime.now()
     dateNowMon = f"MES_{dateNow.strftime('%m')}_{dateNow.strftime('%b').upper()}"
     dateNowDay = f"DIA_{dateNow.strftime('%d')}"
     dateNowHou = f"{dateNow.strftime('%H')}"
@@ -79,7 +74,6 @@ def errAll(exceptErr):
 
 # NOTIFICAÇÃO WINDOWS
 def notifyAndConsole(message):
-    """IGNORE"""
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
     subprocess.Popen(
@@ -92,13 +86,11 @@ def notifyAndConsole(message):
 try:
     # REGEX DE URL
     def rgxMat(a, b):
-        """IGNORE"""
         c = re.escape(b).replace(r"\*", ".*")
         return re.match(f"^{c}$", a) is not None
 
     # CONEXÃO DO SOCKET
     def tryConnectSocket(sock, port):
-        """IGNORE"""
         attempts, maxAttempts = 0, 6
         while attempts < maxAttempts:
             try:
@@ -113,7 +105,6 @@ try:
 
     # SERVER
     async def serverRun():
-        """IGNORE"""
         global bufferSocket, sockReq, sockRes, arrUrl
         os.system("cls")
         # LER O CONFIG E DEFINIR AS VARIÁVEIS
@@ -154,7 +145,6 @@ try:
     # MITMPROXY: REQ [SEND]
     class URLLogger:
         def request(self, flow: http.HTTPFlow) -> None:
-            """IGNORE"""
             global bufferSocket, sockReq, arrUrl
             regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
             if regex is not None:
@@ -295,7 +285,6 @@ try:
 
         # MITMPROXY: RES [GET]
         def response(self, flow: http.HTTPFlow) -> None:
-            """IGNORE"""
             global bufferSocket, sockRes, arrUrl
             regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
             if regex is not None:

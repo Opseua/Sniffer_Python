@@ -24,8 +24,11 @@
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json, os, subprocess, time, re, locale, base64, socket, io, gzip, zlib, asyncio
+import json, os, subprocess, time, re, locale, base64, socket, io, gzip, zlib, asyncio, locale
 from datetime import datetime
+
+# LIMPAR CONSOLE (MANTER NO INÍCIO)
+os.system("cls")
 
 # BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install brotli mitmproxy
 import brotli
@@ -42,6 +45,9 @@ arrUrl = None  # fun → MITMPROXY REQ/RES
 background_2 = f"{letter}:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/2_BACKGROUND.exe"
 batProxy = f"{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/scripts/BAT/PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat"
 fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
+
+# FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
+locale.setlocale(locale.LC_TIME, "pt_BR")
 
 
 # CONSOLE
@@ -106,7 +112,6 @@ try:
     # SERVER
     async def serverRun():
         global bufferSocket, sockReq, sockRes, arrUrl
-        os.system("cls")
         # LER O CONFIG E DEFINIR AS VARIÁVEIS
         locale.setlocale(locale.LC_TIME, "pt_BR")
         fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")

@@ -69,7 +69,7 @@ async function tryRatingGetResponse(inf) {
             let { obj } = inf; let objNew = {}; for (let keyMain in obj) {
                 let rootVal = obj[keyMain]; if (typeof rootVal === 'object') {
                     objNew[keyMain] = {}; for (let subKey in rootVal) {
-                        let valor = rootVal[subKey]; let regex = /^(.*)\.value$/; let match = subKey.match(regex); if (match) {
+                        let valor = rootVal[subKey]; let regex;/* regex = /^(.*)\.value$/; */ regex = /^(.*)\.\d{1,2}\.value$/; let match = subKey.match(regex); if (match) {
                             let [, prefixo, /* indice */] = match; let subKeyNew = `${prefixo}.[X].value`; if (!objNew[keyMain][subKeyNew]) { objNew[keyMain][subKeyNew] = []; }
                             if (!objNew[keyMain][subKeyNew].includes(valor[0])) { objNew[keyMain][subKeyNew].push(valor[0]); }
                         }

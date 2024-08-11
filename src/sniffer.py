@@ -19,18 +19,24 @@
 # pylint: disable=E0401
 # ERRO DE IMPORT ANTES DE USAR A VARIÁVEL
 # pylint: disable=C0413
+# pylint: disable=C0411
 # ERRO DE IMPORT 'datetime'
 # pylint: disable=E1101
+# ERRO IGNORAR ERROS DO CTRL + C
+# pylint: disable=W1514
+# ERRO 'sig' e 'frame'
+# pylint: disable=W0613
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json, os, subprocess, time, re, locale, base64, socket, io, gzip, zlib, asyncio, locale
+import json, os, subprocess, time, re, locale, base64, socket, io, gzip, zlib
 from datetime import datetime
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
 os.system("cls")
 
 # BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install brotli mitmproxy
+import asyncio
 import brotli
 from mitmproxy import http
 from mitmproxy.options import Options

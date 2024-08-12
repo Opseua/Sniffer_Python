@@ -10,10 +10,13 @@ async function ewoq(inf) {
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
         retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform.replace('_teste', '')]
 
+        // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; }
+
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F20]` });
-            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; // await csf([gO.inf]);
+            gO.inf[platform]['log'] = []; // await csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/GetNewTasks`;

@@ -115,8 +115,9 @@
                                 logradouro = `${logradouro}${complemento}`; let bairro = endereco.bairro || ''; let localidade = endereco.localidade || ''; let uf = endereco.uf || ''
                                 let cep = endereco.cep.replace(/(\d{5})(\d{3})/, "$1-$2");
                                 let clipboard = `${logradouro == '' ? '' : `${logradouro} - `}${bairro == '' ? '' : `${bairro}, `}${localidade == '' ? '' : `${localidade} - `}`
-                                clipboard = `${clipboard}${uf == '' ? '' : `${uf}, `}${cep == '' ? '' : `${cep}`}`; html += `<td><span class="copy-icon" onclick="clipboardSet('${clipboard}')">${logradouro}</span></td>`;
-                                html += `<td>${bairro}</td>`; html += `<td>${localidade}</td>`; html += `<td>${uf}</td>`; html += `<td>${cep}</td>`; row.innerHTML = html; tbody.appendChild(row);
+                                clipboard = `${clipboard}${uf == '' ? '' : `${uf}, `}${cep == '' ? '' : `${cep}`}`; let html1 = `<td><span class="copy-icon" onclick="clipboardSet('${clipboard}')">`; let html2 = `</span></td>`
+                                html += `${html1}${logradouro}${html2}`; html += `${html1}${bairro}${html2}`; html += `${html1}${localidade}${html2}`; html += `${html1}${uf}${html2}`; html += `${html1}${cep}${html2}`;
+                                row.innerHTML = html; tbody.appendChild(row);
                             });
                         }
                     }

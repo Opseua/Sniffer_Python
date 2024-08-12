@@ -20,10 +20,13 @@ async function tryRating(inf) {
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
         retConfigStorage = await configStorage({ 'e': e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform.replace('_teste', '')]
 
+        // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; }
+
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21]` });
-            gO.inf[platform] = {}; gO.inf[platform]['log'] = []; // await csf([gO.inf]);
+            gO.inf[platform]['log'] = []; // await csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
@@ -50,7 +53,7 @@ async function tryRating(inf) {
                     notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
                         'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
                     }; await notification(infNotification);
-                } else if (!obj[0].metadata?.created) {
+                } else if (!body.tasks[0].metadata?.created) {
                     // BLIND, NÃO TEM A RESPOSTA
                     await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' });
                 } else {

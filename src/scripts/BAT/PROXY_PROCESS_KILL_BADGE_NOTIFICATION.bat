@@ -39,16 +39,24 @@ if not "!arg1!"=="!arg1:PROCESS_KILL=!" (
 
 rem PROXY → ON
 if not "!arg1!"=="!arg1:PROXY_ON=!" (
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:8088" /F
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "127.0.0.1;!confHost!;*fb*;*facebook*;*whatsapp*" /F
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /F
+	rem → PROXY MANUAL
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:8088" /F
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "127.0.0.1;!confHost!;*fb*;*facebook*;*whatsapp*;*chatgpt*" /F
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /F
+	
+	rem → SCRIPT DE INSTALACAO
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8087/src/scripts/BAT/proxy.pac" /F
 )
 
 rem PROXY → OFF
 if not "!arg1!"=="!arg1:PROXY_OFF=!" (
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "" /F
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "" /F
+	rem → PROXY MANUAL
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "" /F
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "" /F
+	
+	rem → SCRIPT DE INSTALACAO
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "" /F
 )
 
 rem NOTIFICATION → SNIFFER ON

@@ -29,11 +29,15 @@
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json, os, subprocess, time, re, locale, base64, socket, io, gzip, zlib
+import json, os, sys, subprocess, time, re, locale, base64, socket, io, gzip, zlib, threading
 from datetime import datetime
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
 os.system("cls")
+
+# IGNORAR ERROS DO CTRL + C
+sys.stderr = open(os.devnull, "w")
 
 # BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install brotli mitmproxy
 import asyncio
@@ -128,6 +132,42 @@ try:
         portMitm = 8088
         bufferSocket = config["sniffer"]["bufferSocket"] * 1000
         arrUrl = config["sniffer"]["arrUrl"]
+
+        # ARQUIVO '.pac': CRIAR
+        def pacFileCreate(arrUrl):
+            with open("src/scripts/BAT/proxy.pac", "w") as file:
+                file.write("function FindProxyForURL(url, host) {\n")
+                file.write("    var proxyUrls = [\n")
+                for url in arrUrl:
+                    file.write(f'        "{url}",\n')
+                file.write("    ];\n")
+                file.write(
+                    "    if (proxyUrls.some(function(currentUrl) { return shExpMatch(host, currentUrl); })) {\n"
+                )
+                file.write(f'        return "PROXY 127.0.0.1:8088";\n')
+                file.write("    } else {\n")
+                file.write('        return "DIRECT";\n')
+                file.write("    }\n")
+                file.write("}\n")
+
+        pacFileCreate(arrUrl)
+
+        # ARQUIVO '.pac': SERVIDOR
+        class QuietHTTPRequestHandler(SimpleHTTPRequestHandler):
+            def log_message(self, format, *args):
+                pass
+
+        def serverPacFile():
+            console(f"SERVIDOR '.pac' RODANDO NA PORTA: {portMitm-1}")
+            HTTPServer(
+                ("127.0.0.1", portMitm - 1), QuietHTTPRequestHandler
+            ).serve_forever()
+
+        if __name__ == "__main__":
+            http_thread = threading.Thread(target=serverPacFile)
+            http_thread.daemon = True
+            http_thread.start()
+
         # TENTAR SE CONECTAR AO SOCKET
         tryConnectSocketReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         tryConnectSocketRes = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

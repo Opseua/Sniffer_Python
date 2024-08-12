@@ -60,19 +60,19 @@ async function serverRun(inf) {
                     // #### Outlier
                     if (platform.includes('Outlier')) {
                         /* [1] → INÍCIO */; urlCurrent = `/en/expert`;
-                        if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[9], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
+                        // if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[9], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
 
                         /* [2] → RECEBE A TASK */; urlCurrent = `/internal/v2/tasks/new_queue`;
-                        if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[10], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
+                        // if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[10], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
 
                         /* [3] → ENVIA O LINTER */; urlCurrent = `/internal/genai/runPerStepResponseLinter_[1-SEND]`;
-                        if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[11], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
+                        // if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[11], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
 
                         /* [4] → RECEBE O LINTER */; urlCurrent = `/internal/genai/runPerStepResponseLinter_[2-GET]`;
-                        if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[11], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
+                        // if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[11], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
 
                         /* [5] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `internal/complete/chat`;
-                        if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[12], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
+                        // if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[12], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
                     }
 
                     // ######################################################################

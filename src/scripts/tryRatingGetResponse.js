@@ -69,9 +69,9 @@ async function tryRatingGetResponse(inf) {
             let { obj } = inf; let objNew = {}; for (let keyMain in obj) {
                 let rootVal = obj[keyMain]; if (typeof rootVal === 'object') {
                     objNew[keyMain] = {}; for (let subKey in rootVal) {
-                        let valor = rootVal[subKey]; let regex;/* regex = /^(.*)\.value$/; */ regex = /^(.*)\.\d{1,2}\.value$/; let match = subKey.match(regex); if (match) {
-                            let [, prefixo, /* indice */] = match; let subKeyNew = `${prefixo}.[X].value`; if (!objNew[keyMain][subKeyNew]) { objNew[keyMain][subKeyNew] = []; }
-                            if (!objNew[keyMain][subKeyNew].includes(valor[0])) { objNew[keyMain][subKeyNew].push(valor[0]); }
+                        let valor = rootVal[subKey]; let regex; regex = /^(.*)\.\d{1,2}\.value$/; regex = regex.test(subKey) ? regex : /^(.*)\.value$/; let match = subKey.match(regex); if (match) {
+                            let [, prefixo, /* indice */] = match; let subKeyNew = prefixo;  // 'valor[0]' IGNORAR VALORES 'false' →→→ EXEMPLO: 'Closed-DNE.unexpected_language' → false
+                            if (valor[0]) { if (!objNew[keyMain][subKeyNew]) { objNew[keyMain][subKeyNew] = []; }; if (!objNew[keyMain][subKeyNew].includes(valor[0])) { objNew[keyMain][subKeyNew].push(valor[0]); } };
                         }
                     }
                 } else { objNew[keyMain] = rootVal; }
@@ -82,7 +82,7 @@ async function tryRatingGetResponse(inf) {
             ret['msg'] = `TRYRATING GET RESPONSE: ERRO | NENHUMA RESPOSTA ENCONTRADA`;
         } else {
             // REMOVER CAMINHO DESNECESSÁRIO DO PATH JSON
-            let text = JSON.stringify(responses); let replace = ['tasks.0.taskData.', '.[X].value', '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\./g'];
+            let text = JSON.stringify(responses); let replace = ['tasks.0.taskData.', 'tasks.1.taskData.', 'tasks.3.taskData.', 'tasks.3.taskData.', '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\./g'];
             replace.forEach(s => { if (s.includes('/g')) { s = s.replace('/g', '') } else { s = s.replace(/[*.+?^${}()|[\]\\]/g, '\\$&') }; text = text.replace(new RegExp(s, 'g'), ''); }); responses = JSON.parse(text)
 
             ret['res'] = responses;

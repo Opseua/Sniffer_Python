@@ -135,22 +135,20 @@ try:
 
         # ARQUIVO '.pac': CRIAR
         def pacFileCreate(arrUrl):
+            base_urls = {
+                urlparse(url).netloc for url in arrUrl if url.startswith("http")
+            }
             with open("src/scripts/BAT/proxy.pac", "w") as file:
                 file.write("function FindProxyForURL(url, host) {\n")
                 file.write("    var proxyUrls = [\n")
-                for url in arrUrl:
-                    file.write(f'        "{url}",\n')
-                file.write("    ];\n")
                 file.write(
-                    "    if (proxyUrls.some(function(currentUrl) { return shExpMatch(host, currentUrl); })) {\n"
+                    ",\n".join(f'        "*{base_url}*"' for base_url in base_urls)
                 )
-                file.write(f'        return "PROXY 127.0.0.1:8088";\n')
-                file.write("    } else {\n")
-                file.write('        return "DIRECT";\n')
-                file.write("    }\n")
+                file.write("\n    ];\n")
+                file.write(
+                    "    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? 'PROXY 127.0.0.1:8088' : 'DIRECT';\n"
+                )
                 file.write("}\n")
-
-        pacFileCreate(arrUrl)
 
         # ARQUIVO '.pac': SERVIDOR
         class QuietHTTPRequestHandler(SimpleHTTPRequestHandler):
@@ -158,9 +156,11 @@ try:
                 pass
 
         def serverPacFile():
-            console(f"SERVIDOR '.pac' RODANDO NA PORTA: {portMitm-1}")
+            pacFileCreate(arrUrl)
+            portServerPacFile = portMitm + 1
+            console(f"SERVIDOR '.pac' RODANDO NA PORTA: {portServerPacFile}")
             HTTPServer(
-                ("127.0.0.1", portMitm - 1), QuietHTTPRequestHandler
+                ("127.0.0.1", portServerPacFile), QuietHTTPRequestHandler
             ).serve_forever()
 
         if __name__ == "__main__":

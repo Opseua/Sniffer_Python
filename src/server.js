@@ -89,8 +89,8 @@ async function serverRun(inf) {
 
         // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respSim respNao
         //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' },
-        //     // { 'platform': 'TryRating_teste', 'hitApp': 'DrivingNavigation3DMaps', 'hitAppType': 'respNao' },
-        //     { 'platform': 'Outlier', 'hitApp': 'AI', 'hitAppType': 'blindNao' },
+        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim' },
+        //     // { 'platform': 'Outlier', 'hitApp': 'AI', 'hitAppType': 'blindNao' },
         // ];
 
         // let platformOption = {
@@ -108,7 +108,7 @@ async function serverRun(inf) {
         //     'TryRating': [
         //         { 'url': arrUrl[6], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO
         //         { 'url': arrUrl[7], 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt' }, // [2] → RECEBE A TASK
-        //         { 'url': arrUrl[8], 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt' }, // [3] → ENVIA A RESPOSTA DA TASK
+        //         // { 'url': arrUrl[8], 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt' }, // [3] → ENVIA A RESPOSTA DA TASK
         //     ],
         //     'Outlier': [
         //         { 'url': arrUrl[9], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO

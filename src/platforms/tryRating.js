@@ -36,8 +36,8 @@ async function tryRating(inf) {
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created); let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1
                     tasksType = resultList > 0 ? 'resultList' : 'tasks'; tasksBlind += blind ? 1 : 0; tasksInf.push({
-                        'blind': blind, 'name': value.metadata.name, 'assetType': value.metadata.assetType, 'metadata': value.metadata.metadata, 'state': value.metadata.state,
-                        'createdBy': value.metadata.createdBy, 'created': value.metadata.created, 'storageType': value.metadata.storageType,
+                        'blind': blind, 'name': value.metadata?.name, 'assetType': value.metadata?.assetType, 'metadata': value.metadata?.metadata, 'state': value.metadata?.state,
+                        'createdBy': value.metadata?.createdBy, 'created': value.metadata?.created, 'storageType': value.metadata?.storageType,
                     })
                 }; let addGet = { 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': JSON.stringify(body.targetLocalIds), 'tasksInf': tasksInf, };
                 gO.inf[platform].log.push({
@@ -50,7 +50,7 @@ async function tryRating(inf) {
                     notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
                         'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
                     }; await notification(infNotification);
-                } else if (!body.tasks[0].metadata.created) {
+                } else if (!body.tasks[0].metadata || !body.tasks[0].metadata.created) {
                     // BLIND, NÃO TEM A RESPOSTA
                     await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' });
                 } else {

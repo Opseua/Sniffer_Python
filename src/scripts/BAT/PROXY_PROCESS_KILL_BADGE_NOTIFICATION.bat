@@ -45,7 +45,7 @@ if not "!arg1!"=="!arg1:PROXY_ON=!" (
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /F
 	
 	rem → SCRIPT DE INSTALACAO
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8087/src/scripts/BAT/proxy.pac" /F
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8089/src/scripts/BAT/proxy.pac" /F
 )
 
 rem PROXY → OFF

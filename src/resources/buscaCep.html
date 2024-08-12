@@ -54,8 +54,8 @@
                         'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/correios.txt`, } }]
                     })
                 }); if (!retFetch.ok) { ret['msg'] = `FETCH [READ TEXT]: ERRO | AO FAZER REQUISIÇÃO`; } else {
-                    let data = await retFetch.text(); data = atob(data); let dataOk = data.replace(/(\r\n|\n|\r)/gm, ''); let token = [...dataOk.matchAll(/app-check-token: (.*?)content-type: /g)].map(match => match[1])[0];
-                    let cookie = [...dataOk.matchAll(/cookie: (.*?)charset/g)].map(match => match[1])[0]; // console.log(data, '\n', token, '\n', cookie,)
+                    let data = await retFetch.text(); data = JSON.parse(data).res; data = atob(data); let dataOk = data.replace(/(\r\n|\n|\r)/gm, '');
+                    let token = [...dataOk.matchAll(/app-check-token: (.*?)content-type: /g)].map(match => match[1])[0]; let cookie = [...dataOk.matchAll(/cookie: (.*?)charset/g)].map(match => match[1])[0];
 
                     ret['res'] = { 'token': token, 'cookie': cookie };
                     ret['msg'] = `FETCH [READ TEXT]: OK`;
@@ -104,7 +104,7 @@
                 }); if (!retFetch.ok) {
                     ret['msg'] = `FETCH [API SERVER]: ERRO | AO FAZER REQUISIÇÃO`; alert(ret.msg);
                 } else {                                                                                                                                                 // → RECARREGAR A PÁGINA
-                    let data = await retFetch.text(); data = JSON.parse(data); if (data.code == 403) { ret['msg'] = `GET ADDRESS: ERRO | TOKEN INVÁLIDO`; alert(ret.msg); window.location.reload(); return ret };
+                    let data = await retFetch.text(); data = JSON.parse(data).res; if (data.code == 403) { ret['msg'] = `GET ADDRESS: ERRO | TOKEN INVÁLIDO`; alert(ret.msg); window.location.reload(); return ret };
                     if (data.code == 404) {
                         ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = document.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>'; tbody.appendChild(row);
                         document.querySelector('#result-table th:first-child').textContent = `Endereços (0)`; // alert(ret.msg);

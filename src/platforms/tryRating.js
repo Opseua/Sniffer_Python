@@ -50,7 +50,7 @@ async function tryRating(inf) {
                     notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
                         'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
                     }; await notification(infNotification);
-                } else if (!body.tasks[0].metadata || !body.tasks[0].metadata.created) {
+                } else if (!obj[0].metadata?.created) {
                     // BLIND, NÃO TEM A RESPOSTA
                     await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' });
                 } else {

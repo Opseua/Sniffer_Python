@@ -37,26 +37,37 @@ if not "!arg1!"=="!arg1:PROCESS_KILL=!" (
 	!2_BACKGROUND! taskkill /IM stopwatch.exe /F
 )
 
+rem PROXY → RESETAR TODOS
+if not "!arg1!"=="!arg1:PROXY_=!" (
+	rem → SCRIPT DE INSTALACAO
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "" /F
+	
+	rem → PROXY MANUAL
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "" /F
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "" /F
+)
+
 rem PROXY → ON
 if not "!arg1!"=="!arg1:PROXY_ON=!" (
+	rem → SCRIPT DE INSTALACAO
+	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8089/src/scripts/BAT/proxy.pac" /F
+
 	rem → PROXY MANUAL
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:8088" /F
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "127.0.0.1;!confHost!;*fb*;*facebook*;*whatsapp*;*chatgpt*" /F
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /F
-	
-	rem → SCRIPT DE INSTALACAO
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8089/src/scripts/BAT/proxy.pac" /F
 )
 
-rem PROXY → OFF
+rem PROXY → OFF (FEITO PELO 'RESETAR TODOS')
 if not "!arg1!"=="!arg1:PROXY_OFF=!" (
+	rem → SCRIPT DE INSTALACAO
+	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "" /F
+
 	rem → PROXY MANUAL
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer /t REG_SZ /d "" /F
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyOverride /t REG_SZ /d "" /F
-	
-	rem → SCRIPT DE INSTALACAO
-	reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "" /F
 )
 
 rem NOTIFICATION → SNIFFER ON

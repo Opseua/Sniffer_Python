@@ -137,8 +137,7 @@ async function serverRun(inf) {
             try {
                 socketErr(socket, 'REQUEST'); let g = ''; socket.on('data', async (chunk) => {
                     g += chunk.toString(); if (g.endsWith('#fim#')) {
-                        g = Buffer.from(g.split("#fim#")[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d)
-                        if ((d.getSend == 'send') && (r.res.getSend == 'send')) {
+                        g = Buffer.from(g.split("#fim#")[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d); if ((d.getSend == 'send') && (r.res.getSend == 'send')) {
                             let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bufferSocket) { let p = b.slice(i, i + bufferSocket); socket.write(p) }
                             socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
                         }; g = ''; // LIMPAR BUFFER
@@ -150,8 +149,7 @@ async function serverRun(inf) {
             try {
                 socketErr(socket, 'RESPONSE'); let g = ''; socket.on('data', async (chunk) => {
                     g += chunk.toString(); if (g.endsWith('#fim#')) {
-                        g = Buffer.from(g.split("#fim#")[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d)
-                        if ((d.getSend == 'get') && (r.res.getSend == 'get')) {
+                        g = Buffer.from(g.split("#fim#")[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d); if ((d.getSend == 'get') && (r.res.getSend == 'get')) {
                             let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bufferSocket) { let part = b.slice(i, i + bufferSocket); socket.write(part) };
                             socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
                         }; g = ''; // LIMPAR BUFFER

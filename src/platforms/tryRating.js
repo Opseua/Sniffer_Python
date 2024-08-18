@@ -89,9 +89,17 @@ async function tryRating(inf) {
                     retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json });
                     retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf });
                     retConfigStorage = await configStorage({ 'e': e, 'path': `./log/${pathLogPlataform}/MES_${time.mon}_${time.monNam}/#_MES_#.json`, 'functionLocal': false, 'action': 'get', 'key': `*` });
-                    for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec }; let notText = [
-                        `🟢 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🔵 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`,
-                        `🔵 QTD: ${judgesQtdHitApp.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecHitApp).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
+                    for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec };
+
+                    // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
+                    function jsonFil1(d) { return new Date(d.setDate(d.getDate() - d.getDay())); }; function jsonFil2(d) { let startOfWeek = jsonFil1(new Date(d)); return new Date(startOfWeek.setDate(startOfWeek.getDate() + 6)); }
+                    let today = new Date(); let filt = {}; Object.keys(retConfigStorage.res).forEach(key => {
+                        let date = new Date(today.getFullYear(), today.getMonth(), parseInt(key.split('_')[1])); if (date >= jsonFil1(new Date(today)) && date <= jsonFil2(new Date(today))) { filt[key] = retConfigStorage.res[key]; }
+                    }); filt = { 'res': filt }; let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec };
+
+                    let notText = [
+                        `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
+                        `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
                         'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`

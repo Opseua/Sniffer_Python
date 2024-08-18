@@ -92,10 +92,9 @@ async function tryRating(inf) {
                     for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec };
 
                     // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
-                    function jsonFil1(d) { return new Date(d.setDate(d.getDate() - d.getDay())); }; function jsonFil2(d) { let startOfWeek = jsonFil1(new Date(d)); return new Date(startOfWeek.setDate(startOfWeek.getDate() + 6)); }
-                    let today = new Date(); let filt = {}; Object.keys(retConfigStorage.res).forEach(key => {
-                        let date = new Date(today.getFullYear(), today.getMonth(), parseInt(key.split('_')[1])); if (date >= jsonFil1(new Date(today)) && date <= jsonFil2(new Date(today))) { filt[key] = retConfigStorage.res[key]; }
-                    }); filt = { 'res': filt }; let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec };
+                    let now = new Date(); now.setHours(now.getHours() - 3); now = new Date(now.getTime() + 24 * 60 * 60 * 1000); let dateSta = new Date(now); dateSta.setDate(now.getDate() - now.getDay()).toString().padStart(2, '0');
+                    dateSta = dateSta.getDate().toString().padStart(2, '0'); let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key]) => key.substring(4) >= dateSta)); filt = { 'res': filt }
+                    let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec };
 
                     let notText = [
                         `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,

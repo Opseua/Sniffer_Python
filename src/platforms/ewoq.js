@@ -57,7 +57,7 @@ async function ewoq(inf) {
                         retFile = await file({ 'e': e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp) }); gO.inf[platform].log[index].path = retFile.res
                     }
                 }; let textNot = other[hitApp] ? `${other[hitApp].not} ` : '';
-                await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, 'retInf': false });
+                await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, });
             } // await csf([gO.inf]);
         }
 
@@ -70,17 +70,17 @@ async function ewoq(inf) {
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                         text = body['1'][0]['11']['1'][0]['4']; let infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text }; let retTranslate = await translate(infTranslate);
                         if (retTranslate.ret) { text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}` } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` };
-                        await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'retInf': false }); await clipboard({ 'value': text });
+                        await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', }); await clipboard({ 'value': text });
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']; if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
                             let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': value.body }); rg = rg?.res?.['1'] ? rg.res['1'] : false; if (!rg) {
-                                await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'retInf': false });
+                                await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', });
                             } else {
                                 let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json' }, 'body': {} };
                                 let retApi = await api(infApi); rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi.res.body }); rg = rg?.res?.['1'] ? rg.res['1'] : false
-                                if (!rg) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'retInf': false }); } else {
+                                if (!rg) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', }); } else {
                                     let uploadDate = new Date(rg); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000 // 15 DIAS ATRÁS
-                                    if (retDateHour > uploadDate) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, 'retInf': false }); }
+                                    if (retDateHour > uploadDate) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, }); }
                                 }
                             }
                         }
@@ -121,7 +121,7 @@ async function ewoq(inf) {
                         `🟢 QTD: ${tasksQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSecMon).res}`, `🔵 QTD: ${tasksQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSec).res}`,
                         `🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSecHitApp).res}`, `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
-                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `, 'retInf': false,
+                        'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     }; await notification(infNotification); gO.inf[platform].log.splice(index, 1);  // await csf([gO.inf]);
                 }

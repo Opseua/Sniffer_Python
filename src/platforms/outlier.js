@@ -98,7 +98,7 @@ async function outlier(inf) {
                         `🟢 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🔵 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`,
                         `🔵 QTD: ${judgesQtdHitApp.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecHitApp).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
-                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
+                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // await csf([gO.inf]);
                 }

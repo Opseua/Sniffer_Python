@@ -48,17 +48,25 @@ async function tryRating(inf) {
                     'addGet': addGet, 'body': inf.body, 'path': retLog.res,
                 }); if (inf.body.includes(`{"serializedAnswer":{"`)) {
                     // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
-                    let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });
+                    let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });
                     if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ } else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body }); }
                     notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
-                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'retInf': false, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
-                    }; await notification(infNotification);
-                } else if (!body.tasks[0].metadata?.created) {
-                    // BLIND, NÃO TEM A RESPOSTA
-                    await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'retInf': false, 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' });
-                } else {
-                    // NNÃO É BLIND
-                    await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'retInf': false, 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' });
+                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
+                    }; await notification(infNotification);  // BLIND, NÃO TEM A RESPOSTA | NÃO É BLIND
+                } else if (!body.tasks[0].metadata?.created) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' }) }
+                else { await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' }); }
+
+                if (hitApp == 'Search20') { // ALTERAR MODO DO MAPA (SOMENTE NA 'Search20')
+                    function fun(funInf) { let e = document.querySelector(funInf.e); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Satellite' }); e.click(); return true }
+                    let origin = `messageSendOrigin_${globalWindow.devGet[1]}`; let destination = `${globalWindow.devGet[1].split('roo=')[0]}roo=${globalWindow.devMy}-CHROME-${globalWindow.devices[0][2][3]}`; let actions = [
+                        { 'e': e, 'action': 'elementAwait', 'target': `*tryrating*`, 'awaitElementMil': 20000, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: ESPERAR
+                        { 'e': e, 'action': 'elementClick', 'target': `*tryrating*`, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: CLICAR
+                        { 'e': e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun.toString()})(${JSON.stringify({ 'ele': '.mktls-option.mktls-show.mktls-value' })});`, }, // EXPANDIDA DO MAPA: SELECIONAR
+                    ]; for (let [index, value] of actions.entries()) {
+                        let message = { 'fun': [{ 'securityPass': globalWindow.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value }] }; let retListenerChromeActions
+                        retListenerChromeActions = await listenerAcionar(origin, { 'destination': destination, 'message': message, 'secondsAwait': 25, }); // console.log(retListenerChromeActions)
+                        if (!retListenerChromeActions.ret) { break }; await new Promise(resolve => { setTimeout(resolve, index == 0 ? 3000 : 500) });
+                    };
                 }
             }
         }
@@ -100,7 +108,7 @@ async function tryRating(inf) {
                         `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
                         `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
-                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`, 'retInf': false,
+                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // await csf([gO.inf]);
                 }

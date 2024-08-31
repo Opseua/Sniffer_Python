@@ -6,7 +6,7 @@ let e = import.meta.url, ee = e;
 async function tryRatingGetResponse(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     try {
-        let { body } = inf;
+        let { body, hitApp } = inf;
 
         // TAREFAS: IDENTIFICAR TIPO ('resultList'/'tasks')
         function getTaskType(inf) { let { obj } = inf; if (obj.tasks && Array.isArray(obj.tasks)) { if (obj.tasks[0].taskData.resultSet) { return 'resultList'; } else { return 'tasks'; } } else { return 'unknown'; } };
@@ -83,7 +83,15 @@ async function tryRatingGetResponse(inf) {
         } else {
             // REMOVER CAMINHO DESNECESSÁRIO DO PATH JSON
             let text = JSON.stringify(responses); let replace = ['tasks.0.taskData.', 'tasks.1.taskData.', 'tasks.3.taskData.', 'tasks.3.taskData.', '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\./g'];
-            replace.forEach(s => { if (s.includes('/g')) { s = s.replace('/g', '') } else { s = s.replace(/[*.+?^${}()|[\]\\]/g, '\\$&') }; text = text.replace(new RegExp(s, 'g'), ''); }); responses = JSON.parse(text)
+            replace.forEach(s => { if (s.includes('/g')) { s = s.replace('/g', '') } else { s = s.replace(/[*.+?^${}()|[\]\\]/g, '\\$&') }; text = text.replace(new RegExp(s, 'g'), ''); });
+            text = text.replace(/, /g, ',').replace(/,/g, ', '); // [Search20] CORRIGIR ENDEREÇO 'Rua, 1351,Bairro,Município - SP,01441-000,Brasil' → 'Maria Silva, 1351, Jardim América, São Paulo - SP, 01441-000, Brasil'
+
+            // RESPOSTAS NA MESMA ORDEM DO JULGAMENTO
+            responses = JSON.parse(text); let keysOrder = []; if (hitApp == 'Search20') { keysOrder = ['Closed-DNE.closed_dne', 'Relevance.Relevance', 'Data.Name', 'Data.Address', 'Relevance.Pin',] }
+            let keysReorder = obj => Object.fromEntries(Object.entries(obj).map(([k, v]) =>
+                [k, typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries([...keysOrder.flatMap(ok => Object.entries(v).filter(([ik]) => ik.includes(ok))),
+                ...Object.entries(v).filter(([ik]) => !keysOrder.some(ok => ik.includes(ok)))]) : v]
+            )); responses = keysReorder(responses);
 
             ret['res'] = responses;
             ret['msg'] = `TRYRATING GET RESPONSE: OK`;

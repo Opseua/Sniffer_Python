@@ -25,14 +25,14 @@ async function tryRating(inf) {
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
-            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21]` });
+            logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21]` });
             gO.inf[platform]['log'] = []; // await csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
             logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (inf.body !== 'NULL') {
-                await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21][F21]` });
+                await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21][F21]` });
                 let body = JSON.parse(inf.body), hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; // await csf([gO.inf]);
                 retLog = await log({ 'e': e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body });
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
@@ -49,15 +49,16 @@ async function tryRating(inf) {
                 }); if (inf.body.includes(`{"serializedAnswer":{"`)) {
                     // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
                     let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });
-                    if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ } else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body }); }
+                    if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ } else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body, 'hitApp': hitApp, }); }
                     notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
                         'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
                     }; await notification(infNotification);  // BLIND, NÃO TEM A RESPOSTA | NÃO É BLIND
-                } else if (!body.tasks[0].metadata?.created) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' }) }
+                } // ********* else if (!body.tasks[0].metadata?.created) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' }) }
                 else { await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' }); }
 
-                if (hitApp == 'Search20') { // ALTERAR MODO DO MAPA (SOMENTE NA 'Search20')
-                    function fun(funInf) { let e = document.querySelector(funInf.e); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Satellite' }); e.click(); return true }
+                if (hitApp == 'Search20') {
+                    // ALTERAR MODO DO MAPA (SOMENTE NA 'Search20')
+                    function fun(funInf) { let e = document.querySelector(funInf.e); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Hybrid' }); e.click(); return true }
                     let origin = `messageSendOrigin_${globalWindow.devGet[1]}`; let destination = `${globalWindow.devGet[1].split('roo=')[0]}roo=${globalWindow.devMy}-CHROME-${globalWindow.devices[0][2][3]}`; let actions = [
                         { 'e': e, 'action': 'elementAwait', 'target': `*tryrating*`, 'awaitElementMil': 20000, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: ESPERAR
                         { 'e': e, 'action': 'elementClick', 'target': `*tryrating*`, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: CLICAR

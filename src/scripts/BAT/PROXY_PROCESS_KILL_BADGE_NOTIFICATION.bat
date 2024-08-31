@@ -75,7 +75,7 @@ if not "!arg1!"=="!arg1:BADGE_NOTIFICATION_ON=!" (
 	!2_BACKGROUND! taskkill /IM stopwatch.exe /F
 	set "url=http://127.0.0.1:!confPort!/?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER"
 	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"
-	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"./src/scripts/media/notification_1.png","title":"SNIFFER","text":"Ativado"}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","color":[25, 255, 71, 255]}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":"PYTH"}}  ]}"
+	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"./src/scripts/media/notification_1.png","title":"SNIFFER","text":"Ativado"}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","color":[25, 255, 71, 255]}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":"ON"}}  ]}"
 	set "pathRes=!local!\z_BODY_RES.txt" & set "pathReq=!local!\z_BODY_REQ.txt" & echo !body! > "!pathReq!" & "!wget!" "--post-file=!pathReq!" "!headers!" --quiet -O "!pathRes!" "!url!"
 	del /F /Q "!pathRes!" & del /F /Q "!pathReq!"
 	!2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Stopwatch\stopwatch.exe

@@ -89,7 +89,7 @@ async function serverRun(inf) {
 
         // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respSim respNao
         //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' },
-        //     { 'platform': 'TryRating_teste', 'hitApp': 'DrivingNavigation3DMaps', 'hitAppType': 'blindNao' },
+        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim' },
         //     // { 'platform': 'Outlier', 'hitApp': 'AI', 'hitAppType': 'blindNao' },
         // ];
 
@@ -123,7 +123,8 @@ async function serverRun(inf) {
         //     let platform = [value.platform.replace('_teste', '')]; platform.push(`${platform[0]}_teste`);
         //     let infFile, retFile, pathLogPlataform = `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1] of platformOption[platform[0]].entries()) {
         //         infFile = { 'e': e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}` }
-        //         retFile = await file(infFile); await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
+        //         retFile = await file(infFile); if (!retFile.ret) { console.log('ARQUIVO NÃO ENCONTRADO', infFile.path); break }
+        //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
         //     }
         // }
 

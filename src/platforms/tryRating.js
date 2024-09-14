@@ -101,8 +101,14 @@ async function tryRating(inf) {
                     for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec };
 
                     // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
-                    let now = new Date(); now.setHours(now.getHours() - 3); now = new Date(now.getTime() + 24 * 60 * 60 * 1000); let dateSta = new Date(now); dateSta.setDate(now.getDate() - now.getDay()).toString().padStart(2, '0');
-                    dateSta = dateSta.getDate().toString().padStart(2, '0'); let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key]) => key.substring(4) >= dateSta)); filt = { 'res': filt }
+                    function firstDayWeek(inf) {
+                        let d = new Date(inf); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
+                        let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { 'day': day, 'mon': mon, 'yea': yea, };
+                    }; let retFirstDayWeek = firstDayWeek(`${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon
+
+                    logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}` });
+
+                    let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt }
                     let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec };
 
                     let notText = [

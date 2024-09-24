@@ -2,12 +2,12 @@
 // infTryRating = { 'e': e, 'platform': platform, 'url': `${platform}/home`, 'body': inf.body }
 // retTryRating = await ewoq(infTryRating); console.log(retTryRating)~
 
-// ### Search20 (Task com julgamentos únicos [TASK ID: igual])
+// ### 'list' Search20 (Task com julgamentos únicos [TASK ID: igual])
 // tasks[0].taskData.resultSet.resultList[1].value.name
 // tasks[0].taskData.resultSet.resultList[2].value.name
 // tasks[0].taskData.resultSet.resultList[1].value.name
 
-// ### SearchAdsRelevance (Task com julgamentos separados [TASK ID: diferente])
+// ### 'task' SearchAdsRelevance (Task com julgamentos separados [TASK ID: diferente])
 // tasks[0].taskData.query
 // tasks[1].taskData.query
 // tasks[2].taskData.query

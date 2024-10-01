@@ -24,10 +24,10 @@ async function tryRatingGetResponse(inf) {
         }
 
         // FILTRAR CHAVE
-        function filterKeyValue(inf) {
+        function filterKey(inf) {
             let { obj, search, eArray } = inf; let result = eArray ? [] : {}; for (let key in obj) {
                 if (typeof obj[key] === 'object' && key !== search) {
-                    result[key] = filterKeyValue({ 'obj': obj[key], 'search': search, 'eArray': Array.isArray(obj[key]) }); if (Object.keys(result[key]).length === 0) { delete result[key]; }
+                    result[key] = filterKey({ 'obj': obj[key], 'search': search, 'eArray': Array.isArray(obj[key]) }); if (Object.keys(result[key]).length === 0) { delete result[key]; }
                 } else if (key === search) { result[key] = obj[key]; } else if (obj[key] === search) { if (eArray) { result.push(key); } else { result[key] = obj[key]; } }
             }; return result;
         }
@@ -51,7 +51,7 @@ async function tryRatingGetResponse(inf) {
                     }
                 }; let keysValue = ''; for (let [index, value] of [['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'keyword', 'pref_name', 'chave1', 'chave2'], ['address',],].entries()) {
                     let retGetValue = getValue({ 'obj': res, 'keysSearch': value }); keysValue = retGetValue.length == 0 ? `${keysValue}SEM_IDENTIFICACAO = ` : `${keysValue}${retGetValue[0]} = `
-                }; if (retGetTasks.type == 'resultList') { res = filterKeyValue({ 'obj': obj, 'search': taskId }) }; let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res })); if (retGetPathObj !== '{}') {
+                }; if (retGetTasks.type == 'resultList') { res = filterKey({ 'obj': obj, 'search': taskId }) }; let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res })); if (retGetPathObj !== '{}') {
                     retGetPathObj = retGetPathObj.replace(/testQuestionInformation.answer.serializedAnswer./g, ''); retGetPathObj = retGetPathObj.replace(new RegExp(`${keysValue} \\.`, 'g'), '');
                     retGetPathObj = retGetPathObj.replace(new RegExp(`${taskId} \\.`, 'g'), ''); retGetPathObj = JSON.parse(retGetPathObj); responses[`${keysValue} [${Math.random().toString(36).substring(2, 5)}]`] = retGetPathObj
                 }

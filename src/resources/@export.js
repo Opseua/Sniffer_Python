@@ -26,5 +26,8 @@ gloWin['ewoq'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric;
 gloWin['outlier'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'outlier', 'path': '../platforms/outlier.js', 'inf': inf }); };
 gloWin['tryRating'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'tryRating', 'path': '../platforms/tryRating.js', 'inf': inf }); };
 
+// FUNÇÕES DESSE PROJETO
+gloWin['isBlind'] = (inf) => { let fun = (eng || !eng) ? functionImport : functionGeneric; return fun({ 'name': 'isBlind', 'path': './isBlind.js', 'inf': inf }); };
+
 // SCRIPTS DESSE PROJETO
 gloWin['tryRatingGetResponse'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'tryRatingGetResponse', 'path': '../scripts/tryRatingGetResponse.js', 'inf': inf }); };

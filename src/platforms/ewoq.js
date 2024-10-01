@@ -68,8 +68,8 @@ async function ewoq(inf) {
                 if (id == value.id) {
                     let body = JSON.parse(value.body), text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
-                        text = body['1'][0]['11']['1'][0]['4']; let infTranslate = { 'source': 'auto', 'target': 'pt', 'text': text }; let retTranslate = await translate(infTranslate);
-                        if (retTranslate.ret) { text = `# PORTUGUÊS #\n${retTranslate.res}\n\n# INGLÊS #\n${text}` } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` };
+                        text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', 'text': text }; let retGoogleTranslate = await googleTranslate(infGoogleTranslate);
+                        if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}` } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` };
                         await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', }); await clipboard({ 'value': text });
                     } else {
                         text = body['1'][0]['10']['1'][0]['2']; if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {

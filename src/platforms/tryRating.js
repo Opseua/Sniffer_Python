@@ -46,15 +46,26 @@ async function tryRating(inf) {
                 gO.inf[platform].log.push({
                     'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': tasksQtd, 'tasksBlind': tasksBlind, 'judgeId': judgeId, 'judgesQtd': 1, 'tasksType': tasksType,
                     'addGet': addGet, 'body': inf.body, 'path': retLog.res,
-                }); if (inf.body.includes(`{"serializedAnswer":{"`)) {
-                    // BLIND, TEM A RESPOSTA [HIT APP OU GENÉRICA]
-                    let retHitAppGetResponse, notClip = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' });
-                    if (hitApp == 'AAA') {/* retHitAppGetResponse = await tryRating_Search20({ 'body': inf.body }); */ } else { retHitAppGetResponse = await tryRatingGetResponse({ 'e': e, 'body': inf.body, 'hitApp': hitApp, }); }
-                    notClip['ret'] = retHitAppGetResponse.ret; notClip['res'] = notClip.ret ? retHitAppGetResponse.res : retHitAppGetResponse.msg; await clipboard({ 'e': e, 'value': notClip.res }); infNotification = {
-                        'duration': notClip ? 3 : 4, 'icon': `./src/scripts/media/notification_${notClip.ret ? 2 : 3}.png`, 'title': `${platform} | ${notClip.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': notClip.res
-                    }; await notification(infNotification);  // BLIND, NÃO TEM A RESPOSTA | NÃO É BLIND
-                } // ********* else if (!body.tasks[0].metadata?.created) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' }) }
-                else { await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' }); }
+                });
+                // CHECAR SE É BLIND
+                let retIsBlind = await isBlind({ 'e': e, 'body': inf.body, }); retIsBlind = retIsBlind.ret && retIsBlind.res.length > 0 ? retIsBlind.res[0].blind : 999; if (retIsBlind == -1) {
+                    let retGR, noCl = {}; await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!' }); // [BLIND: SIM | RESP: SIM]
+                    retGR = await tryRatingGetResponse({ 'e': e, 'body': inf.body, 'hitApp': hitApp, }); noCl['ret'] = retGR.ret; noCl['res'] = noCl.ret ? retGR.res : retGR.msg; await clipboard({ 'e': e, 'value': noCl.res });
+                    await notification({ 'duration': noCl ? 3 : 4, 'icon': `./src/scripts/media/notification_${noCl.ret ? 2 : 3}.png`, 'title': `${platform} | ${noCl.ret ? 'CONCLUÍDO' : 'ERRO'}`, 'text': noCl.res });
+                } else if (retIsBlind == 1) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | BLIND`, 'text': 'Não tem a resposta!' }); } // [BLIND: SIM | RESP: NÃO]
+                else if (retIsBlind == 999) { await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_4.png', 'title': `${platform} | BLIND ???`, 'text': 'Avaliar manualmente' }); } // [BLIND: ???]
+                else { await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NÃO É BLIND`, 'text': 'Avaliar manualmente' }); } // [BLIND: NÃO]
+
+                // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
+                let retFile = await file({ 'e': e, 'action': 'list', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30 });
+                let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', }; if (retFile.ret) {
+                    platInf['folder'] = false; if (retFile.res.length > 0) {
+                        for (let [/*i*/, v] of retFile.res.entries()) {
+                            if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false }; if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false }; if (v.name.includes('page_tryrating.mhtml')) { platInf['page'] = false };
+                        };
+                    }
+                }; Object.keys(platInf).forEach((k, /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} ` } });
+                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
 
                 if (hitApp == 'Search20') {
                     // ALTERAR MODO DO MAPA (SOMENTE NA 'Search20')

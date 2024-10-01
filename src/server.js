@@ -87,8 +87,8 @@ async function serverRun(inf) {
 
 
         // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respSim respNao
-        //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' },
-        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim' },
+        //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' }, // [hitApp] → YouTube_Video_Inappropriateness_Evaluation
+        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'blindNao' }, // [hitApp] → Search20 DrivingNavigation3DMaps
         //     // { 'platform': 'Outlier', 'hitApp': 'AI', 'hitAppType': 'blindNao' },
         // ];
 

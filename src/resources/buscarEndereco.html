@@ -40,8 +40,8 @@
         }
 
         async function pageOnLoad(duration) { // ONLOAD
-            let t, h, m, s; await getSecurityPass(); try {
-                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER&mes={"fun":[{"securityPass":"${securityPass}","retInf":true,"name":"file","par":{"action":"list","path":"D:/ARQUIVOS/PROJETOS/Sniffer_Python/log","max":10}}]}`;
+            let t, h, m, s; await getSecurityPass(); let sP = securityPass; try {
+                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER&mes={"fun":[{"securityPass":"${sP}","retInf":true,"name":"file","par":{"action":"list","path":"!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log","max":10}}]}`;
                 let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, }); if (!retFetch.ok) { alert('ERRO AO OBTER TEMPO DO TOKEN'); return };
                 let i, data = await retFetch.text(); data = JSON.parse(data).res; for (let [index, value] of data.entries()) { if (value.name == 'correios.txt') { i = value.edit; break } }; const int = setInterval(function () {
                     let n = Math.floor((new Date().getTime()) / 1000) - 10800; let iOk = Math.floor((new Date(i).getTime()) / 1000) + 7200; if (iOk < n) { t = 0; } else { t = iOk - n; };

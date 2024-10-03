@@ -4,6 +4,9 @@ await import('./resources/@export.js'); let e = import.meta.url, ee = e;
 async function serverRun(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     try {
+        // IMPORTAR BIBLIOTECA [NODEJS]
+        if (typeof _net === 'undefined') { await functionImportLibrary({ 'lib': '_net' }); };
+
         logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]` })
 
         let infConfigStorage, retConfigStorage; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET

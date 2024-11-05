@@ -29,9 +29,8 @@
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json, os, sys, subprocess, time, re, locale, base64, socket, io, gzip, zlib, threading
+import json, os, sys, subprocess, time, re, locale, base64, socket, io, gzip, zlib
 from datetime import datetime
-from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
 os.system("cls")
@@ -124,6 +123,8 @@ try:
         global bufferSocket, sockReq, sockRes, arrUrl
         # LER O CONFIG E DEFINIR AS VARIÁVEIS
         locale.setlocale(locale.LC_TIME, "pt_BR")
+
+        # CONFIG.json
         fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")
         config = ""
         with open(fullPathJson, "r", encoding="utf-8") as file:
@@ -146,27 +147,13 @@ try:
                 )
                 file.write("\n    ];\n")
                 file.write(
-                    "    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? 'PROXY 127.0.0.1:8088' : 'DIRECT';\n"
+                    '    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:8088" : "DIRECT";\n'
                 )
                 file.write("}\n")
 
-        # ARQUIVO '.pac': SERVIDOR
-        class QuietHTTPRequestHandler(SimpleHTTPRequestHandler):
-            def log_message(self, format, *args):
-                pass
-
-        def serverPacFile():
-            pacFileCreate(arrUrl)
-            portServerPacFile = portMitm + 1
-            console(f"SERVIDOR '.pac' RODANDO NA PORTA: {portServerPacFile}")
-            HTTPServer(
-                ("127.0.0.1", portServerPacFile), QuietHTTPRequestHandler
-            ).serve_forever()
-
+        # SCRIPT INICIANDO
         if __name__ == "__main__":
-            http_thread = threading.Thread(target=serverPacFile)
-            http_thread.daemon = True
-            http_thread.start()
+            pacFileCreate(arrUrl)
 
         # TENTAR SE CONECTAR AO SOCKET
         tryConnectSocketReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

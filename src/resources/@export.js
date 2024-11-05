@@ -15,19 +15,22 @@ await getPath({ 'e': new Error(), 'devChildren': devChildren })
 // console.log('devSend:', globalWindow.devSend); console.log('devGet:', globalWindow.devGet); console.log('conf:', globalWindow.conf);
 // console.log('root:', globalWindow.root); console.log('functions:', globalWindow.functions); console.log('project:', globalWindow.project);
 
+// PEGAR O NOME DO ARQUIVO(SEM EXTENSÃO)
+function funFile(txt) { return txt.match(/([^\\/]+)(?=\.[^\\.]+$)/)[0]; };
+
 // IMPORTAR FUNÇÕES DINAMICAMENTE QUANDO NECESSÁRIO 
-let qtd = 0; async function functionImport(infOk) { let { name, path, inf } = infOk; qtd++; if (qtd > 30) { console.log('IMP...', name) }; await import(`${path}`); return await gloWin[name](inf) }
+let qtd1 = 0; async function funImport(infOk) { let { path, inf } = infOk; qtd1++; let name = funFile(path); if (qtd1 > 30) { console.log('IMPORTANDO...', name) }; await import(`${path}`); return await gloWin[name](inf); }
 
 // FUNÇÃO GENÉRICA (QUANDO O ENGINE ESTIVER ERRADO) | ENCAMINHAR PARA DEVICE
-async function functionGeneric(infOk) { let { name, inf, retInf } = infOk; let retDevAndFun = await devFun({ 'e': import.meta.url, 'enc': true, 'data': { 'name': name, 'par': inf, 'retInf': retInf, } }); return retDevAndFun }
+async function funGeneric(infOk) { let { path, inf } = infOk; let name = funFile(path); let retDevAndFun = await devFun({ 'e': import.meta.url, 'enc': true, 'data': { 'name': name, 'par': inf, } }); return retDevAndFun; }
 
 // PLATAFORMAS DESSE PROJETO
-gloWin['ewoq'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'ewoq', 'path': '../platforms/ewoq.js', 'inf': inf }); };
-gloWin['outlier'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'outlier', 'path': '../platforms/outlier.js', 'inf': inf }); };
-gloWin['tryRating'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'tryRating', 'path': '../platforms/tryRating.js', 'inf': inf }); };
+gloWin['ewoq'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/ewoq.js', 'inf': inf }); };
+gloWin['outlier'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/outlier.js', 'inf': inf }); };
+gloWin['tryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/tryRating.js', 'inf': inf }); };
 
 // FUNÇÕES DESSE PROJETO
-gloWin['isBlind'] = (inf) => { let fun = (eng || !eng) ? functionImport : functionGeneric; return fun({ 'name': 'isBlind', 'path': './isBlind.js', 'inf': inf }); };
+gloWin['taskInf'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': './taskInf.js', 'inf': inf }); };
 
 // SCRIPTS DESSE PROJETO
-gloWin['tryRatingGetResponse'] = (inf) => { let fun = (!eng) ? functionImport : functionGeneric; return fun({ 'name': 'tryRatingGetResponse', 'path': '../scripts/tryRatingGetResponse.js', 'inf': inf }); };
+gloWin['tryRatingGetResponse'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../scripts/tryRatingGetResponse.js', 'inf': inf }); };

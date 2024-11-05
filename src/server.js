@@ -5,16 +5,20 @@ async function serverRun(inf) {
     let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
     try {
         // IMPORTAR BIBLIOTECA [NODEJS]
-        if (typeof _net === 'undefined') { await functionImportLibrary({ 'lib': '_net' }); };
+        if (typeof _net === 'undefined') { await funLibrary({ 'lib': '_net' }); };
 
-        logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]` })
+        logConsole({ e, ee, 'write': true, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]` })
 
-        let infConfigStorage, retConfigStorage; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
-        infConfigStorage = { 'e': e, 'action': 'get', 'key': 'sniffer' }; retConfigStorage = await configStorage(infConfigStorage); if (!retConfigStorage.ret) { return retConfigStorage }
-        else { retConfigStorage = retConfigStorage.res }; let portSocket = retConfigStorage.portSocket, bufferSocket = retConfigStorage.bufferSocket, arrUrl = retConfigStorage.arrUrl
+        let infConSto, retConSto; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
+        infConSto = { e, 'action': 'get', 'key': 'sniffer' }; retConSto = await configStorage(infConSto); if (!retConSto.ret) { return retConSto } else { retConSto = retConSto.res }
+        let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; global['platforms'] = retConSto.platforms; let gW = globalWindow;
+        let ori = `messageSendOrigin_${gW.devGet[1]}`; let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; global['ori'] = ori; global['des'] = des; global['sPa'] = gW.securityPass;
 
         // CLIENT (NÃO POR COMO 'await'!!!) | MANTER NO FINAL
         client({ 'e': e })
+
+        // [2 SEGUNDOS APÓS INICIAR] BADGE (USUARIO_3): RESETAR
+        setTimeout(() => { listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '' } }] } }) }, 1000);
 
         async function funGetSend(inf) {
             let ret = { 'complete': true, res: {} }
@@ -79,19 +83,19 @@ async function serverRun(inf) {
 
                     // ######################################################################
                     if (!ret.complete) { showLog = 'REQ/RES CANCELADA' } else if (ret.res && (ret.res.body || ret.res.headers)) { showLog = 'REQ/RES ALTERADA' }
-                } else { showLog = `OUTRO URL | ${url}` }; if (showLog) { logConsole({ 'e': e, 'ee': ee, 'write': true, 'msg': `JS → ${showLog}` }); }
+                } else { showLog = `OUTRO URL | ${url}` }; if (showLog) { logConsole({ e, ee, 'write': true, 'msg': `JS → ${showLog}` }); }
             } catch (catchErr) {
                 let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
-            }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
-        }
+            };
 
+            return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };
+        }
 
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-
-        // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respSim respNao
+        // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respNao respSim respSim_CLOSED_DNE 
         //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' }, // [hitApp] → YouTube_Video_Inappropriateness_Evaluation
-        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'blindNao' }, // [hitApp] → Search20 DrivingNavigation3DMaps
+        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim_CLOSED_DNE' }, // [hitApp] → Search20 DrivingNavigation3DMaps
         //     // { 'platform': 'Outlier', 'hitApp': 'AI', 'hitAppType': 'blindNao' },
         // ];
 
@@ -101,11 +105,11 @@ async function serverRun(inf) {
         //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_1-${hitAppType}.txt' }, // [2] → RECEBE A TASK
         //         { 'url': arrUrl[3], 'getSend': 'send', 'file': '3-SEND_TEMPLATE-${hitAppType}.txt' }, // [3] → SOLICITA O TEMPLATE
         //         { 'url': arrUrl[3], 'getSend': 'get', 'file': '4-GET_TEMPLATE-${hitAppType}.txt' }, // [4] → RECEBE O TEMPLATE
-        //         // { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_2-${hitAppType}.txt' }, // [2] → RECEBE A TASK
+        //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_2-${hitAppType}.txt' }, // [2] → RECEBE A TASK
         //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_1_100_LOADED-${hitAppType}.txt' }, // [5] → TASK 100% CARREGADA
         //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_1-${hitAppType}.txt' }, // [6] → ENVIA A RESPOSTA DA TASK
-        //         // { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_2_100_LOADED-${hitAppType}.txt' }, // [5] → TASK 100% CARREGADA
-        //         // { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_2-${hitAppType}.txt' }, // [6] → ENVIA A RESPOSTA DA TASK
+        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_2_100_LOADED-${hitAppType}.txt' }, // [5] → TASK 100% CARREGADA
+        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_2-${hitAppType}.txt' }, // [6] → ENVIA A RESPOSTA DA TASK
         //     ],
         //     'TryRating': [
         //         { 'url': arrUrl[6], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO
@@ -124,15 +128,13 @@ async function serverRun(inf) {
         // for (let [index, value] of hitApps.entries()) {
         //     let platform = [value.platform.replace('_teste', '')]; platform.push(`${platform[0]}_teste`);
         //     let infFile, retFile, pathLogPlataform = `${letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1] of platformOption[platform[0]].entries()) {
-        //         infFile = { 'e': e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}` }
+        //         infFile = { e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}` }
         //         retFile = await file(infFile); if (!retFile.ret) { console.log('ARQUIVO NÃO ENCONTRADO', infFile.path); break }
         //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
         //     }
         // }
 
-
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
 
         // -------------------------------------------------------------------------------------------------
         let scEr = false; function socketErr(socket, err) { socket.on('error', (err) => { if (!scEr) { scEr = true; try { serverSocketErr } catch (catchErr) { esLintIgnore = catchErr; } }; esLintIgnore = err }); esLintIgnore = err; }

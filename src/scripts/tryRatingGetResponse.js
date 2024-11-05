@@ -1,5 +1,5 @@
 // let infTryRatingGetResponse, retTryRatingGetResponse
-// infTryRatingGetResponse = { 'e': e, 'body': inf.body }
+// infTryRatingGetResponse = { e, 'body': inf.body }
 // retTryRatingGetResponse = await tryRatingGetResponse(infTryRatingGetResponse); console.log(retTryRatingGetResponse)
 
 let e = import.meta.url, ee = e;
@@ -100,7 +100,9 @@ async function tryRatingGetResponse(inf) {
 
     } catch (catchErr) {
         let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
-    }; return { ...({ ret: ret.ret }), ...(ret.msg && { msg: ret.msg }), ...(ret.res && { res: ret.res }), };
+    };
+
+    return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };
 };
 
 // CHROME | NODEJS

@@ -14,7 +14,7 @@
 
 let e = import.meta.url, ee = e;
 async function tryRating(inf) {
-    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
+    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {
         let { platform, url, body, } = inf;
 
@@ -28,14 +28,14 @@ async function tryRating(inf) {
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((url == `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21]` });
-            gO.inf[platform]['log'] = []; // await csf([gO.inf]);
+            gO.inf[platform]['log'] = []; // csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((url == `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (body) {
                 commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21][F21]` });
-                body = JSON.parse(body); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; // await csf([gO.inf]);
+                body = JSON.parse(body); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; // csf([gO.inf]);
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body });
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value] of body.tasks.entries()) {
@@ -50,16 +50,6 @@ async function tryRating(inf) {
                     'addGet': addGet, 'body': body, 'path': retLog.res,
                 });
 
-                // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
-                let retTaskInf = await taskInf({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], }); if (!retTaskInf.ret) { return ret }; retTaskInf = retTaskInf.res;
-                let not; let blindNum = retTaskInf.res[hitApp]['0'].tasks['0'].blindNum;
-                if (blindNum == 3) { not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'resp', 'bC': '#19ff47', }; clipboard({ e, 'value': JSON.stringify(retTaskInf.clip[hitApp]['0'], null, 2) }); }
-                else if (blindNum == 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
-                else if (blindNum == 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
-                else if (blindNum == 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
-                notification({ 'duration': not.duration, 'icon': `./src/scripts/media/notification_${not.icon}.png`, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
-                listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
-
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
                 retFile = await file({ e, 'action': 'list', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30 });
                 let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', }; if (retFile.ret) {
@@ -70,6 +60,16 @@ async function tryRating(inf) {
                     }
                 }; Object.keys(platInf).forEach((k, /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} ` } });
                 if (!!platInf.t) { notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
+
+                // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
+                let not; let retTaskInf = await taskInf({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], });
+                if (!retTaskInf.ret) { logConsole({ e, ee, 'write': true, 'msg': `${JSON.stringify(retTaskInf)}` }); return ret; }; retTaskInf = retTaskInf.res; let blindNum = retTaskInf.res[hitApp]['0'].tasks['0'].blindNum;
+                if (blindNum == 3) { not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'resp', 'bC': '#19ff47', }; clipboard({ e, 'value': JSON.stringify(retTaskInf.clip[hitApp]['0'], null, 2) }); }
+                else if (blindNum == 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
+                else if (blindNum == 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
+                else if (blindNum == 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
+                notification({ 'duration': not.duration, 'icon': `./src/scripts/media/notification_${not.icon}.png`, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
+                listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
 
                 // [Search20]: ALTERAR MODO DO MAPA
                 if (hitApp == 'Search20') {
@@ -129,7 +129,7 @@ async function tryRating(inf) {
                     ]; infNotification = {
                         'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
-                    }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // await csf([gO.inf]);
+                    }; notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
                 }
             }
         }
@@ -138,7 +138,7 @@ async function tryRating(inf) {
         ret['ret'] = true;
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     };
 
     return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };

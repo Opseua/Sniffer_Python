@@ -4,7 +4,7 @@
 
 let e = import.meta.url, ee = e;
 async function ewoq(inf) {
-    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
+    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {
         let { platform, url, body, } = inf;
 
@@ -16,8 +16,8 @@ async function ewoq(inf) {
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((url == `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F20]` });
-            gO.inf[platform]['log'] = []; // await csf([gO.inf]);
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F20]` });
+            gO.inf[platform]['log'] = []; // csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/GetNewTasks`;
@@ -36,7 +36,7 @@ async function ewoq(inf) {
                         retFile = await file({ e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp) }); gO.inf[platform].log[index].path = retFile.res;
                     }
                 }
-            } // await csf([gO.inf]);
+            } // csf([gO.inf]);
         }
 
         /* [3] → SOLICITA O TEMPLATE */; urlCurrent = `/GetTemplate_[1-SEND]`;
@@ -57,37 +57,36 @@ async function ewoq(inf) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp; pathNew = gO.inf[platform].log[index].path
                         retFile = await file({ e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp) }); gO.inf[platform].log[index].path = retFile.res
                     }
-                }; let textNot = other[hitApp] ? `${other[hitApp].not} ` : '';
-                await notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, });
-            } // await csf([gO.inf]);
+                }; let textNot = other[hitApp] ? `${other[hitApp].not} ` : ''; notification({ 'duration': 2, 'icon': './src/scripts/media/notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${textNot}${hitApp}`, });
+            } // csf([gO.inf]);
         }
 
         /* [5] → TASK 100% CARREGADA */; urlCurrent = `/RecordTaskRenderingLatency_[TASK_100%_LOADED]`;
         if ((url == `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F20][F20]` });
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F20][F20]` });
             body = JSON.parse(body); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value] of gO.inf[platform].log.entries()) {
                 if (id == value.id) {
                     body = value.body; let text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`
                     if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                         text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', 'text': text }; let retGoogleTranslate = await googleTranslate(infGoogleTranslate);
                         if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}` } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}` };
-                        await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', }); await clipboard({ 'value': text });
+                        notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', }); clipboard({ 'value': text });
                     } else {
 
                         // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
                         if (value.hitApp == 'YouTubeVideoInappropriatenessEvaluation') {
                             let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body) }); rg = rg?.res?.['1'] ? rg.res['1'] : false;
-                            if (!rg) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', }); } else {
+                            if (!rg) { notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', }); } else {
                                 let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json' }, }; let retApi = await api(infApi);
                                 rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada' }); rg = rg?.res?.['1'] ? rg.res['1'] : false
-                                if (!rg) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', }); } else {
+                                if (!rg) { notification({ 'duration': 4, 'icon': './src/scripts/media/notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', }); } else {
                                     let uploadDate = new Date(rg); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000 // 15 DIAS ATRÁS
-                                    if (retDateHour > uploadDate) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, }); }
+                                    if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, }); }
                                 }
                             }
                         }
 
-                    }; text = body['1'][0]['10']['1'][0]['2']; await clipboard({ 'value': text }); // await csf([gO.inf]);
+                    }; text = body['1'][0]['10']['1'][0]['2']; clipboard({ 'value': text }); // csf([gO.inf]);
                 }
             }
         }
@@ -125,7 +124,7 @@ async function ewoq(inf) {
                     ]; infNotification = {
                         'duration': 3, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp} `,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
-                    }; await notification(infNotification); gO.inf[platform].log.splice(index, 1);  // await csf([gO.inf]);
+                    }; notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
                 }
             }
         }
@@ -134,7 +133,7 @@ async function ewoq(inf) {
         ret['ret'] = true;
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     };
 
     return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };

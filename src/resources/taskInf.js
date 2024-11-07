@@ -189,7 +189,7 @@ async function taskInf(inf = {}) {
                 let metadataCreated = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.created ? [m.created] : [false]) : []; })).join(' | ');
                 let metadataStorageType = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.storageType ? [m.storageType] : [false]) : []; })).join(' | ');
                 let qtdJudge = r.res.tasks['0'].qtdJudge; let qtdBlind = r.res.tasks['0'].qtdBlind; let qtdResp = r.res.tasks['0'].qtdResp; let t = [
-                    'X', targetLocalIds.length, taskType, blindNum, metadata, timeCreated, path, hitApp, projectId, requestId, metadataName, metadataAssetType, metadataState,
+                    'x', targetLocalIds.length, taskType, blindNum, metadata, timeCreated, path, hitApp, projectId, requestId, metadataName, metadataAssetType, metadataState,
                     metadataCreatedBy, metadataCreated, metadataStorageType, qtdJudge, qtdBlind, qtdResp
                 ].join('*'); t = await file({ e, 'action': 'write', 'path': pathReg, 'rewrite': true, 'text': `${t}\n` }); if (!t.ret) { return t; };
             };
@@ -212,7 +212,7 @@ async function taskInf(inf = {}) {
         ret['res'] = res
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res;
+        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     };
 
     return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };

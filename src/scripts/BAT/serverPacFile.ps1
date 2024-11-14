@@ -18,8 +18,8 @@ if ($http.IsListening) {
 	write-host "Proxy ativado" -f 'y'
 }
 
-# LETRA
-$letra = $Env:letra
+# PEGAR VARIAVEL DE AMBIENTE
+$fileProjetos = $Env:fileProjetos
 
 # INFINTE LOOP
 # Used to listen for requests
@@ -34,7 +34,7 @@ while ($http.IsListening) {
 
 	if ($context.Request.HttpMethod -eq 'GET') {
 		$relativePath = $context.Request.RawUrl -replace '/files', ''
-		$requestedPath = $letra + ":\ARQUIVOS\PROJETOS\Sniffer_Python\src\scripts\BAT\" + $relativePath
+		$requestedPath = $fileProjetos + "\Sniffer_Python\src\scripts\BAT\" + $relativePath
 
 		if (Test-Path $requestedPath) {
 			$item = Get-Item $requestedPath

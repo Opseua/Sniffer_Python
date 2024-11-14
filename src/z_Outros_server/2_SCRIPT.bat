@@ -20,7 +20,7 @@ rem Exemplo 2: # WebScraper # criar a copia do programExe: 'nodeWebScraper_serve
 rem MODE →→→ 'CMD' (RESTART [SIM]) / 'LEGACY' (RESTART [NAO]) # PROJECT | OUTROSADD | ARQUIVO SCRIPT
 for /f "tokens=1,2,3,4,5,6 delims=\" %%a in ("!local!") do ( set "project=%%d" & set "outrosAdd=%%f" ) & set "replace="
 set "outrosAdd=!outrosAdd:z_Outros_=%replace%!" & set "scriptType=ERRO" & set "ret=ERRO"
-set "mode=LEGACY" & set "programExe=node" & set "root=!letra!:\ARQUIVOS\PROJETOS" & set "fileScript=!root!\!project!\src\!outrosAdd!" & cd\ & !letra!: & cd !root!\!project!
+set "mode=LEGACY" & set "programExe=node" & set "root=!fileProjetos!" & set "fileScript=!root!\!project!\src\!outrosAdd!" & cd\ & !letra!: & cd !root!\!project!
 rem #### ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ ##########################################################
 
 rem CHECAR SE ESTA RODANDO
@@ -28,13 +28,13 @@ tasklist /fi "ImageName eq !programExe!!project!_!outrosAdd!.exe" /fo csv 2>NUL 
 if "%ERRORLEVEL%"=="0" ( set "ret=TRUE" ) else ( set "ret=FALSE" )
 
 rem ESTA RODANDO [NAO]
-if "!ret!"=="FALSE" ( 
-	if "!arg1!"=="!arg1:OFF=!" ( 
+if "!ret!"=="FALSE" (
+	if "!arg1!"=="!arg1:OFF=!" (
 		taskkill /IM pythonSniffer_Python_server.exe /F
 		if "!arg1!"=="!arg1:VIEW=!" (
-			!2_BACKGROUND! !filePortable!\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
+			!2_BACKGROUND! !fileWindows!\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
 		) else (
-			start "pythonSniffer_Python_server_sniffer.py" !filePortable!\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
+			start "pythonSniffer_Python_server_sniffer.py" !fileWindows!\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\!project!\src\sniffer.py
 			rem JANELA DO LOG POSICIONAR
 			!2_BACKGROUND! "timeout 3 > nul & !fileNircmdSetSize! pythonSniffer_Python_server_sniffer.py WINTP3"
 		)

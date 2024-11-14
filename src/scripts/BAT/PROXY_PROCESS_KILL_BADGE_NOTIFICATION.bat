@@ -72,7 +72,7 @@ if not "!arg1!"=="!arg1:BADGE_NOTIFICATION_ON=!" (
 	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"./src/scripts/media/notification_1.png","title":"SNIFFER","text":"Ativado"}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":"ON","color":"#19ff47"}}  ]}"
 	set "pathRes=!local!\z_BODY_RES.txt" & set "pathReq=!local!\z_BODY_REQ.txt" & echo !body! > "!pathReq!" & "!wget!" "--post-file=!pathReq!" "!headers!" --quiet -O "!pathRes!" "!url!"
 	del /F /Q "!pathRes!" & del /F /Q "!pathReq!"
-	!2_BACKGROUND! !filePortable!\PORTABLE_Stopwatch\stopwatch.exe
+	!2_BACKGROUND! !fileWindows!\PORTABLE_Stopwatch\stopwatch.exe
 )
 
 rem NOTIFICATION → SNIFFER OFF

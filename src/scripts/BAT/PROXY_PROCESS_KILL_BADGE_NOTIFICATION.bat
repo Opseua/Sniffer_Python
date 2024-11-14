@@ -53,7 +53,7 @@ if not "!arg1!"=="!arg1:PROXY_=!" (
 rem PROXY → ON
 if not "!arg1!"=="!arg1:PROXY_ON=!" (
 	rem → INICIAR SERVIDOR HTTP PAC FILE E ATIVAR PROXY
-	!2_BACKGROUND! "powershell D:\ARQUIVOS\PROJETOS\Sniffer_Python\src\scripts\BAT\serverPacFile.ps1"
+	!2_BACKGROUND! "powershell !fileProjetos!\Sniffer_Python\src\scripts\BAT\serverPacFile.ps1"
 	
 	rem → SCRIPT DE INSTALACAO
 	rem reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8089/src/scripts/BAT/proxy.pac" /F
@@ -72,7 +72,7 @@ if not "!arg1!"=="!arg1:BADGE_NOTIFICATION_ON=!" (
 	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"./src/scripts/media/notification_1.png","title":"SNIFFER","text":"Ativado"}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":"ON","color":"#19ff47"}}  ]}"
 	set "pathRes=!local!\z_BODY_RES.txt" & set "pathReq=!local!\z_BODY_REQ.txt" & echo !body! > "!pathReq!" & "!wget!" "--post-file=!pathReq!" "!headers!" --quiet -O "!pathRes!" "!url!"
 	del /F /Q "!pathRes!" & del /F /Q "!pathReq!"
-	!2_BACKGROUND! !letra!:\ARQUIVOS\WINDOWS\PORTABLE_Stopwatch\stopwatch.exe
+	!2_BACKGROUND! !filePortable!\PORTABLE_Stopwatch\stopwatch.exe
 )
 
 rem NOTIFICATION → SNIFFER OFF

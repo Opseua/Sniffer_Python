@@ -18,8 +18,8 @@ async function tryRating(inf) {
     try {
         let { platform, url, body, } = inf;
 
-        platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile; let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`
-        let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
+        try { body = JSON.parse(body) } catch (catchErr) { esLintIgnore = catchErr; body = false; }; platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile;
+        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; };
@@ -34,9 +34,8 @@ async function tryRating(inf) {
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((url == `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (body) {
-                commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21][F21]` });
-                body = JSON.parse(body); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; // csf([gO.inf]);
-                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body });
+                commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21][F21]` }); // csf([gO.inf]);
+                let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body });
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created); let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1
@@ -59,7 +58,7 @@ async function tryRating(inf) {
                         };
                     }
                 }; Object.keys(platInf).forEach((k, /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} ` } });
-                if (!!platInf.t) { notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
+                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInf = await taskInf({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], });
@@ -68,8 +67,9 @@ async function tryRating(inf) {
                 else if (blindNum == 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
                 else if (blindNum == 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
                 else if (blindNum == 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
-                notification({ 'duration': not.duration, 'icon': `./src/scripts/media/notification_${not.icon}.png`, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
-                listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
+                await notification({ 'duration': not.duration, 'icon': `./src/scripts/media/notification_${not.icon}.png`, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
+                let retLisAci = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
+                logConsole({ e, ee, 'write': true, 'msg': `listenerAcionar\n${JSON.stringify(retLisAci)}` });
 
                 // [Search20]: ALTERAR MODO DO MAPA
                 if (hitApp == 'Search20') {
@@ -88,48 +88,50 @@ async function tryRating(inf) {
 
         /* [3] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/client_log`;
         if ((url == `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); let json; body = JSON.parse(body); let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
-            let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0; let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0;
-            let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId; let pathJson = `./log/${pathLogPlataform}`;
-            retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body }); pathNew = retLog.res; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1);
-            pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew }); for (let [index, value] of gO.inf[platform].log.entries()) {
-                if (judgeId == value.judgeId) {
-                    pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
-                    pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, 'pathNew': pathNew })
-                    retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
-                    if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {} }, 'judges': [] } } else { json = retConfigStorage.res };
-                    let dif = Number(time.tim) - value.tim; json.judges.push({
-                        'hitApp': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
-                        'judgesSec': dif, 'judgesHour': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'tasksType': value.tasksType, 'addGet': value.addGet,
-                    }); if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }; for (let [index, value] of json.judges.entries()) {
-                        tasksQtd += value.tasksQtd; judgesQtd += value.judgesQtd; judgesSec += value.judgesSec; tasksBlinds += value.tasksBlind; if (value.hitApp == hitApp) {
-                            tasksQtdHitApp += value.tasksQtd; judgesQtdHitApp += value.judgesQtd; judgesSecHitApp += value.judgesSec; tasksBlindsHitApp += value.tasksBlind;
-                            if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) { judgesQtdHitAppLast += value.judgesQtd; judgesSecHitAppLast += value.judgesSec }
-                        }
-                    }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksBlinds': tasksBlinds, 'judgesQtd': judgesQtd, 'judgesSec': judgesSec, 'judgesHour': dateHour(judgesSec).res, };
-                    json.inf.hitApp[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksBlinds': tasksBlindsHitApp, 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'tasksHour': dateHour(judgesSecHitApp).res, }
-                    retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json });
-                    retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, });
-                    for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec };
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (body) {
+                let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
+                let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0; let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0;
+                let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId; let pathJson = `./log/${pathLogPlataform}`;
+                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body }); pathNew = retLog.res; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1);
+                pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew }); for (let [index, value] of gO.inf[platform].log.entries()) {
+                    if (judgeId == value.judgeId) {
+                        pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
+                        pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, 'pathNew': pathNew })
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}` });
+                        if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {} }, 'judges': [] } } else { json = retConfigStorage.res };
+                        let dif = Number(time.tim) - value.tim; json.judges.push({
+                            'hitApp': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
+                            'judgesSec': dif, 'judgesHour': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'tasksType': value.tasksType, 'addGet': value.addGet,
+                        }); if (!other[hitApp]) { lastHour = other.default.lastHour } else { lastHour = other[hitApp].lastHour }; for (let [index, value] of json.judges.entries()) {
+                            tasksQtd += value.tasksQtd; judgesQtd += value.judgesQtd; judgesSec += value.judgesSec; tasksBlinds += value.tasksBlind; if (value.hitApp == hitApp) {
+                                tasksQtdHitApp += value.tasksQtd; judgesQtdHitApp += value.judgesQtd; judgesSecHitApp += value.judgesSec; tasksBlindsHitApp += value.tasksBlind;
+                                if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) { judgesQtdHitAppLast += value.judgesQtd; judgesSecHitAppLast += value.judgesSec }
+                            }
+                        }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksBlinds': tasksBlinds, 'judgesQtd': judgesQtd, 'judgesSec': judgesSec, 'judgesHour': dateHour(judgesSec).res, };
+                        json.inf.hitApp[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksBlinds': tasksBlindsHitApp, 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'tasksHour': dateHour(judgesSecHitApp).res, }
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json });
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, });
+                        for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec };
 
-                    // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
-                    function firstDayWeek(inf) {
-                        let d = new Date(inf); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
-                        let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { 'day': day, 'mon': mon, 'yea': yea, };
-                    }; let retFirstDayWeek = firstDayWeek(`${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon
+                        // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
+                        function firstDayWeek(inf) {
+                            let d = new Date(inf); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
+                            let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { 'day': day, 'mon': mon, 'yea': yea, };
+                        }; let retFirstDayWeek = firstDayWeek(`${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon
 
-                    logConsole({ e, ee, 'write': true, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}` });
+                        logConsole({ e, ee, 'write': true, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}` });
 
-                    let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt }
-                    let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec };
+                        let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt }
+                        let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec };
 
-                    let notText = [
-                        `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
-                        `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
-                    ]; infNotification = {
-                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
-                        'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
-                    }; notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
+                        let notText = [
+                            `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
+                            `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
+                        ]; infNotification = {
+                            'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
+                            'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
+                        }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
+                    }
                 }
             }
         }

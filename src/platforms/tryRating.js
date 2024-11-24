@@ -14,12 +14,12 @@
 
 let e = import.meta.url, ee = e;
 async function tryRating(inf) {
-    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
+    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {
         let { platform, url, body, } = inf;
 
         try { body = JSON.parse(body) } catch (catchErr) { esLintIgnore = catchErr; body = false; }; platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile;
-        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
+        let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; };
@@ -27,14 +27,14 @@ async function tryRating(inf) {
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((url == `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21]` });
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21]` });
             gO.inf[platform]['log'] = []; // csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((url == `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (body) {
-                commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21][F21]` }); // csf([gO.inf]);
+                commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [ALT+F21][F21]` }); // csf([gO.inf]);
                 let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body });
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value] of body.tasks.entries()) {
@@ -50,7 +50,7 @@ async function tryRating(inf) {
                 });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                retFile = await file({ e, 'action': 'list', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30 });
+                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30 });
                 let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', }; if (retFile.ret) {
                     platInf['folder'] = false; if (retFile.res.length > 0) {
                         for (let [/*i*/, v] of retFile.res.entries()) {
@@ -58,7 +58,7 @@ async function tryRating(inf) {
                         };
                     }
                 }; Object.keys(platInf).forEach((k, /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} ` } });
-                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': './src/scripts/media/notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
+                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInf = await taskInf({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], });
@@ -67,7 +67,7 @@ async function tryRating(inf) {
                 else if (blindNum == 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
                 else if (blindNum == 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
                 else if (blindNum == 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
-                await notification({ 'duration': not.duration, 'icon': `./src/scripts/media/notification_${not.icon}.png`, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
+                await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
                 let retLisAci = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
                 logConsole({ e, ee, 'write': true, 'msg': `listenerAcionar\n${JSON.stringify(retLisAci)}` });
 
@@ -128,7 +128,7 @@ async function tryRating(inf) {
                             `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
                             `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                         ]; infNotification = {
-                            'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
+                            'duration': 2, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp}`,
                             'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                         }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
                     }

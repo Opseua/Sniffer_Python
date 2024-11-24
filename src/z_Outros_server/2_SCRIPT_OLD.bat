@@ -27,14 +27,24 @@ rem CHECAR SE ESTA RODANDO
 tasklist /fi "ImageName eq !programExe!!project!_!outrosAdd!.exe" /fo csv 2>NUL | find /I "!programExe!!project!_!outrosAdd!.exe">NUL
 if "%ERRORLEVEL%"=="0" ( set "ret=TRUE" ) else ( set "ret=FALSE" )
 
-rem ESTA RODANDO [NAO]
-rem if "!ret!"=="FALSE" ( if "!arg1!"=="!arg1:OFF=!" ( ) )
-
-rem ESTA RODANDO [SIM]
-rem if "!ret!"=="TRUE" ( )
-
-rem STATE
-!2_BACKGROUND! !root!\src\scripts\BAT\PROXY_PROCESS_BADGE_NOTIFICATION.bat !arg1! !ret!
+if "!ret!"=="FALSE" (
+	rem ESTA RODANDO [NAO]
+	if "!arg1!"=="!arg1:OFF=!" (
+		taskkill /IM pythonSniffer_Python_server.exe /F
+		if "!arg1!"=="!arg1:VIEW=!" (
+			!2_BACKGROUND! !fileWindows!\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\src\sniffer.py
+		) else (
+			start "pythonSniffer_Python_server_sniffer.py" !fileWindows!\PORTABLE_Python\pythonSniffer_Python_server.exe !root!\src\sniffer.py
+			rem JANELA DO LOG POSICIONAR
+			!2_BACKGROUND! "timeout 3 > nul & !fileNircmdSetSize! pythonSniffer_Python_server_sniffer.py WINTP3"
+		)
+	) else (
+		!2_BACKGROUND! !fileProjetos!\Sniffer_Python\src\scripts\BAT\PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat PROXY_OFF
+	)	
+) else (
+	rem ESTA RODANDO [SIM]
+	!2_BACKGROUND! !fileProjetos!\Sniffer_Python\src\scripts\BAT\PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat PROCESS_KILL_ONLY_PYTHON+PROXY_OFF+BADGE_NOTIFICATION_OFF
+)
 
 rem  (NAO SUBIR OS 'if'!!!)
 if "!mode!"=="CMD" ( set "scriptType=processCmdKeep" ) else ( if "!mode!"=="LEGACY" ( set "scriptType=processCmdKeep" ) )

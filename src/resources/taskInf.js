@@ -20,7 +20,7 @@
 
 let e = import.meta.url, ee = e;
 async function taskInf(inf = {}) {
-    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e;
+    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
         let { body, plataform, includes = [], reg, excludes = [] } = inf;
 
@@ -46,8 +46,8 @@ async function taskInf(inf = {}) {
 
         // SEPARAR: TASKS | POSSÍVEIS RESPOSTAS
         async function tasksResponses(inf = {}) {
-            let { obj, } = inf; let { projectId, requestId, templateTaskType, targetLocalIds, timeCreated } = obj; let taskType = 'x';
-            let res = { 'tasks': { '0': { projectId, requestId, 'hitApp': templateTaskType.replace(/[^a-zA-Z0-9]/g, ''), targetLocalIds, timeCreated, taskType, } }, 'responses': {}, }; obj.tasks.forEach(task => {
+            let { obj, } = inf; let { type = 'x', conceptId = 'x', projectId, requestId, templateTaskType, targetLocalIds, timeCreated } = obj; let taskType = 'x';
+            let res = { 'tasks': { '0': { type, conceptId, projectId, requestId, 'hitApp': templateTaskType.replace(/[^a-zA-Z0-9]/g, ''), targetLocalIds, timeCreated, taskType, } }, 'responses': {}, }; obj.tasks.forEach(task => {
                 let taskKey = task.taskKey; if (!res.tasks[taskKey]) { res.tasks[taskKey] = {} }; if (!res.responses[taskKey]) { res.responses[taskKey] = {} }; if (task.taskData.resultSet && task.taskData.resultSet.resultList) {
                     // [resultList]
                     taskType = 'resultList'; let resultList = task.taskData.resultSet.resultList; resultList.forEach(item => {
@@ -68,15 +68,52 @@ async function taskInf(inf = {}) {
             let getValues = (data) => Array.isArray(data) ? data.map(i => i.value) : [data.value ?? data]; let infObjFilter, retObjFilter; for (let [index, value] of Object.keys(tasks).filter(k => k !== '0').entries()) {
                 let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); for (let [index1, value1] of childrens.entries()) {
                     let children = value1; for (let [index2, value2] of Object.keys(questionsOptionsObj).entries()) {
-                        let ratingFieldKey = value2; value2 = questionsOptionsObj[value2]; let { fieldType, question, options, } = value2;
+                        let ratingFieldKey = value2; value2 = questionsOptionsObj[value2]; let { fieldType, question, options, } = value2; let keys = [ratingFieldKey];
+                        let valuesLabel = options.some(i => i.label) ? options.map(i => i.label) : []; let valuesValue = options.some(i => i.value) ? options.map(i => i.value) : [];
+
+                        // ------------------------------------------------------------------- (ANTIGO) -------------------------------------------------------------------------------------------------------
                         // [PELA KEY] | EXEMPLO → 'Relevance'
                         infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': [ratingFieldKey], 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res;
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('\n→', JSON.stringify(retObjFilter), '\n');
                         res.searchByKey.push(...retObjFilter.map(valueKey => ({ father, children, fieldType, ratingFieldKey, question, 'path': valueKey.key, 'value': getValues(valueKey.value), 'optionsIgnore': options, })));
-                        // [PELO VALUE] | EXEMPLO → 'Navigational'
+                        // (ANTIGO) [PELO VALUE] | EXEMPLO → 'Navigational'
                         infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': options.map(i => i.label || i.value), 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res;
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('\n→', JSON.stringify(retObjFilter), '\n');
                         res.searchByValue.push(...retObjFilter.map(valueValue => ({ father, children, fieldType, ratingFieldKey, question, 'path': valueValue.key, 'value': getValues(valueValue.value), 'optionsIgnore': options, })));
+                        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+                        // ------------------------------------------------------------------- (NOVO) -------------------------------------------------------------------------------------------------------
+                        // // [PELA CHAVE] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
+                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': keys, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('1 byKey ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
+                        // res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey', 'value': getValues(v.value), 'optionsIgnore': options, })));
+
+                        // // [PELA CHAVE {label}] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
+                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': valuesLabel, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('2 byKey-label ***', JSON.stringify(valuesLabel), '\n→', JSON.stringify(retObjFilter), '\n');
+                        // res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey-label', 'value': getValues(v.value), 'optionsIgnore': options, })));
+
+                        // // [PELA CHAVE {value}] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
+                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': valuesValue, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('3 byKey-value ***', JSON.stringify(valuesValue), '\n→', JSON.stringify(retObjFilter), '\n');
+                        // res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey-value', 'value': getValues(v.value), 'optionsIgnore': options, })));
+
+                        // // [PELO VALOR] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
+                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': keys, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('4 byValue ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
+                        // res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue', 'value': getValues(v.value), 'optionsIgnore': options, })));
+
+                        // // [PELO VALOR {label}] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
+                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': valuesLabel, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('5 byValue-label ***', JSON.stringify(valuesLabel), '\n→', JSON.stringify(retObjFilter), '\n');
+                        // res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue-label', 'value': getValues(v.value), 'optionsIgnore': options, })));
+
+                        // // [PELO VALOR {value}] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
+                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': valuesValue, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('6 byValue-value ***', JSON.stringify(valuesValue), '\n→', JSON.stringify(retObjFilter), '\n');
+                        // res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue-value', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
                     }
                 }
             }; return res
@@ -85,13 +122,13 @@ async function taskInf(inf = {}) {
         // FILTRAR: RESPOSTAS [DUPLICADOS EM 'value' E 'label' AO MESMO TEMPO] | 'false' DO 'Business/POI is closed or does not exist' | 'ratingFieldKey' NÃO CORRESPONDENTE
         async function responsesFilter(inf = {}) {
             let { responsesGet: responsesGetObj, } = inf; let { searchByKey, searchByValue, } = responsesGetObj; let res = {}; for (let [index, valueOk] of [...searchByKey, ...searchByValue].entries()) {
-                let { father, children, fieldType, ratingFieldKey, question, path, value, optionsIgnore } = valueOk; let pathFind = path.split(`.${ratingFieldKey}`);
-                pathFind = pathFind.length == 2 ? `${pathFind[0]}.${ratingFieldKey}` : `${pathFind[0]}.${ratingFieldKey}${pathFind[1]}.${ratingFieldKey}`; if (!(fieldType == 'checkbox' && value[0] !== true)) {
-                    if ((path.toLowerCase() + '.').includes(`.${ratingFieldKey.toLowerCase()}.`)) {
+                let { father, children, fieldType, ratingFieldKey, question, path, type, value, optionsIgnore } = valueOk; let alternativeMode = ['byKey-labelAAA', 'byKey-value',].includes(type);
+                if (!(fieldType == 'checkbox' && value[0] !== true)) {
+                    if ((path.toLowerCase() + '.').includes(`.${ratingFieldKey.toLowerCase()}.`) || alternativeMode) {
                         if (!res[father]) { res[father] = {}; }; if (!res[father][children]) { res[father][children] = {}; };
                         if (!res[father][children][ratingFieldKey]) { res[father][children][ratingFieldKey] = { 'fieldType': fieldType, 'question': question, 'value': [], 'optionsIgnore': optionsIgnore } };
-                        res[father][children][ratingFieldKey]['fieldType'] = fieldType; res[father][children][ratingFieldKey]['question'] = question
-                        res[father][children][ratingFieldKey]['value'].push(...value); res[father][children][ratingFieldKey]['value'] = [...new Set(res[father][children][ratingFieldKey]['value'])]
+                        res[father][children][ratingFieldKey]['fieldType'] = fieldType; res[father][children][ratingFieldKey]['question'] = question; res[father][children][ratingFieldKey]['value'].push(...value);
+                        res[father][children][ratingFieldKey]['value'] = [...new Set(res[father][children][ratingFieldKey]['value'])];
                     }
                 }
             }; return res
@@ -100,8 +137,8 @@ async function taskInf(inf = {}) {
         // JUNTAR: TASKS | PERGUNTAS E OPÇÕES (RADIO/SELET/ETC) | RESPOSTAS | 0 → [BLIND: ???] | 1 → [BLIND: NÃO] | 2 → [BLIND: SIM <> RESP: NÃO] | 3 → [BLIND: SIM <> RESP: SIM]
         async function returnObj(inf = {}) {
             let clip = {}; let add = { 'blindNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, }; let { tasksResponses: tasksResponsesObj, responsesFilter: responsesFilterObj, compact, } = inf;
-            let { tasks, } = tasksResponsesObj; let { projectId, requestId, hitApp, targetLocalIds, timeCreated, taskType, } = tasks['0'];
-            let res = { projectId, requestId, 'hitApp': hitApp, targetLocalIds, timeCreated, 'tasks': { '0': { ...add, taskType, }, }, }; for (let [index, value] of Object.keys(tasks).filter(k => k !== '0').entries()) {
+            let { tasks, } = tasksResponsesObj; let { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, taskType, } = tasks['0'];
+            let res = { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, 'tasks': { '0': { ...add, taskType, }, }, }; for (let [index, value] of Object.keys(tasks).filter(k => k !== '0').entries()) {
                 let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; }; for (let [index1, value1] of childrens.entries()) {
                     let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { 'blindNum': 0, }, 'judge': 'x', 'task': tasks[father][children], }; };
                     let judge = res.tasks[father][children]['task']; let blindNum = 0;
@@ -143,7 +180,7 @@ async function taskInf(inf = {}) {
             arrBody.push({ 'path': false, 'body': (typeof body === 'object' ? body : JSON.parse(body)), })
         } else if (plataform) {
             // JULGAMENTOS (RECEBIDOS): PEGAR [EM MASSA] POR PLATAFORMA
-            let retFile = await file({ 'action': 'list', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/${plataform}`, 'max': 12 }); if (!retFile.ret) { return retFile };
+            let retFile = await file({ 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/log/Plataformas/${plataform}`, 'max': 12 }); if (!retFile.ret) { return retFile };
             for (let [index, value] of retFile.res.entries()) {
                 if (value.isFolder && value.name.includes('MES_')) {
                     let retFile1 = await file({ 'action': 'list', 'path': value.path, 'max': 32 }); if (!retFile1.ret) { return retFile1 }; for (let [index1, value1] of retFile1.res.entries()) {
@@ -161,7 +198,7 @@ async function taskInf(inf = {}) {
                 let retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile }; retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
                 if (!arrRequestId.includes(requestId)) { arrRequestId.push(requestId); arrBody.push({ 'path': value, 'body': retFile }); }
             }
-        }; let pathReg = '!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/Plataformas/z_teste/reg.txt'; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'rewrite': false, 'text': '\n' }); };
+        }; let pathReg = `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/reg.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'rewrite': false, 'text': 'x\n' }); };
 
         // ******************************************************************************************************************************************************************************************************************
 
@@ -180,7 +217,7 @@ async function taskInf(inf = {}) {
             let r = retReturnObj; let hitApp = r.res.hitApp; let blindNum = r.res.tasks['0'].blindNum; let path = value.path; if (path) { path = path.split(`/`); path = path[path.length - 1].replace('.txt', '') };
             let d = dateHour(new Date(r.res.timeCreated * 1000)).res; let timeCreated = `${d.day}/${d.mon}/${d.yea}`; if (reg) {
                 // REGISTRAR NO TXT
-                let targetLocalIds = r.res.targetLocalIds; let taskType = r.res.tasks['0'].taskType; let projectId = r.res.projectId; let requestId = r.res.requestId;
+                let targetLocalIds = r.res.targetLocalIds; let taskType = r.res.tasks['0'].taskType; let type = r.res.type; let conceptId = r.res.conceptId; let projectId = r.res.projectId; let requestId = r.res.requestId;
                 let metadata = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).map(s => s.task?.metadata && Object.keys(s.task.metadata).length > 0)).filter(v => v !== undefined).join(' | ')
                 let metadataName = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.name ? [m.name] : [false]) : []; })).join(' | ');
                 let metadataAssetType = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.assetType ? [m.assetType] : [false]) : []; })).join(' | ');
@@ -189,7 +226,7 @@ async function taskInf(inf = {}) {
                 let metadataCreated = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.created ? [m.created] : [false]) : []; })).join(' | ');
                 let metadataStorageType = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.storageType ? [m.storageType] : [false]) : []; })).join(' | ');
                 let qtdJudge = r.res.tasks['0'].qtdJudge; let qtdBlind = r.res.tasks['0'].qtdBlind; let qtdResp = r.res.tasks['0'].qtdResp; let t = [
-                    'x', targetLocalIds.length, taskType, blindNum, metadata, timeCreated, path, hitApp, projectId, requestId, metadataName, metadataAssetType, metadataState,
+                    type, conceptId, projectId, requestId, hitApp, targetLocalIds.length, path, blindNum, timeCreated, taskType, metadata, metadataName, metadataAssetType, metadataState,
                     metadataCreatedBy, metadataCreated, metadataStorageType, qtdJudge, qtdBlind, qtdResp
                 ].join('*'); t = await file({ e, 'action': 'write', 'path': pathReg, 'rewrite': true, 'text': `${t}\n` }); if (!t.ret) { return t; };
             };

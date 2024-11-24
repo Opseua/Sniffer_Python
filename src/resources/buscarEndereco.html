@@ -41,7 +41,7 @@
 
         async function pageOnLoad(duration) { // ONLOAD
             let t, h, m, s; await getSecurityPass(); let sP = securityPass; try {
-                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER&mes={"fun":[{"securityPass":"${sP}","retInf":true,"name":"file","par":{"action":"list","path":"!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log","max":10}}]}`;
+                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER&mes={"fun":[{"securityPass":"${sP}","retInf":true,"name":"file","par":{"action":"list","path":"!fileProjetos!/Sniffer_Python/log","max":10}}]}`;
                 let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, }); if (!retFetch.ok) { alert('ERRO AO OBTER TEMPO DO TOKEN'); return };
                 let i, data = await retFetch.text(); data = JSON.parse(data).res; for (let [index, value] of data.entries()) { if (value.name == 'correios.txt') { i = value.edit; break } }; const int = setInterval(function () {
                     let n = Math.floor((new Date().getTime()) / 1000) - 10800; let iOk = Math.floor((new Date(i).getTime()) / 1000) + 7200; if (iOk < n) { t = 0; } else { t = iOk - n; };
@@ -53,7 +53,7 @@
 
         // REGEX
         function regex(inf) {
-            let ret = { 'ret': false }; try {
+            let ret = { 'ret': false, }; try {
                 if (!inf.pattern) { ret['msg'] = `REGEX: ERRO | INFORMAR O 'pattern'`; } else if (!inf.text) { ret['msg'] = `REGEX: ERRO | INFORMAR O 'text'`; } else {
                     if (inf.pattern.includes('(.*?)')) {
                         let res = {}; let ok = false; let patternSplit = inf.pattern.split('(.*?)'); let split1 = patternSplit[0].replace(/[*.+?^${}()|[\]\\]/g, '\\$&')
@@ -172,10 +172,10 @@
 
         // LER O TXT DO NOTEBOOK
         async function readText(inf) {
-            let ret = { 'ret': false }; try {
+            let ret = { 'ret': false, }; try {
                 let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
                     'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
-                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': `!letter!:/ARQUIVOS/PROJETOS/Sniffer_Python/log/correios.txt`, } }]
+                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': `!fileProjetos!/Sniffer_Python/log/correios.txt`, } }]
                     })
                 }); if (!retFetch.ok) { ret['msg'] = `FETCH [READ TEXT]: ERRO | AO FAZER REQUISIÇÃO`; } else {
                     let data = await retFetch.text(); data = JSON.parse(data).res; data = atob(data); let dataOk = data.replace(/(\r\n|\n|\r)/gm, '');
@@ -207,7 +207,7 @@
 
         // CONSULTAR ENDEREÇO
         let token = false; async function getAddress() {
-            let ret = { 'ret': false }; try {
+            let ret = { 'ret': false, }; try {
                 // PEGAR VALOR DO IMPUT | CHECAR SE ALGO FOI IMPUTADO | SUBSTITUIR: DIVISOR DE COLUNA
                 let input = document.getElementById('address-input').value.trim(); if (!input) { ret['msg'] = `GET ADDRESS: ERRO | NENHUM VALOR INSERIDO`; alert(ret.msg); return ret }
                 input = input.replace(/	/g, ','); let isGoogleMaps = false;

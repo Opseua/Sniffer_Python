@@ -29,7 +29,7 @@
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json, os, sys, subprocess, time, re, locale, base64, socket, io, gzip, zlib
+import json, os, sys, time, re, locale, base64, socket, io, gzip, zlib
 from datetime import datetime
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
@@ -46,14 +46,13 @@ from mitmproxy.options import Options
 from mitmproxy.tools.dump import DumpMaster
 
 # VARIÁVEIS
-letter = os.path.dirname(os.path.realpath(__file__))[0]
 bufferSocket = None  # fun → MITMPROXY REQ/RES
 sockReq = None  # fun → MITMPROXY REQ/RES
 sockRes = None  # fun → MITMPROXY REQ/RES
 arrUrl = None  # fun → MITMPROXY REQ/RES
-background_2 = f"{letter}:/ARQUIVOS/WINDOWS/BAT/RUN_PORTABLE/2_BACKGROUND.exe"
-batProxy = f"{letter}:/ARQUIVOS/PROJETOS/Sniffer_Python/src/scripts/BAT/PROXY_PROCESS_KILL_BADGE_NOTIFICATION.bat"
+# letter = os.getenv("letter")
 fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
+fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
 
 # FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
 locale.setlocale(locale.LC_TIME, "pt_BR")
@@ -91,9 +90,7 @@ def errAll(exceptErr):
 def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
-    subprocess.Popen(
-        f'{background_2} "{batProxy} PROCESS_KILL_ALL+PROXY_OFF+BADGE_NOTIFICATION_OFF & {letter}:/ARQUIVOS/WINDOWS/BAT/notify-send.exe #1#PYTHON: ERRO#1# #1#{message}#1#"'
-    )
+    os.startfile(f"{fileProjetos}/Sniffer_Python/src/z_Outros_server/OFF.vbs")
     # ENCERRAR SCRIPT
     os._exit(1)
 
@@ -106,7 +103,7 @@ try:
 
     # CONEXÃO DO SOCKET
     def tryConnectSocket(sock, port):
-        attempts, maxAttempts = 0, 6
+        attempts, maxAttempts = 0, 12
         while attempts < maxAttempts:
             try:
                 sock.connect(("127.0.0.1", port))
@@ -116,15 +113,12 @@ try:
                 console(f"SOCKET: TENTATIVA [{attempts}/{maxAttempts}]")
                 if attempts >= maxAttempts:
                     notifyAndConsole("SOCKET: ERRO | MÁXIMO DE TENTATIVAS")
-                time.sleep(0.5)
+                time.sleep(0.2)
 
     # SERVER
     async def serverRun():
         global bufferSocket, sockReq, sockRes, arrUrl
-        # LER O CONFIG E DEFINIR AS VARIÁVEIS
-        locale.setlocale(locale.LC_TIME, "pt_BR")
-
-        # CONFIG.json
+        # LER O CONFIG E DEFINIR AS VARIÁVEI
         fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")
         config = ""
         with open(fullPathJson, "r", encoding="utf-8") as file:
@@ -132,28 +126,9 @@ try:
         portSocket = config["sniffer"]["portSocket"]
         portMitm = 8088
         bufferSocket = config["sniffer"]["bufferSocket"] * 1000
-        arrUrl = config["sniffer"]["arrUrl"]
-
-        # ARQUIVO '.pac': CRIAR
-        def pacFileCreate(arrUrl):
-            base_urls = {
-                urlparse(url).netloc for url in arrUrl if url.startswith("http")
-            }
-            with open("src/scripts/BAT/proxy.pac", "w") as file:
-                file.write("function FindProxyForURL(url, host) {\n")
-                file.write("    var proxyUrls = [\n")
-                file.write(
-                    ",\n".join(f'        "*{base_url}*"' for base_url in base_urls)
-                )
-                file.write("\n    ];\n")
-                file.write(
-                    '    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:8088" : "DIRECT";\n'
-                )
-                file.write("}\n")
-
-        # SCRIPT INICIANDO
-        if __name__ == "__main__":
-            pacFileCreate(arrUrl)
+        # arrUrl = config["sniffer"]["arrUrl"]
+        # MANTER APENAS URLS QUE COMEÇAM COM 'http'
+        arrUrl = [url for url in config["sniffer"]["arrUrl"] if url.startswith("http")]
 
         # TENTAR SE CONECTAR AO SOCKET
         tryConnectSocketReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -172,10 +147,6 @@ try:
         m.addons.add(*addons)
         try:
             console(f"MITMPROXY RODANDO NA PORTA: {portMitm}")
-            # PROXY: ATIVAR | ABRIR STOPWATCH
-            subprocess.Popen(
-                f"{background_2} {batProxy} PROXY_ON+BADGE_NOTIFICATION_ON"
-            )
             await m.run()
         except KeyboardInterrupt:
             m.shutdown()

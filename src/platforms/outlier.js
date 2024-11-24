@@ -4,10 +4,10 @@
 
 let e = import.meta.url, ee = e;
 async function outlier(inf) {
-    let ret = { 'ret': false }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
+    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; await csf([gO.inf]) // SET
     try {
         let platform = inf.platform ? inf.platform : 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent
-        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
+        let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, time2 = `${time.hou}.${time.min}.${time.sec}.${time.mil}`; let pathLogPlataform = `Plataformas/${platform}`;
         retConfigStorage = await configStorage({ e, 'action': 'get', 'key': 'sniffer' }); if (!retConfigStorage.ret) { return retConfigStorage }; let other = retConfigStorage.res.platforms[platform.replace('_teste', '')]
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
@@ -15,14 +15,14 @@ async function outlier(inf) {
 
         /* [1] → INÍCIO */; urlCurrent = `/en/expert`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); // await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F22]` });
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); // await commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F22]` });
             gO.inf[platform]['log'] = []; // await csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/internal/v2/tasks/new_queue`;
         if ((inf.url == `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}` }); if (inf.body !== 'NULL') {
-                // await commandLine({ 'notAdm': true, 'command': `!letter!:/ARQUIVOS/WINDOWS/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F22][F22]` });
+                // await commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F22][F22]` });
                 let body = JSON.parse(inf.body)[0], hitApp = body.project.name; /* bpdy.project.taskerName */; hitApp = hitApp.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body._id
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': inf.body });
                 let tasksQtd = 1; let tasksBlind = false
@@ -98,7 +98,7 @@ async function outlier(inf) {
                         `🟢 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🔵 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`,
                         `🔵 QTD: ${judgesQtdHitApp.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecHitApp).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`
                     ]; infNotification = {
-                        'duration': 2, 'icon': './src/scripts/media/icon_4.png', 'title': `${platform} | ${hitApp}`,
+                        'duration': 2, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp}`,
                         'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`
                     }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // await csf([gO.inf]);
                 }

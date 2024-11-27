@@ -32,18 +32,19 @@
 
 
     <script>
-        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecurityPass(inf) { // PEGAR O SECURITY PASS
+        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecPas(inf) { // PEGAR O SECURITY PASS
             try {
                 let url = `${ipServer}?act=getSecurityPass&roo=&mes=`; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, });
-                if (!retFetch.ok) { alert('FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO'); } else { let data = await retFetch.text(); securityPass = data; }
+                if (!retFetch.ok) { alert('FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO'); } else { let data = await retFetch.text(); securityPass = JSON.parse(data).res; }
             } catch (catchErr) { alert('GET SECURITY PASS: ERRO | TRYCATCH', catchErr); };
         }
 
         async function pageOnLoad(duration) { // ONLOAD
-            let t, h, m, s; await getSecurityPass(); let sP = securityPass; try {
+            let t, h, m, s; await getSecPas(); let sP = securityPass; try {
                 let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER&mes={"fun":[{"securityPass":"${sP}","retInf":true,"name":"file","par":{"action":"list","path":"!fileProjetos!/Sniffer_Python/log","max":10}}]}`;
                 let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, }); if (!retFetch.ok) { alert('ERRO AO OBTER TEMPO DO TOKEN'); return };
-                let i, data = await retFetch.text(); data = JSON.parse(data).res; for (let [index, value] of data.entries()) { if (value.name == 'correios.txt') { i = value.edit; break } }; const int = setInterval(function () {
+                let i, data = await retFetch.text(); data = JSON.parse(data).res; for (let [index, value] of data.entries()) { if (value.name == 'correios.txt') { i = value.edit; break } };
+                const int = setInterval(function () {
                     let n = Math.floor((new Date().getTime()) / 1000) - 10800; let iOk = Math.floor((new Date(i).getTime()) / 1000) + 7200; if (iOk < n) { t = 0; } else { t = iOk - n; };
                     h = parseInt(t / 3600, 10); m = parseInt((t % 3600) / 60, 10); s = parseInt(t % 60, 10); h = h < 10 ? "0" + h : h; m = m < 10 ? "0" + m : m; s = s < 10 ? "0" + s : s;
                     let d = document.querySelector('#timer'); d.textContent = h + ":" + m + ":" + s; if (--t < 0) { clearInterval(int); d.textContent = "TOKEN EXPIROU"; }

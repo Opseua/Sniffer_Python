@@ -12,7 +12,7 @@ async function serverRun(inf) {
         let infConSto, retConSto; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         infConSto = { e, 'action': 'get', 'key': 'sniffer' }; retConSto = await configStorage(infConSto); if (!retConSto.ret) { return retConSto } else { retConSto = retConSto.res }
         let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; global['platforms'] = retConSto.platforms;
-        let ori = `messageSendOrigin_${gW.devGet[1]}`; let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; global['ori'] = ori; global['des'] = des; global['sPa'] = gW.securityPass;
+        let ori = `messageSendOrigin_${gW.devGet[1]}`; let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; global['ori'] = ori; global['des'] = des;
 
         async function pacFileCreate(arrUrl) {
             let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let retFile
@@ -32,7 +32,7 @@ async function serverRun(inf) {
         client({ 'e': e });
 
         // [2 SEGUNDOS APÓS INICIAR] BADGE (USUARIO_3): RESETAR
-        setTimeout(() => { listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '' } }] } }) }, 1000);
+        setTimeout(() => { listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '' } }] } }) }, 1000);
 
         // PAC
         pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
@@ -154,7 +154,7 @@ async function serverRun(inf) {
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
         // -------------------------------------------------------------------------------------------------
-        let scEr = false; function socketErr(socket, err) { socket.on('error', (err) => { if (!scEr) { scEr = true; try { serverSocketErr } catch (catchErr) { esLintIgnore = catchErr; } }; esLintIgnore = err }); esLintIgnore = err; }
+        let scEr = false; function socketErr(socket, err) { socket.on('error', (err) => { if (!scEr) { scEr = true; try { esLintIgnore } catch (catchErr) { esLintIgnore = catchErr; } }; esLintIgnore = err }); esLintIgnore = err; }
         let sockReq = _net.createServer((socket) => { // ########### REQ [SEND]
             try {
                 socketErr(socket, 'REQUEST'); let g = ''; socket.on('data', async (chunk) => {

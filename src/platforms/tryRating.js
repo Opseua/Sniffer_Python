@@ -23,7 +23,7 @@ async function tryRating(inf) {
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; };
-        listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '', } }] }, }); // BADGE (USUARIO_3): RESETAR
+        listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '', } }] }, }); // BADGE (USUARIO_3): RESETAR
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((url == `${platform}${urlCurrent}`)) {
@@ -68,7 +68,7 @@ async function tryRating(inf) {
                 else if (blindNum == 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
                 else if (blindNum == 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
                 await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
-                let retLisAci = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
+                let retLisAci = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
                 logConsole({ e, ee, 'write': true, 'msg': `listenerAcionar\n${JSON.stringify(retLisAci)}` });
 
                 // [Search20]: ALTERAR MODO DO MAPA
@@ -78,7 +78,7 @@ async function tryRating(inf) {
                         { e, 'action': 'elementClick', 'target': `*tryrating*`, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: CLICAR
                         { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun.toString()})(${JSON.stringify({ 'ele': '.mktls-option.mktls-show.mktls-value' })});`, }, // EXPANDIDA DO MAPA: SELECIONAR
                     ]; for (let [index, value] of actions.entries()) {
-                        let retLisChrAct = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': sPa, 'retInf': true, 'name': 'chromeActions', 'par': value }] }, });
+                        let retLisChrAct = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value }] }, });
                         if (!retLisChrAct.ret) { break }; await new Promise(resolve => { setTimeout(resolve, index == 0 ? 3000 : 500) }); // console.log(retLisChrAct);
                     };
                 }

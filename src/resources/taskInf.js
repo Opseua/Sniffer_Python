@@ -83,35 +83,35 @@ async function taskInf(inf = {}) {
 
                         // ------------------------------------------------------------------- (NOVO) -------------------------------------------------------------------------------------------------------
 
-                        // // [PELA CHAVE] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
-                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': keys, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('1 byKey ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
-                        // res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // [PELA CHAVE] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
+                        infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': keys, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('1 byKey ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
+                        res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
-                        // // [PELA CHAVE {label}] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
-                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': valuesLabel, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('2 byKey-label ***', JSON.stringify(valuesLabel), '\n→', JSON.stringify(retObjFilter), '\n');
-                        // res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey-label', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // [PELA CHAVE {label}] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
+                        infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': valuesLabel, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('2 byKey-label ***', JSON.stringify(valuesLabel), '\n→', JSON.stringify(retObjFilter), '\n');
+                        res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey-label', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
-                        // // [PELA CHAVE {value}] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
-                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': valuesValue, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('3 byKey-value ***', JSON.stringify(valuesValue), '\n→', JSON.stringify(retObjFilter), '\n');
-                        // res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey-value', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // [PELA CHAVE {value}] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
+                        infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': valuesValue, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('3 byKey-value ***', JSON.stringify(valuesValue), '\n→', JSON.stringify(retObjFilter), '\n');
+                        res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey-value', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
-                        // // [PELO VALOR] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
-                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': keys, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('4 byValue ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
-                        // res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // [PELO VALOR] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
+                        infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': keys, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('4 byValue ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
+                        res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
-                        // // [PELO VALOR {label}] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
-                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': valuesLabel, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('5 byValue-label ***', JSON.stringify(valuesLabel), '\n→', JSON.stringify(retObjFilter), '\n');
-                        // res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue-label', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // [PELO VALOR {label}] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
+                        infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': valuesLabel, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('5 byValue-label ***', JSON.stringify(valuesLabel), '\n→', JSON.stringify(retObjFilter), '\n');
+                        res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue-label', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
-                        // // [PELO VALOR {value}] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
-                        // infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': valuesValue, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
-                        // retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('6 byValue-value ***', JSON.stringify(valuesValue), '\n→', JSON.stringify(retObjFilter), '\n');
-                        // res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue-value', 'value': getValues(v.value), 'optionsIgnore': options, })));
+                        // [PELO VALOR {value}] | EXEMPLO → 'Navigational' *** { 'aaa': 'Navigational' }
+                        infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'values': valuesValue, 'filters': [{ 'includes': [`*${father}*`,] }, { 'includes': [`*${children}*`,] },], };
+                        retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('6 byValue-value ***', JSON.stringify(valuesValue), '\n→', JSON.stringify(retObjFilter), '\n');
+                        res.searchByValue.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byValue-value', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
                         // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

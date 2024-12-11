@@ -32,7 +32,7 @@
 
 
     <script>
-        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecPas(inf) { // PEGAR O SECURITY PASS
+        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecPas(inf = {}) { // PEGAR O SECURITY PASS
             try {
                 let url = `${ipServer}?act=getSecurityPass&roo=&mes=`; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, });
                 if (!retFetch.ok) { alert('FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO'); } else { let data = await retFetch.text(); securityPass = JSON.parse(data).res; }
@@ -53,31 +53,29 @@
         }; window.onload = function () { pageOnLoad(); };
 
         // REGEX
-        function regex(inf) {
-            let ret = { 'ret': false, }; try {
-                if (!inf.pattern) { ret['msg'] = `REGEX: ERRO | INFORMAR O 'pattern'`; } else if (!inf.text) { ret['msg'] = `REGEX: ERRO | INFORMAR O 'text'`; } else {
-                    if (inf.pattern.includes('(.*?)')) {
-                        let res = {}; let ok = false; let patternSplit = inf.pattern.split('(.*?)'); let split1 = patternSplit[0].replace(/[*.+?^${}()|[\]\\]/g, '\\$&')
-                        let split2 = patternSplit[1].replace(/[*.+?^${}()|[\]\\]/g, '\\$&'); let result1 = inf.text.match(`${split1}(.*?)${split2}`);
-                        let result2 = inf.text.match(`(?<=${split1})(.+)(?=${split2})`); let result3 = inf.text.match(`${split1}([\\s\\S]*?)${split2}`);
-                        let result4 = inf.text.match(`(?<=${split1})([\\s\\S]+)(?=${split2})`); let matches = inf.text.match(new RegExp(split1 + '(.*?)' + split2, 'g'));
+        function regex(inf = {}) {
+            let ret = { 'ret': false, }; let { pattern, text, simple = false, } = inf; try {
+                if (!pattern) { ret['msg'] = `REGEX: ERRO | INFORMAR O 'pattern'`; } else if (!text) { ret['msg'] = `REGEX: ERRO | INFORMAR O 'text'`; } else {
+                    if (pattern.includes('(.*?)')) {
+                        let res = {}; let ok = false; let patternSplit = pattern.split('(.*?)'); let split1 = patternSplit[0].replace(/[*.+?^${}()|[\]\\]/g, '\\$&')
+                        let split2 = patternSplit[1].replace(/[*.+?^${}()|[\]\\]/g, '\\$&'); let result1 = text.match(`${split1}(.*?)${split2}`);
+                        let result2 = text.match(`(?<=${split1})(.+)(?=${split2})`); let result3 = text.match(`${split1}([\\s\\S]*?)${split2}`);
+                        let result4 = text.match(`(?<=${split1})([\\s\\S]+)(?=${split2})`); let matches = text.match(new RegExp(split1 + '(.*?)' + split2, 'g'));
                         let result5 = matches ? matches.map(function (match) { return match.replace(new RegExp(split1 + '|' + split2, 'g'), ''); }) : [];
                         res['0'] = `res.['1'] → [-|<] | res.['2'] → [-|>] | res.['3'] → [^|<] | res.['4'] → [^|>] | res.['5'] → [-|< ALL]`
-                        if (result1 && result1.length > 0) { res['1'] = result1[1]; ok = true } else { res['1'] = `[-|<] PADRAO '${inf.pattern}' NAO ENCONTRADO` }
-                        if (result2 && result2.length > 0) { res['2'] = result2[1]; ok = true } else { res['2'] = `[-|>] PADRAO '${inf.pattern}' NAO ENCONTRADO` }
-                        if (result3 && result3.length > 0) { res['3'] = result3[1]; ok = true } else { res['3'] = `[^|<] PADRAO '${inf.pattern}' NAO ENCONTRADO` }
-                        if (result4 && result4.length > 0) { res['4'] = result4[1]; ok = true } else { res['4'] = `[^|>] PADRAO '${inf.pattern}' NAO ENCONTRADO` }
-                        if (result5 && result5.length > 0) { res['5'] = result5; ok = true } else { res['5'] = `[-|< ALL] PADRAO '${inf.pattern}' NAO ENCONTRADO` };
+                        if (result1 && result1.length > 0) { res['1'] = result1[1]; ok = true } else { res['1'] = `[-|<] PADRAO '${pattern}' NAO ENCONTRADO` }
+                        if (result2 && result2.length > 0) { res['2'] = result2[1]; ok = true } else { res['2'] = `[-|>] PADRAO '${pattern}' NAO ENCONTRADO` }
+                        if (result3 && result3.length > 0) { res['3'] = result3[1]; ok = true } else { res['3'] = `[^|<] PADRAO '${pattern}' NAO ENCONTRADO` }
+                        if (result4 && result4.length > 0) { res['4'] = result4[1]; ok = true } else { res['4'] = `[^|>] PADRAO '${pattern}' NAO ENCONTRADO` }
+                        if (result5 && result5.length > 0) { res['5'] = result5; ok = true } else { res['5'] = `[-|< ALL] PADRAO '${pattern}' NAO ENCONTRADO` };
                         if (ok) { ret['msg'] = `REGEX: OK`; ret['res'] = res; ret['ret'] = true }
                     } else {
-                        let pattern = inf.pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*'); let result = new RegExp(`^${pattern}$`).test(inf.text);
-                        if (inf.simple) { if (result) { return true } else { return false } }
-                        else { if (result) { ret['msg'] = `REGEX: OK`; ret['res'] = 'TEXTO POSSUI O PADRAO'; ret['ret'] = true; } else { ret['msg'] = `REGEX: ERRO | PADRAO '${inf.pattern}' NAO ENCONTRADO`; } }
+                        let pattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*'); let result = new RegExp(`^${pattern}$`).test(text);
+                        if (simple) { if (result) { return true } else { return false } }
+                        else { if (result) { ret['msg'] = `REGEX: OK`; ret['res'] = 'TEXTO POSSUI O PADRAO'; ret['ret'] = true; } else { ret['msg'] = `REGEX: ERRO | PADRAO '${pattern}' NAO ENCONTRADO`; } }
                     }
                 }
-            } catch (catchErr) { ret['msg'] = catchErr; };
-
-            return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };
+            } catch (catchErr) { ret['msg'] = catchErr; }; return { ...({ 'ret': ret.ret }), ...(ret.msg && { 'msg': ret.msg }), ...(ret.res && { 'res': ret.res }), };
         };
 
         // REMOVER ACENTOS | ENDEREÇO: TOKENIZAR ENDEREÇO | // ENDEREÇO: TIPO DE LOGRADOURO
@@ -90,8 +88,8 @@
             let partsOk = []; for (let [index, v] of parts.entries()) { if (/^\d.*\d$/.test(v) && !/\d{5}-\d{3}/.test(v)) { partsOk.push(v.replace(/\D+/g, '')) } else { partsOk.push(v) } }; parts = partsOk; return parts;
         };
 
-        function addressType(inf) {
-            let address = inf.address.trim(); let found = false; let search = [
+        function addressType(inf = {}) {
+            let { address, } = inf; address = address.trim(); let found = false; let search = [
                 { 'found': 'Rua', 'arr': ['rua ', 'r. '] }, { 'found': 'Avenida', 'arr': ['avenida ', 'av. ', 'av ', ,] },
                 { 'found': 'Travessa', 'arr': ['TRAVESSA ', 'travessa ', 'tv. ', 'tv ',] },
                 { 'found': 'Rodovia', 'arr': ['RODOVIA ', 'rodovia ', 'rod. ', 'rod ',] },
@@ -101,8 +99,8 @@
         }
 
         // ENDEREÇO: CRIAR OBJETO
-        function addressParse(inf) {
-            let retAddressTokenize = addressTokenize(inf.address); let addressObj = {}; let found = '#LOG#'; let retAddressType = addressType({ 'address': retAddressTokenize.join('#JOIN#') });
+        function addressParse(inf = {}) {
+            let { address, } = inf; let retAddressTokenize = addressTokenize(address); let addressObj = {}; let found = '#LOG#'; let retAddressType = addressType({ 'address': retAddressTokenize.join('#JOIN#') });
             retAddressType.address = retAddressType.address.split('#JOIN#'); retAddressTokenize = retAddressType.address; let processedAddresses = retAddressTokenize.reverse().filter(value => {
                 if (!addressObj.logradouro && value.includes(found)) { addressObj['tipo'] = retAddressType.found; addressObj['logradouro'] = value.replace(found, ''); return false; }
                 else if (value.toLowerCase().includes('loja') && !addressObj.loja) { addressObj['loja'] = value; return false; }
@@ -126,14 +124,14 @@
         }
 
         // PONTUAÇÃO: DO VALOR
-        function keyScore(inf) {
+        function keyScore(inf = {}) {
             let { chaveA, chaveB, chaveC, pontucao } = inf; if (!chaveA || !chaveB || !pontucao) { return 0 } else if (!chaveC) {
                 return chaveB.toLowerCase().replace(/(\d{5})-(\d{3})/, '$1$2').includes(chaveA.toLowerCase().replace(/(\d{5})-(\d{3})/, '$1$2')) ? pontucao : 0
             } else { chaveA = Number(chaveA); chaveB = Number(chaveB); chaveC = Number(chaveC); return chaveA > (chaveB - 1) && chaveA < (chaveC + 1) ? pontucao : 0 }
         }
 
         // PONTUAÇÃO: DO RESULTADO
-        function resultScore(inf) {
+        function resultScore(inf = {}) {
             let { objeto1, objeto2, } = inf; let chavesOk = { ...objeto1 }; delete chavesOk.pontucao; let chaves = Object.keys(chavesOk); let pontucaoIndice = []; for (let [index, value] of objeto2.entries()) {
                 let pontucao = { 'indice': 999, 'pontuacao': 0 }; let obj = {}; let pontuacaoOk = { tipo: 10, logradouro: 51, numero: 9, bairro: 10, municipio: 40, cep: 100, }
                 obj['tipo'] = value.tipoLogradouro; obj['logradouro'] = value.nomeLogradouro; obj['numeroInicial'] = value.numeroInicial;
@@ -151,10 +149,10 @@
         }
 
         // PONTUAÇÃO: MELHORES RESULTADOS
-        function scoreBest(inf) {
-            inf.pontucaoIndice.sort((a, b) => b.pontuacao - a.pontuacao); let firstMax = inf.pontucaoIndice[0].pontuacao; let secondMax = null;
-            for (let i = 1; i < inf.pontucaoIndice.length; i++) { if (inf.pontucaoIndice[i].pontuacao < firstMax) { secondMax = inf.pontucaoIndice[i].pontuacao; break; } }; if (secondMax === null) { secondMax = firstMax; };
-            let resScore = inf.pontucaoIndice.filter(item => item.pontuacao >= secondMax && item.pontuacao > 50).map(item => inf.objeto2[item.indice]); return resScore.length == 0 ? inf.objeto2 : resScore
+        function scoreBest(inf = {}) {
+            let { pontucaoIndice, objeto2, } = inf; pontucaoIndice.sort((a, b) => b.pontuacao - a.pontuacao); let firstMax = pontucaoIndice[0].pontuacao; let secondMax = null;
+            for (let i = 1; i < pontucaoIndice.length; i++) { if (pontucaoIndice[i].pontuacao < firstMax) { secondMax = pontucaoIndice[i].pontuacao; break; } }; if (secondMax === null) { secondMax = firstMax; };
+            let resScore = pontucaoIndice.filter(item => item.pontuacao >= secondMax && item.pontuacao > 50).map(item => objeto2[item.indice]); return resScore.length == 0 ? objeto2 : resScore
         }
 
         // ENDEREÇO: LADO PAR OU IMPAR
@@ -172,7 +170,7 @@
         function clipboardSet(inf) { navigator.clipboard.writeText(inf).then(() => { }, (catchErr) => { console.log(`CLIPBOARD SET: ERRO | ${catchErr}`); }); }
 
         // LER O TXT DO NOTEBOOK
-        async function readText(inf) {
+        async function readText(inf = {}) {
             let ret = { 'ret': false, }; try {
                 let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
                     'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
@@ -189,11 +187,11 @@
         }
 
         // PEGAR O NOME E ENDEREÇO DO GOOGLE MAPS
-        async function getgoogleMaps(inf) {
-            let infGoogleMaps = {}; try {
+        async function getgoogleMaps(inf = {}) {
+            let { url, } = inf; let infGoogleMaps = {}; try {
                 let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
                     'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
-                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': { 'method': 'GET', 'url': inf.url, 'max': 10 } }]
+                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': { 'method': 'GET', 'url': url, 'max': 10 } }]
                     })
                 }); if (retFetch.ok) {
                     let d = await retFetch.text(); d = JSON.parse(d).res.body; let dOk = regex({ 'pattern': `name="Description">  <meta content="(.*?)" itemprop="name"`, 'text': d.replace(/\\n/g, '') }); if (dOk.ret) {
@@ -229,8 +227,8 @@
                 let tbody = document.querySelector('#result-table tbody'); tbody.innerHTML = ''; let addressParseOk = addressParse({ 'address': inputKeep }); // console.log(addressParseOk)
 
                 // CONSULTAR O ENDEREÇO
-                async function searchAddress(inf) {
-                    let input = inf.input; let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
+                async function searchAddress(inf = {}) {
+                    let { input, } = inf; let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
                         'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
                             'fun': [{
                                 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': {
@@ -243,11 +241,11 @@
                 };
 
                 // FAZER BUSCAS
-                let retFetchs = []; async function getResultsCorreios(inf) {
+                let retFetchs = []; async function getResultsCorreios(inf = {}) {
                     let { tipo, logradouro, bairro, municipio, estado, cep, legacy } = inf; if (legacy) { addressParseOk = { 'logradouro': inputKeep }; logradouro = true; }; let ok = addressParseOk;
                     tipo = !tipo ? true : ok.tipo || false; logradouro = !logradouro ? true : ok.logradouro || false; bairro = !bairro ? true : ok.bairro || false; municipio = !municipio ? true : ok.municipio || false;
                     estado = !estado ? true : ok.estado || false; cep = !cep ? true : ok.cep || false; if (!tipo || !logradouro || !bairro || !municipio || !estado || !cep) { return };
-                    let query = { 'tipo': tipo, 'logradouro': logradouro, 'bairro': bairro, 'municipio': municipio, 'estado': estado, 'cep': cep && cep !== true ? cep.replace('-', '') : cep, }; console.log(inf.inf)
+                    let query = { 'tipo': tipo, 'logradouro': logradouro, 'bairro': bairro, 'municipio': municipio, 'estado': estado, 'cep': cep && cep !== true ? cep.replace('-', '') : cep, };
                     let queryOk = ''; Object.keys(query).forEach((key, index) => { if (query[key] && query[key] !== true && key !== 'tipo') { queryOk = `${queryOk}, ${query[key]}` } });
                     input = queryOk.replace(', ', query.tipo && query.tipo !== true ? query.tipo + ' ' : '');
                     let retFetch = await searchAddress({ 'input': input }); if (!retFetch.ok) { ret['msg'] = `FETCH [API SERVER]: ERRO | AO FAZER REQUISIÇÃO`; alert(ret.msg); retFetchs = false; return; } else {

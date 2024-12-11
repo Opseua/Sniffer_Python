@@ -1,7 +1,7 @@
 function startupFun(b, c) { let a = c - b; let s = Math.floor(a / 1000); let m = a % 1000; let f = m.toString().padStart(3, '0'); return `${s}.${f}` }; let startup = new Date();
 await import('./resources/@export.js'); let e = import.meta.url, ee = e;
 
-async function serverRun(inf) {
+async function serverRun(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
         // IMPORTAR BIBLIOTECA [NODEJS]
@@ -37,7 +37,7 @@ async function serverRun(inf) {
         // PAC
         pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
-        async function funGetSend(inf) {
+        async function funGetSend(inf = {}) {
             let ret = { 'complete': true, res: {} }
             try {
                 let { getSend, url, body, platform } = inf; ret['res']['getSend'] = getSend; let showLog = false; if (arrUrl.find(infRegex => regex({ 'simple': true, 'pattern': infRegex, 'text': url }))) {
@@ -80,24 +80,6 @@ async function serverRun(inf) {
                         if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[8], 'text': url })) { tryRating({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
                     }
 
-                    // #### Outlier
-                    if (platform.includes('Outlier')) {
-                        /* [1] → INÍCIO */; urlCurrent = `/en/expert`;
-                        // if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[9], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
-
-                        /* [2] → RECEBE A TASK */; urlCurrent = `/internal/v2/tasks/new_queue`;
-                        // if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[10], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
-
-                        /* [3] → ENVIA O LINTER */; urlCurrent = `/internal/genai/runPerStepResponseLinter_[1-SEND]`;
-                        // if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[11], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
-
-                        /* [4] → RECEBE O LINTER */; urlCurrent = `/internal/genai/runPerStepResponseLinter_[2-GET]`;
-                        // if ((getSend == 'get') && regex({ 'simple': true, 'pattern': arrUrl[11], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
-
-                        /* [5] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `internal/complete/chat`;
-                        // if ((getSend == 'send') && regex({ 'simple': true, 'pattern': arrUrl[12], 'text': url })) { outlier({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body }) }
-                    }
-
                     // ######################################################################
                     if (!ret.complete) { showLog = 'REQ/RES CANCELADA' } else if (ret.res && (ret.res.body || ret.res.headers)) { showLog = 'REQ/RES ALTERADA' }
                 } else { showLog = `OUTRO URL | ${url}` }; if (showLog) { logConsole({ e, ee, 'write': true, 'msg': `JS → ${showLog}` }); }
@@ -113,7 +95,6 @@ async function serverRun(inf) {
         // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respNao respSim respSim_CLOSED_DNE 
         //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' }, // [hitApp] → YouTube_Video_Inappropriateness_Evaluation
         //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim_CLOSED_DNE' }, // [hitApp] → Search20 DrivingNavigation3DMaps
-        //     // { 'platform': 'Outlier', 'hitApp': 'AI', 'hitAppType': 'blindNao' },
         // ];
 
         // let platformOption = {
@@ -132,13 +113,6 @@ async function serverRun(inf) {
         //         { 'url': arrUrl[6], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO
         //         { 'url': arrUrl[7], 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt' }, // [2] → RECEBE A TASK
         //         { 'url': arrUrl[8], 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt' }, // [3] → ENVIA A RESPOSTA DA TASK
-        //     ],
-        //     'Outlier': [
-        //         { 'url': arrUrl[9], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO
-        //         { 'url': arrUrl[10], 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt' }, // [2] → RECEBE A TASK
-        //         { 'url': arrUrl[11], 'getSend': 'send', 'file': '3-SEND_LINTER-${hitAppType}.txt' }, // [3] → ENVIA O LINTER
-        //         { 'url': arrUrl[11], 'getSend': 'get', 'file': '4-GET_LINTER-${hitAppType}.txt' }, // [4] → RECEBE O LINTER
-        //         { 'url': arrUrl[12], 'getSend': 'send', 'file': '5-SEND_TASK-${hitAppType}.txt' }, // [5] → ENVIA A RESPOSTA DA TASK
         //     ],
         // }
 

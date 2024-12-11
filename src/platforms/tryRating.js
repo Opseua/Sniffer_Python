@@ -13,7 +13,7 @@
 // tasks[2].taskData.query
 
 let e = import.meta.url, ee = e;
-async function tryRating(inf) {
+async function tryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {
         let { platform, url, body, } = inf;
@@ -51,29 +51,37 @@ async function tryRating(inf) {
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
                 retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30 });
-                let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', }; if (retFile.ret) {
+                let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', 'get': '(2-GET_TASK-)', }; if (retFile.ret) {
                     platInf['folder'] = false; if (retFile.res.length > 0) {
                         for (let [/*i*/, v] of retFile.res.entries()) {
-                            if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false }; if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false }; if (v.name.includes('page_tryrating.mhtml')) { platInf['page'] = false };
+                            if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false }; if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false };
+                            if (v.name.includes('page_tryrating.mhtml')) { platInf['page'] = false }; if (v.name.includes('2-GET_TASK-')) { platInf['get'] = false };
                         };
                     }
                 }; Object.keys(platInf).forEach((k, /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} ` } });
                 if (!!platInf.t) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}` }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
-                let not; let retTaskInf = await taskInf({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], });
-                if (!retTaskInf.ret) { logConsole({ e, ee, 'write': true, 'msg': `${JSON.stringify(retTaskInf)}` }); return ret; }; retTaskInf = retTaskInf.res; let blindNum = retTaskInf.res[hitApp]['0'].tasks['0'].blindNum;
-                if (blindNum == 3) { not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'resp', 'bC': '#19ff47', }; clipboard({ e, 'value': JSON.stringify(retTaskInf.clip[hitApp]['0'], null, 2) }); }
-                else if (blindNum == 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
+                let not; let retTaskInfTryRating = await taskInfTryRating({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], });
+                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'write': true, 'msg': `${JSON.stringify(retTaskInfTryRating)}` }); return ret; }; retTaskInfTryRating = retTaskInfTryRating.res;
+                let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum == 3) {
+                    not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'resp', 'bC': '#19ff47', };
+                    clipboard({ e, 'value': JSON.stringify(retTaskInfTryRating.clip[hitApp]['0'], null, 2) });
+                } else if (blindNum == 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
                 else if (blindNum == 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
                 else if (blindNum == 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
                 await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}` });
                 let retLisAci = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC } }] }, });
                 logConsole({ e, ee, 'write': true, 'msg': `listenerAcionar\n${JSON.stringify(retLisAci)}` });
 
+                if (blindNum == 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
+                    await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { 'hitApp': hitApp, 'path': retLog.res } }] }, });
+                }
+
                 // [Search20]: ALTERAR MODO DO MAPA
                 if (hitApp == 'Search20') {
-                    function fun(f) { let e = document.querySelector(f.e); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Hybrid' }); e.click(); return true }; let actions = [
+                    function fun(f) { let e = document.querySelector(f.e); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Hybrid' }); e.click(); return true };
+                    let actions = [
                         { e, 'action': 'elementAwait', 'target': `*tryrating*`, 'awaitElementMil': 20000, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: ESPERAR
                         { e, 'action': 'elementClick', 'target': `*tryrating*`, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: CLICAR
                         { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun.toString()})(${JSON.stringify({ 'ele': '.mktls-option.mktls-show.mktls-value' })});`, }, // EXPANDIDA DO MAPA: SELECIONAR
@@ -114,10 +122,10 @@ async function tryRating(inf) {
                         for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec };
 
                         // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
-                        function firstDayWeek(inf) {
-                            let d = new Date(inf); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
+                        function firstDayWeek(inf = {}) {
+                            let { date, } = inf; let d = new Date(date); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
                             let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { 'day': day, 'mon': mon, 'yea': yea, };
-                        }; let retFirstDayWeek = firstDayWeek(`${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon
+                        }; let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}` }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon
 
                         logConsole({ e, ee, 'write': true, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}` });
 

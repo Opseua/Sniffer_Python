@@ -25,11 +25,10 @@ async function funGeneric(infOk) { let { path, inf, } = infOk; let name = funFil
 
 // PLATAFORMAS DESSE PROJETO
 gloWin['ewoq'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/ewoq.js', 'inf': inf }); };
-gloWin['outlier'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/outlier.js', 'inf': inf }); };
 gloWin['tryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/tryRating.js', 'inf': inf }); };
 
 // FUNÇÕES DESSE PROJETO
-gloWin['taskInf'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': './taskInf.js', 'inf': inf }); };
+gloWin['taskInfTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': './taskInfTryRating.js', 'inf': inf }); };
 
 // SCRIPTS DESSE PROJETO
-gloWin['tryRatingGetResponse'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../scripts/tryRatingGetResponse.js', 'inf': inf }); };
+gloWin['getResponseTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../scripts/getResponseTryRating.js', 'inf': inf }); };

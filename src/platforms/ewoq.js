@@ -3,7 +3,7 @@
 // retEwoq = await ewoq(infEwoq); console.log(retEwoq)
 
 let e = import.meta.url, ee = e;
-async function ewoq(inf) {
+async function ewoq(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {
         let { platform, url, body, } = inf;

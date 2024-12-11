@@ -1,30 +1,30 @@
-// let infTryRatingGetResponse, retTryRatingGetResponse
-// infTryRatingGetResponse = { e, 'body': inf.body }
-// retTryRatingGetResponse = await tryRatingGetResponse(infTryRatingGetResponse); console.log(retTryRatingGetResponse)
+// let infGetResponseTryRating, retGetResponseTryRating
+// infGetResponseTryRating = { e, 'body': inf.body }
+// retGetResponseTryRating = await getResponseTryRating(infGetResponseTryRating); console.log(retGetResponseTryRating)
 
 let e = import.meta.url, ee = e;
-async function tryRatingGetResponse(inf) {
+async function getResponseTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
         let { body, hitApp } = inf;
 
         // TAREFAS: IDENTIFICAR TIPO ('resultList'/'tasks')
-        function getTaskType(inf) { let { obj } = inf; if (obj.tasks && Array.isArray(obj.tasks)) { if (obj.tasks[0].taskData.resultSet) { return 'resultList'; } else { return 'tasks'; } } else { return 'unknown'; } };
+        function getTaskType(inf = {}) { let { obj } = inf; if (obj.tasks && Array.isArray(obj.tasks)) { if (obj.tasks[0].taskData.resultSet) { return 'resultList'; } else { return 'tasks'; } } else { return 'unknown'; } };
 
         // TAREFAS: PEGAR CONTEÚDO
-        function getTasks(inf) {
+        function getTasks(inf = {}) {
             let { obj } = inf; let retGetTaskType = getTaskType({ 'obj': obj }); let responses = []; if (retGetTaskType === 'resultList') { obj.tasks[0].taskData.resultSet.resultList.forEach(item => { responses.push(item); }); }
             else if (retGetTaskType === 'tasks') { obj.tasks.forEach(task => { responses.push(task.taskData); }); }; return { 'type': retGetTaskType, 'tasks': responses };
         }
 
         // TAREFAS: PEGAR VALOR DA CHAVE
-        function getValue(inf) {
+        function getValue(inf = {}) {
             let { obj, keysSearch } = inf; for (let key of keysSearch) { if (obj[key] !== undefined) { return [obj[key]]; } };
             for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ 'obj': obj[key], 'keysSearch': keysSearch }); if (value.length > 0) { return value; } } }; return [];
         }
 
         // FILTRAR CHAVE
-        function filterKey(inf) {
+        function filterKey(inf = {}) {
             let { obj, search, eArray } = inf; let result = eArray ? [] : {}; for (let key in obj) {
                 if (typeof obj[key] === 'object' && key !== search) {
                     result[key] = filterKey({ 'obj': obj[key], 'search': search, 'eArray': Array.isArray(obj[key]) }); if (Object.keys(result[key]).length === 0) { delete result[key]; }
@@ -33,8 +33,8 @@ async function tryRatingGetResponse(inf) {
         }
 
         // CRIAR PATH GENÉRICO DO VALOR DA CHAVE
-        function getPathObj(inf) {
-            let { obj } = inf; let path = inf.path ? inf.path : ''; let paths = {}; for (let key in obj) {
+        function getPathObj(inf = {}) {
+            let { obj, path } = inf; path = path || ''; let paths = {}; for (let key in obj) {
                 let newPath = `${path}.${key}`; if (key === 'value') { if (Array.isArray(obj[key])) { paths[newPath.substring(1)] = [...new Set(obj[key])]; } else { paths[newPath.substring(1)] = [obj[key]]; } }
                 else if (Array.isArray(obj[key])) { obj[key].forEach((item, index) => { Object.assign(paths, getPathObj({ 'obj': item, 'path': `${newPath}.${index}` })); }); }
                 else if (typeof obj[key] === 'object') { Object.assign(paths, getPathObj({ 'obj': obj[key], 'path': newPath })); }
@@ -59,13 +59,13 @@ async function tryRatingGetResponse(inf) {
         }
 
         // INSERIR SEPARADOR DE TAREFAS
-        function insertSeparator(inf) {
+        function insertSeparator(inf = {}) {
             let { obj } = inf; let objNew = {}; let qtd = 1; let add = '###################################'; function adSe() { objNew[`${add}_${qtd}_${add}`] = 'x'; objNew[`_${qtd}`] = '.'; qtd++; }; let keys = Object.keys(obj);
             if (keys.length > 0) { adSe(); keys.forEach((key, index) => { objNew[key] = obj[key]; if (typeof obj[key] === 'object' && !Array.isArray(obj[key]) && index !== (keys.length - 1)) { adSe(); } }); }; return objNew;
         }; responses = insertSeparator({ 'obj': responses });
 
         // AGRUPAR VALORES
-        function agroupValues(inf) {
+        function agroupValues(inf = {}) {
             let { obj } = inf; let objNew = {}; for (let keyMain in obj) {
                 let rootVal = obj[keyMain]; if (typeof rootVal === 'object') {
                     objNew[keyMain] = {}; for (let subKey in rootVal) {
@@ -106,4 +106,4 @@ async function tryRatingGetResponse(inf) {
 };
 
 // CHROME | NODEJS
-(eng ? window : global)['tryRatingGetResponse'] = tryRatingGetResponse;
+(eng ? window : global)['getResponseTryRating'] = getResponseTryRating;

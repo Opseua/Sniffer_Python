@@ -13,13 +13,13 @@
 // // ###
 // body = await file({ 'action': 'read', 'path': pathTxt }); body = JSON.parse(body.res);
 // // ******************************************
-// let infNameTest, retNameTest
-// infNameTest = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res'], 'includes': ['MES_', 'DIA_', '.'], }; // 'reg' TRUE salva no 'log/Plataformas/z_teste/reg.txt'
-// infNameTest = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], };
-// retNameTest = await taskInf(infNameTest); console.log(JSON.stringify(retNameTest), '\n');
+// let infTaskInfTryRating, retTaskInfTryRating
+// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res'], 'includes': ['MES_', 'DIA_', '.'], }; // 'reg' TRUE salva no 'log/Plataformas/z_teste/reg.txt'
+// infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], };
+// retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
 
 let e = import.meta.url, ee = e;
-async function taskInf(inf = {}) {
+async function taskInfTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
         let { body, plataform, includes = [], reg, excludes = [] } = inf;
@@ -144,7 +144,7 @@ async function taskInf(inf = {}) {
                     let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { 'blindNum': 0, }, 'judge': 'x', 'task': tasks[father][children], }; };
                     let judge = res.tasks[father][children]['task']; let blindNum = 0;
                     // IDENTIFICAÇÃO DO JULGAMENTO
-                    if (['Search20',].includes(hitApp)) {
+                    if (['Search20', 'AddressVerification',].includes(hitApp)) {
                         judge = `${judge?.value?.name || 'null'} = ${judge?.value?.address?.[0] || 'null'}`; judge = judge.replace(/, /g, ',').replace(/,/g, ', ')
                     } else if (['Categorization', 'EmailCategorizationPortugueseLanguage', 'TimeSensitiveEmailCategorizationPortugueseLanguage',].includes(hitApp)) {
                         judge = `${judge?.sender || 'null'}`;
@@ -257,4 +257,4 @@ async function taskInf(inf = {}) {
 }
 
 // CHROME | NODEJS
-(eng ? window : global)['taskInf'] = taskInf;
+(eng ? window : global)['taskInfTryRating'] = taskInfTryRating;

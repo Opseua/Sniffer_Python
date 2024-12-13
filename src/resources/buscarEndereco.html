@@ -189,16 +189,15 @@
         // PEGAR O NOME E ENDEREÇO DO GOOGLE MAPS
         async function getgoogleMaps(inf = {}) {
             let { url, } = inf; let infGoogleMaps = {}; try {
-                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
+                let urlOk = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(urlOk, {
                     'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
                         'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': { 'method': 'GET', 'url': url, 'max': 10 } }]
                     })
                 }); if (retFetch.ok) {
                     let d = await retFetch.text(); d = JSON.parse(d).res.body; let dOk = regex({ 'pattern': `name="Description">  <meta content="(.*?)" itemprop="name"`, 'text': d.replace(/\\n/g, '') }); if (dOk.ret) {
                         dOk = dOk.res['1'].split(' · '); infGoogleMaps['name'] = dOk[0]; infGoogleMaps['category'] = false; infGoogleMaps['address'] = dOk[1];
-                        dOk = regex({ 'pattern': `property="og:image:height">  <meta content="(.*?)" itemprop="description`, 'text': d }); if (dOk.ret) {
-                            dOk = dOk.res['1']; infGoogleMaps['category'] = dOk.includes(' · ') ? dOk.split(' · ')[1] : dOk;
-                        }
+                        dOk = regex({ 'pattern': `property="og:image:height">  <meta content="(.*?)" itemprop="description`, 'text': d });
+                        if (dOk.ret) { dOk = dOk.res['1']; infGoogleMaps['category'] = dOk.includes(' · ') ? dOk.split(' · ')[1] : dOk; }
                     }
                 }
             } catch (catchErr) { console.log(catchErr) }; return infGoogleMaps

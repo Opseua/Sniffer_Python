@@ -15,9 +15,9 @@
 // // ###
 // body = await file({ 'action': 'read', 'path': pathTxt }); body = JSON.parse(body.res);
 // // ******************************************
-// let infTaskInfTryRating, retTaskInfTryRating
-// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res'], 'includes': ['MES_', 'DIA_', '.'], }; // 'reg' TRUE salva no 'log/Plataformas/z_teste/reg.txt'
-// infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA'], };
+// let infTaskInfTryRating, retTaskInfTryRating;
+// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res',], 'includes': ['MES_', 'DIA_', '.',], }; // 'reg' TRUE salva no 'log/Plataformas/z_teste/reg.txt'
+// infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], };
 // retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
 
 let e = import.meta.url, ee = e;

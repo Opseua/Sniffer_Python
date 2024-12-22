@@ -89,34 +89,34 @@ async function serverRun(inf = {}) {
 
         // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respNao respSim respSim_CLOSED_DNE 
         //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' }, // [hitApp] → YouTube_Video_Inappropriateness_Evaluation
-        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim_CLOSED_DNE' }, // [hitApp] → Search20 DrivingNavigation3DMaps
+        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim_CLOSED_DNE', }, // [hitApp] → Search20 DrivingNavigation3DMaps
         // ];
 
         // let platformOption = {
         //     'EWOQ': [
-        //         { 'url': arrUrl[1], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO
-        //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_1-${hitAppType}.txt' }, // [2] → RECEBE A TASK
-        //         { 'url': arrUrl[3], 'getSend': 'send', 'file': '3-SEND_TEMPLATE-${hitAppType}.txt' }, // [3] → SOLICITA O TEMPLATE
-        //         { 'url': arrUrl[3], 'getSend': 'get', 'file': '4-GET_TEMPLATE-${hitAppType}.txt' }, // [4] → RECEBE O TEMPLATE
-        //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_2-${hitAppType}.txt' }, // [2] → RECEBE A TASK
-        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_1_100_LOADED-${hitAppType}.txt' }, // [5] → TASK 100% CARREGADA
-        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_1-${hitAppType}.txt' }, // [6] → ENVIA A RESPOSTA DA TASK
-        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_2_100_LOADED-${hitAppType}.txt' }, // [5] → TASK 100% CARREGADA
-        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_2-${hitAppType}.txt' }, // [6] → ENVIA A RESPOSTA DA TASK
+        //         { 'url': arrUrl[1], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt', }, // [1] → INÍCIO
+        //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_1-${hitAppType}.txt', }, // [2] → RECEBE A TASK
+        //         { 'url': arrUrl[3], 'getSend': 'send', 'file': '3-SEND_TEMPLATE-${hitAppType}.txt', }, // [3] → SOLICITA O TEMPLATE
+        //         { 'url': arrUrl[3], 'getSend': 'get', 'file': '4-GET_TEMPLATE-${hitAppType}.txt', }, // [4] → RECEBE O TEMPLATE
+        //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_2-${hitAppType}.txt', }, // [2] → RECEBE A TASK
+        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_1_100_LOADED-${hitAppType}.txt', }, // [5] → TASK 100% CARREGADA
+        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_1-${hitAppType}.txt', }, // [6] → ENVIA A RESPOSTA DA TASK
+        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_2_100_LOADED-${hitAppType}.txt', }, // [5] → TASK 100% CARREGADA
+        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_2-${hitAppType}.txt', }, // [6] → ENVIA A RESPOSTA DA TASK
         //     ],
         //     'TryRating': [
-        //         { 'url': arrUrl[6], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt' }, // [1] → INÍCIO
-        //         { 'url': arrUrl[7], 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt' }, // [2] → RECEBE A TASK
-        //         { 'url': arrUrl[8], 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt' }, // [3] → ENVIA A RESPOSTA DA TASK
+        //         { 'url': arrUrl[6], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt', }, // [1] → INÍCIO
+        //         { 'url': arrUrl[7], 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt', }, // [2] → RECEBE A TASK
+        //         { 'url': arrUrl[8], 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt', }, // [3] → ENVIA A RESPOSTA DA TASK
         //     ],
-        // }
+        // };
 
-        // for (let [index, value] of hitApps.entries()) {
-        //     let platform = [value.platform.replace('_teste', '')]; platform.push(`${platform[0]}_teste`);
-        //     let infFile, retFile, pathLogPlataform = `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1] of platformOption[platform[0]].entries()) {
-        //         infFile = { e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}` }
-        //         retFile = await file(infFile); if (!retFile.ret) { console.log('ARQUIVO NÃO ENCONTRADO', infFile.path); break }
-        //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res }); await new Promise(resolve => { setTimeout(resolve, 2000) })
+        // for (let [index, value,] of hitApps.entries()) {
+        //     let platform = [value.platform.replace('_teste', ''),]; platform.push(`${platform[0]}_teste`);
+        //     let infFile, retFile, pathLogPlataform = `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1,] of platformOption[platform[0]].entries()) {
+        //         infFile = { e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}`, };
+        //         retFile = await file(infFile); if (!retFile.ret) { console.log('ARQUIVO NÃO ENCONTRADO', infFile.path); break; }
+        //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res, }); await new Promise(resolve => { setTimeout(resolve, 2000); });
         //     }
         // }
 

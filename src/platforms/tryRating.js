@@ -1,16 +1,16 @@
-// let infTryRating, retTryRating
-// infTryRating = { e, 'platform': platform, 'url': `${platform}/home`, 'body': body }
-// retTryRating = await ewoq(infTryRating); console.log(retTryRating)~
+// let infTryRating, retTryRating;
+// infTryRating = { e, 'platform': platform, 'url': `${platform}/home`, 'body': body, };
+// retTryRating = await ewoq(infTryRating); console.log(retTryRating);
 
-// ### 'list' Search20 (Task com julgamentos únicos [TASK ID: igual])
-// tasks[0].taskData.resultSet.resultList[1].value.name
-// tasks[0].taskData.resultSet.resultList[2].value.name
-// tasks[0].taskData.resultSet.resultList[1].value.name
+// // ### 'list' Search20 (Task com julgamentos únicos [TASK ID: igual])
+// // tasks[0].taskData.resultSet.resultList[1].value.name
+// // tasks[0].taskData.resultSet.resultList[2].value.name
+// // tasks[0].taskData.resultSet.resultList[1].value.name
 
-// ### 'task' SearchAdsRelevance (Task com julgamentos separados [TASK ID: diferente])
-// tasks[0].taskData.query
-// tasks[1].taskData.query
-// tasks[2].taskData.query
+// // ### 'task' SearchAdsRelevance (Task com julgamentos separados [TASK ID: diferente])
+// // tasks[0].taskData.query
+// // tasks[1].taskData.query
+// // tasks[2].taskData.query
 
 let e = import.meta.url, ee = e;
 async function tryRating(inf = {}) {

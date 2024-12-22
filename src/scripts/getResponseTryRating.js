@@ -1,6 +1,6 @@
-// let infGetResponseTryRating, retGetResponseTryRating
-// infGetResponseTryRating = { e, 'body': inf.body }
-// retGetResponseTryRating = await getResponseTryRating(infGetResponseTryRating); console.log(retGetResponseTryRating)
+// let infGetResponseTryRating, retGetResponseTryRating;
+// infGetResponseTryRating = { e, 'body': inf.body, };
+// retGetResponseTryRating = await getResponseTryRating(infGetResponseTryRating); console.log(retGetResponseTryRating);
 
 let e = import.meta.url, ee = e;
 async function getResponseTryRating(inf = {}) {

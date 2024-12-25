@@ -10,12 +10,10 @@
 
 <body>
     <div id="timer">00:00:00</div>
-
     <div id="input-section">
         <input type="text" id="address-input" placeholder="Digite o endereço ou CEP"> <button
             onclick="getAddress()">CONSULTAR</button>
     </div>
-
     <table id="result-table">
         <thead>
             <tr>
@@ -30,9 +28,8 @@
         <tbody></tbody>
     </table>
 
-
     <script>
-        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecPas(inf = {}) { // PEGAR O SECURITY PASS
+        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; let token = false; async function getSecPas(inf = {}) { // PEGAR O SECURITY PASS
             try {
                 let url = `${ipServer}?act=getSecurityPass&roo=&mes=`; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, });
                 if (!retFetch.ok) { alert('FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO'); } else { let data = await retFetch.text(); securityPass = JSON.parse(data).res; }
@@ -41,15 +38,16 @@
 
         async function pageOnLoad(duration) { // ONLOAD
             let t, h, m, s; await getSecPas(); let sP = securityPass; try {
-                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER&mes={"fun":[{"securityPass":"${sP}","retInf":true,"name":"file","par":{"action":"list","path":"!fileProjetos!/Sniffer_Python/log","max":10}}]}`;
-                let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, }); if (!retFetch.ok) { alert('ERRO AO OBTER TEMPO DO TOKEN'); return };
-                let i, data = await retFetch.text(); data = JSON.parse(data).res; for (let [index, value] of data.entries()) { if (value.name == 'correios.txt') { i = value.edit; break } };
-                let int = setInterval(function () {
-                    let n = Math.floor((new Date().getTime()) / 1000) - 10800; let iOk = Math.floor((new Date(i).getTime()) / 1000) + 7200; if (iOk < n) { t = 0; } else { t = iOk - n; };
+                let body = { 'fun': [{ 'securityPass': sP, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': '!fileProjetos!/Sniffer_Python/log/correios.txt', } }] }
+                let retFetch = await fetch(`${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`, { 'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify(body) });
+                if (!retFetch.ok) { alert('ERRO AO LER ARQUIVO CORREIOS'); return }; let i, data = await retFetch.text(); data = JSON.parse(JSON.parse(data).res);
+                let time = new Date(Number(`${data.time.replace(' ', '') - 10800}000`)); token = atob(data.txt.replace(' ', ''));
+                token = [...token.replace(/(\r\n|\n|\r)/gm, '').matchAll(/app-check-token: (.*?)content-type: /g)].map(match => match[1])[0]; let int = setInterval(function () {
+                    let n = Math.floor((new Date().getTime()) / 1000) - 10800; let iOk = Math.floor((new Date(time).getTime()) / 1000) + 7200; if (iOk < n) { t = 0; } else { t = iOk - n; };
                     h = parseInt(t / 3600, 10); m = parseInt((t % 3600) / 60, 10); s = parseInt(t % 60, 10); h = h < 10 ? "0" + h : h; m = m < 10 ? "0" + m : m; s = s < 10 ? "0" + s : s;
                     let d = document.querySelector('#timer'); d.textContent = h + ":" + m + ":" + s; if (--t < 0) { clearInterval(int); d.textContent = "TOKEN EXPIROU"; }
                 }, 1000);
-            } catch (catchErr) { alert('ERRO FUNCAO TIMER', catchErr); }
+            } catch (catchErr) { alert('ERRO FUNCAO TIMER/TOKEN', catchErr); }
         }; window.onload = function () { pageOnLoad(); };
 
         // REGEX
@@ -169,30 +167,12 @@
         document.getElementById('address-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') { getAddress(); } }); document.getElementById('address-input').focus();
         function clipboardSet(inf) { navigator.clipboard.writeText(inf).then(() => { }, (catchErr) => { console.log(`CLIPBOARD SET: ERRO | ${catchErr}`); }); }
 
-        // LER O TXT DO NOTEBOOK
-        async function readText(inf = {}) {
-            let ret = { 'ret': false, }; try {
-                let url = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(url, {
-                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
-                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': `!fileProjetos!/Sniffer_Python/log/correios.txt`, } }]
-                    })
-                }); if (!retFetch.ok) { ret['msg'] = `FETCH [READ TEXT]: ERRO | AO FAZER REQUISIÇÃO`; } else {
-                    let data = await retFetch.text(); data = JSON.parse(data).res; data = atob(data); let dataOk = data.replace(/(\r\n|\n|\r)/gm, '');
-                    let token = [...dataOk.matchAll(/app-check-token: (.*?)content-type: /g)].map(match => match[1])[0]; let cookie = [...dataOk.matchAll(/cookie: (.*?)charset/g)].map(match => match[1])[0];
-                    ret['res'] = { 'token': token, 'cookie': cookie }; ret['msg'] = `FETCH [READ TEXT]: OK`; ret['ret'] = true;
-                }
-            } catch (catchErr) { ret['msg'] = 'READ TEXT: ERRO | TRYCATCH'; };
-
-            return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
-        }
-
         // PEGAR O NOME E ENDEREÇO DO GOOGLE MAPS
         async function getgoogleMaps(inf = {}) {
             let { url, } = inf; let infGoogleMaps = {}; try {
                 let urlOk = `${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`; let retFetch = await fetch(urlOk, {
-                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
-                        'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': { 'method': 'GET', 'url': url, 'max': 10 } }]
-                    })
+                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true },
+                    'body': JSON.stringify({ 'fun': [{ 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': { 'method': 'GET', 'url': url, 'max': 5 } }] })
                 }); if (retFetch.ok) {
                     let d = await retFetch.text(); d = JSON.parse(d).res.body; let dOk = regex({ 'pattern': `name="Description">  <meta content="(.*?)" itemprop="name"`, 'text': d.replace(/\\n/g, '') }); if (dOk.ret) {
                         dOk = dOk.res['1'].split(' · '); infGoogleMaps['name'] = dOk[0]; infGoogleMaps['category'] = false; infGoogleMaps['address'] = dOk[1];
@@ -204,7 +184,7 @@
         }
 
         // CONSULTAR ENDEREÇO
-        let token = false; async function getAddress() {
+        async function getAddress() {
             let ret = { 'ret': false, }; try {
                 // PEGAR VALOR DO IMPUT | CHECAR SE ALGO FOI IMPUTADO | SUBSTITUIR: DIVISOR DE COLUNA
                 let input = document.getElementById('address-input').value.trim(); if (!input) { ret['msg'] = `GET ADDRESS: ERRO | NENHUM VALOR INSERIDO`; alert(ret.msg); return ret }
@@ -221,7 +201,6 @@
 
                 // PESQUISAR APENAS PELO CEP SE A CONSULTA FOR 'Endereço + CEP' | SUBSTITUIR: HÍFEN DO CEP (SE O IMPUT FOR CEP) | PEGAR O TOKEN
                 let matchCep = input.match(/(\d{5}-?\d{3})/g); input = matchCep ? matchCep[0] : input; if (/^\d{5}-\d{3}$/.test(input)) { input = input.replace(/\D/g, ''); }
-                if (!token) { let retReadText = await readText(); if (!retReadText.ret) { ret = retReadText; alert(ret.msg); return ret }; token = retReadText.res.token; }
                 // DEFINIR CABEÇALHO DOS RESULTADOS | PARSE DO IMPUT
                 let tbody = document.querySelector('#result-table tbody'); tbody.innerHTML = ''; let addressParseOk = addressParse({ 'address': inputKeep }); // console.log(addressParseOk)
 
@@ -232,7 +211,7 @@
                             'fun': [{
                                 'securityPass': securityPass, 'retInf': true, 'name': 'api', 'par': {
                                     'method': 'GET', 'url': `https://proxyapp.correios.com.br/v1/busca-correios/rapida?texto=${input}&tipoCep=TODOS&inicio=0&fim=50`,
-                                    'headers': { 'Content-Type': 'application/json', 'User-Agent': 'Dart/3.3 (dart:io)', 'app-check-token': `${token}` }, 'max': 20
+                                    'headers': { 'Content-Type': 'application/json', 'User-Agent': 'Dart/3.3 (dart:io)', 'app-check-token': `${token}` }, 'max': 5
                                 }
                             }]
                         })

@@ -21,16 +21,10 @@ async function serverRun(inf = {}) {
             res += '\n    ];\n'; res += '    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:8088" : "DIRECT";\n'; res += '}\n';
             retFile = await file({ e, 'action': 'write', 'rewrite': false, 'path': `!letter!:/${gW.root}/Sniffer_Python/src/scripts/BAT/proxy.pac`, 'text': res, });
             if (!retFile.ret) { logConsole({ e, ee, 'write': true, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
-        }
+        }; pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
-        // CLIENT (NÃO POR COMO 'await'!!!) | MANTER NO FINAL
-        client({ 'e': e, });
-
-        // [2 SEGUNDOS APÓS INICIAR] BADGE (USUARIO_3): RESETAR
-        setTimeout(() => { listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '', }, },], }, }); }, 1000);
-
-        // PAC
-        pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
+        // CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL]  ||||  [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
+        client({ e, }); setTimeout(() => { listenerAcionar(ori, { destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); }, 1000);
 
         async function funGetSend(inf = {}) {
             let ret = { 'complete': true, res: {}, };
@@ -78,10 +72,7 @@ async function serverRun(inf = {}) {
                     // ######################################################################
                     if (!ret.complete) { showLog = 'REQ/RES CANCELADA'; } else if (ret.res && (ret.res.body || ret.res.headers)) { showLog = 'REQ/RES ALTERADA'; }
                 } else { showLog = `OUTRO URL | ${url}`; }; if (showLog) { logConsole({ e, ee, 'write': true, 'msg': `JS → ${showLog}`, }); }
-            } catch (catchErr) {
-                let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
-            };
-
+            } catch (catchErr) { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; };
             return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
         }
 
@@ -123,36 +114,27 @@ async function serverRun(inf = {}) {
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
         // -------------------------------------------------------------------------------------------------
-
-        function socketErr(socket, err) {
-            socket.on('error', (err) => {
-                if (err.code !== 'ECONNRESET') { logConsole({ e, ee, 'write': true, 'msg': `ERRO SOCKET\n${JSON.stringify(err)}`, }); esLintIgnore = err; } // ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER
-            }); esLintIgnore = err;
-        }
-        let sockReq = _net.createServer((socket) => { // ########### REQ [SEND]
-            try {
-                socketErr(socket, 'REQUEST'); let g = ''; socket.on('data', async (chunk) => {
-                    g += chunk.toString(); if (g.endsWith('#fim#')) {
-                        g = Buffer.from(g.split('#fim#')[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d); if ((d.getSend === 'send') && (r.res.getSend === 'send')) {
-                            let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bufferSocket) { let p = b.slice(i, i + bufferSocket); socket.write(p); }
-                            socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
-                        }; g = ''; // LIMPAR BUFFER
-                    }
-                });
-            } catch (catchErr) { (async () => { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; })(); }
-        }); sockReq.listen((portSocket), () => { });
-        let sockRes = _net.createServer((socket) => { // ########### RES [GET]
-            try {
-                socketErr(socket, 'RESPONSE'); let g = ''; socket.on('data', async (chunk) => {
-                    g += chunk.toString(); if (g.endsWith('#fim#')) {
-                        g = Buffer.from(g.split('#fim#')[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d); if ((d.getSend === 'get') && (r.res.getSend === 'get')) {
-                            let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bufferSocket) { let part = b.slice(i, i + bufferSocket); socket.write(part); };
-                            socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
-                        }; g = ''; // LIMPAR BUFFER
-                    }
-                });
-            } catch (catchErr) { (async () => { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; })(); }
-        }); sockRes.listen((portSocket + 1), () => { });
+        // ERROS SERVIDOR (ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER)
+        async function serverErr(err) { let errString = err.toString(); if (errString.includes('EADDRINUSE') || !errString.includes('ECONNRESET')) { await regexE({ 'inf': inf, 'e': err, }); process.exit(1); } };
+        let serverSocketReq = _net.createServer((socket) => { // ########### REQ [SEND]
+            let g = ''; socket.on('data', async (chunk) => {
+                g += chunk.toString(); if (g.endsWith('#fim#')) {
+                    g = Buffer.from(g.split('#fim#')[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d); if ((d.getSend === 'send') && (r.res.getSend === 'send')) {
+                        let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bufferSocket) { let p = b.slice(i, i + bufferSocket); socket.write(p); }
+                        socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
+                    }; g = ''; // LIMPAR BUFFER
+                }
+            });
+        }); let serverSocketRes = _net.createServer((socket) => { // ########### RES [GET]
+            let g = ''; socket.on('data', async (chunk) => {
+                g += chunk.toString(); if (g.endsWith('#fim#')) {
+                    g = Buffer.from(g.split('#fim#')[0], 'base64').toString('utf-8'); let d = JSON.parse(g); let r = await funGetSend(d); if ((d.getSend === 'get') && (r.res.getSend === 'get')) {
+                        let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bufferSocket) { let part = b.slice(i, i + bufferSocket); socket.write(part); };
+                        socket.write('#fim#'); // ENVIAR CARACTERE DE FIM 
+                    }; g = ''; // LIMPAR BUFFER
+                }
+            }); // INICIAR SERVIDORES SOCKET (REQ [SEND] | RES [GET])
+        }); serverSocketReq.listen((portSocket), () => { serverSocketRes.listen((portSocket + 1), () => { }).on('error', (err) => { serverErr(err); }); }).on('error', async (err) => { serverErr(err); });
         // -------------------------------------------------------------------------------------------------
     } catch (catchErr) {
         let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];

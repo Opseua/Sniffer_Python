@@ -75,21 +75,17 @@ async function ewoq(inf = {}) {
                             text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', 'text': text, }; let retGoogleTranslate = await googleTranslate(infGoogleTranslate);
                             if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; };
                             notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', }); clipboard({ 'value': text, });
-                        } else {
-
+                        } else if (value.hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
                             // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
-                            if (value.hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
-                                let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); rg = rg?.res?.['1'] ? rg.res['1'] : false;
-                                if (!rg) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', }); } else {
-                                    let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json', }, }; let retApi = await api(infApi);
-                                    rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada', }); rg = rg?.res?.['1'] ? rg.res['1'] : false;
-                                    if (!rg) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', }); } else {
-                                        let uploadDate = new Date(rg); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000; // 15 DIAS ATRÁS
-                                        if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, }); }
-                                    }
+                            let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); rg = rg?.res?.['1'] ? rg.res['1'] : false;
+                            if (!rg) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', }); } else {
+                                let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${rg}`, 'headers': { 'accept-language': 'application/json', }, }; let retApi = await api(infApi);
+                                rg = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada', }); rg = rg?.res?.['1'] ? rg.res['1'] : false;
+                                if (!rg) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', }); } else {
+                                    let uploadDate = new Date(rg); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000; // 15 DIAS ATRÁS
+                                    if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, }); }
                                 }
                             }
-
                         }; text = body['1'][0]['10']['1'][0]['2']; clipboard({ 'value': text, }); // csf([gO.inf]);
                     }
                 }

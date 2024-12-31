@@ -58,9 +58,30 @@ fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
 locale.setlocale(locale.LC_TIME, "pt_BR")
 
 
+# LOGCONSOLE
+def logConsole(inf):
+    dateNow = datetime.now()
+    dateNowMon = f"MES_{dateNow.strftime('%m')}_{dateNow.strftime('%b').upper()}"
+    dateNowDay = f"DIA_{dateNow.strftime('%d')}"
+    dateNowHou = f"{dateNow.strftime('%H')}"
+    dateNowMin = f"{dateNow.strftime('%M')}"
+    dateNowSec = f"{dateNow.strftime('%S')}"
+    dateNowMil = f"{dateNow.microsecond // 1000:03d}"
+    dateInFile = f"→ {dateNowHou}:{dateNowMin}:{dateNowSec}.{dateNowMil}\n{str(inf)}"
+    fileName = (
+        f"log/Python/{dateNowMon}/{dateNowDay}/{dateNowHou}.00-{dateNowHou}.59_log.txt"
+    )
+    os.makedirs(os.path.dirname(fileName), exist_ok=True)
+    err = f"{dateInFile}\n\n"
+    with open(fileName, "a", encoding="utf-8") as file:
+        file.write(err)
+
+
 # CONSOLE
 def console(*args):
-    print("".join(str(arg) for arg in args))
+    text = "".join(str(arg) for arg in args)
+    print(text)
+    logConsole(text)
     if (console.counter + 1) % 100 == 0:
         os.system("cls")
         print("CONSOLE LIMPO!\n")

@@ -27,14 +27,14 @@ async function tryRating(inf = {}) {
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21]`, });
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "[CTRL+F21]"`, });
             gO.inf[platform]['log'] = []; // csf([gO.inf]);
         }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
-                commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F21][F21]`, }); // csf([gO.inf]);
+                commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "[CTRL+F21][F21]"`, });
                 let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, });
                 // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {

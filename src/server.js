@@ -38,7 +38,7 @@ async function serverRun(inf = {}) {
 
                     // #### EWOQ
                     if (platform.includes('EWOQ')) {
-                        /* [1] → INÍCIO */; urlCurrent = `/home`; // INSPECIONAR → /(GetNewTasks|GetTemplate|RecordTaskRenderingLatency|SubmitFeedback)/
+                        /* [1] → INÍCIO */; urlCurrent = `/home`;
                         if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
 
                         /* [2] → RECEBE A TASK */; urlCurrent = `/GetNewTasks`;

@@ -16,7 +16,7 @@ async function ewoq(inf = {}) {
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F20]`, });
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "[CTRL+F20]"`, });
             gO.inf[platform]['log'] = []; // csf([gO.inf]);
         }
 
@@ -67,7 +67,7 @@ async function ewoq(inf = {}) {
         /* [5] → TASK 100% CARREGADA */; urlCurrent = `/RecordTaskRenderingLatency_[TASK_100%_LOADED]`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['2']) {
-                commandLine({ 'notAdm': true, 'command': `${fileWindows}/BAT/ESCREVER_e_ou_TECLA.vbs [CTRL+F20][F20]`, });
+                commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "[CTRL+F20][F20]"`, });
                 let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         body = value.body; let text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;

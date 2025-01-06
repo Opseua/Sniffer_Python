@@ -23,20 +23,17 @@ async function tryRating(inf = {}) {
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; };
+        function runClavier(com) { commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "${com}"`, }); };
         listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '', }, },], }, }); // BADGE (USUARIO_3): RESETAR
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "[CTRL+F21]"`, });
-            gO.inf[platform]['log'] = []; // csf([gO.inf]);
-        }
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */; }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
-                commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "[CTRL+F21][F21]"`, });
-                let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, });
-                // CAPTURAR TODAS AS TASKS DO JULGAMENTO
+                runClavier(`[CTRL+F21][F21]`); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
+                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, }); // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created); let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1;
                     tasksType = resultList > 0 ? 'resultList' : 'tasks'; tasksBlind += blind ? 1 : 0; tasksInf.push({
@@ -55,7 +52,7 @@ async function tryRating(inf = {}) {
                     platInf['folder'] = false; if (retFile.res.length > 0) {
                         for (let [/*i*/, v,] of retFile.res.entries()) {
                             if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false; }; if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false; };
-                            if (v.name.includes('page_tryrating.mhtml')) { platInf['page'] = false; }; if (v.name.includes('2-GET_TASK-')) { platInf['get'] = false; };
+                            if (v.name.includes('page_tryrating')) { platInf['page'] = false; }; if (v.name.includes('2-GET_TASK-')) { platInf['get'] = false; };
                         };
                     }
                 }; Object.keys(platInf).forEach((k /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} `; } });
@@ -97,12 +94,12 @@ async function tryRating(inf = {}) {
 
         /* [3] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/client_log`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
-                let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0;
-                let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0; let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0;
-                let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId; let pathJson = `./log/${pathLogPlataform}`;
-                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1);
-                pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew, }); for (let [index, value,] of gO.inf[platform].log.entries()) {
+            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); if (body) {
+                let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
+                let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
+                let pathJson = `./log/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
+                pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew, });
+                for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (judgeId === value.judgeId) {
                         pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
                         pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, 'pathNew': pathNew, });

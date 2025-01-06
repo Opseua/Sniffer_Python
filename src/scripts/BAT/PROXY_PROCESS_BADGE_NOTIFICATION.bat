@@ -34,26 +34,24 @@ rem ### ON
 if not "!action!"=="!action:ON=!" (
 	rem ENCERRAR PYTHON (NAO USAR O BACKGROUND!!! DO CONTRARIO ELE ENCERRA O PYTHON QUE SERA INICIADO)
 	taskkill /IM python!project!_server.exe /F
-	
+
 	rem MUDAR LOCAL DO TERMINAL
 	cd /d !fileProjetos!\!project!
 	
 	if "!action!"=="ON_HIDE" (
-		rem HIDE
+		rem [HIDE]
 		!3_BACKGROUND! /NOCONSOLE "!fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py"
 	) else (
-		rem VIEW
-		start "python!project!_server_sniffer.py" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py
-		
-		rem JANELA DO LOG POSICIONAR
-		!3_BACKGROUND! /NOCONSOLE "!3_BACKGROUND! /NOCONSOLE /DELAY=2 "cmd.exe /c "D:\ARQUIVOS\PROJETOS\Chrome_Extension\src\scripts\BAT\fileNircmdSetSize.vbs python!project!_server_sniffer.py WINTP3""""
+		rem [VIEW] OBRIGATORIO O '/RUNAS'!!! | JANELA DO LOG POSICIONAR
+		!3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title CMD_python!project!_server_sniffer.py& start "python!project!_server_sniffer.py" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileNircmdSetSize! python!project!_server_sniffer.py WINTP3"
 	)
 	
-	rem → PROXY [ON] - SCRIPT DE INSTALACAO
-	!3_BACKGROUND! /NOCONSOLE "reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8889/?act=getFilePac" /F"
+	rem → PROXY [ON] - SCRIPT DE INSTALACAO | ENCERRAR E INICIAR stopwatch
+	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8889/?act=getFilePac" /F" "cmd.exe /c taskkill /IM stopwatch.exe /F & !fileWindows!\PORTABLE_Stopwatch\Stopwatch.lnk"
+
+	ping -n 1 -w 1000 127.0.0.1 > nul
 
 	rem NOTIFICATION → SNIFFER ON
-	!3_BACKGROUND! /NOCONSOLE "cmd.exe /c taskkill /IM stopwatch.exe /F & start !fileWindows!\PORTABLE_Stopwatch\stopwatch.exe"
 	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"
 	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"notification_1.png","title":"SNIFFER","text":"Ativado"}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":"ON","color":"#19ff47"}}  ]}"
 	set "pathRes=!local!\z_BODY_RES_!outrosAdd!.txt" & set "pathReq=!local!\z_BODY_REQ_!outrosAdd!.txt" & echo !body! > "!pathReq!" & "!wget!" "--post-file=!pathReq!" "!headers!" --quiet -O "!pathRes!" "http://127.0.0.1:!confPort!/?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_0"
@@ -62,11 +60,8 @@ if not "!action!"=="!action:ON=!" (
 
 rem ### OFF
 if not "!action!"=="!action:OFF=!" (
-	rem ENCERRAR PYTHON
-	!3_BACKGROUND! /NOCONSOLE "cmd.exe /c taskkill /IM python!project!_server.exe /F & taskkill /IM stopwatch.exe /F"
-	
-	rem → PROXY [OFF] - SCRIPT DE INSTALACAO | PROXY MANUAL	
-	!3_BACKGROUND! /NOCONSOLE "reg ADD "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /f"
+	rem → PROXY [OFF] - SCRIPT DE INSTALACAO | PROXY MANUAL	| ENCERRAR E INICIAR stopwatch/python
+	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /f" "cmd.exe /c taskkill /IM stopwatch.exe /F & taskkill /IM python!project!_server.exe /F"
 	
 	rem NOTIFICATION → SNIFFER OFF
 	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"

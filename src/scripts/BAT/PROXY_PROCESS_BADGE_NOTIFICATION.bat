@@ -4,7 +4,7 @@ set "letra=%letra:~0,1%" & set "local=%local:~0,-1%" & set "arquivo=%~nx0" & set
 set "usuario=%USERNAME%" & set "argTUDO=%~1 %~2 %~3 %~4 %~5" & set "arg1=%~1" & set "arg2=%~2"
 
 rem AVISO PARA USAR O ATALHO COM PARAMENTROS
-if "!arg1!" == "" ( !fileMsg! "[!local!\!arquivo!]\\n\\nNao usar o BAT/BACKGROUND" & exit )
+if "!arg1!" == "" ( !3_BACKGROUND! /NOCONSOLE "cmd.exe /c !fileMsg! "[!local!\!arquivo!]\\n\\nNENHUM PARAMETRO PASSADO"" & exit )
 
 rem set "start=ERRO" & set "adm=ERRO" & NET SESSION > nul 2>&1 & if !errorlevel! neq 0 ( set "adm=NAO" ) else ( set "adm=SIM" )
 
@@ -14,16 +14,16 @@ rem set "timeNow=!timeNow:~0,-3!" & set "dia=!DATE:~0,2!" & set "mes=!DATE:~3,2!
 rem ********************************************************************************************************************************************************
 
 set "action=ERRO"
-if "!arg1!"=="OFF" (
+if "!arg1!" == "OFF" (
 	set "action=OFF"
 ) else (
-	if not "!arg2!"=="!arg2:E=!" (
-		if not "!arg2!"=="FALSE" (
+	if not "!arg2!" == "!arg2:E=!" (
+		if not "!arg2!" == "FALSE" (
 			rem OFF
 			set "action=OFF"
 		) else (
 			rem ON_VIEW | ON_HIDE
-			if not "!arg1!"=="!arg1:_VIEW=!" ( set "action=ON_VIEW" ) else ( set "action=ON_HIDE" )
+			if not "!arg1!" == "!arg1:_VIEW=!" ( set "action=ON_VIEW" ) else ( set "action=ON_HIDE" )
 		)
 	)
 )
@@ -31,14 +31,14 @@ if "!arg1!"=="OFF" (
 set "project=Sniffer_Python"
 
 rem ### ON
-if not "!action!"=="!action:ON=!" (
+if not "!action!" == "!action:ON=!" (
 	rem ENCERRAR PYTHON (NAO USAR O BACKGROUND!!! DO CONTRARIO ELE ENCERRA O PYTHON QUE SERA INICIADO)
 	taskkill /IM python!project!_server.exe /F
 
 	rem MUDAR LOCAL DO TERMINAL
 	cd /d !fileProjetos!\!project!
 	
-	if "!action!"=="ON_HIDE" (
+	if "!action!" == "ON_HIDE" (
 		rem [HIDE]
 		!3_BACKGROUND! /NOCONSOLE "!fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py"
 	) else (
@@ -59,7 +59,7 @@ if not "!action!"=="!action:ON=!" (
 )
 
 rem ### OFF
-if not "!action!"=="!action:OFF=!" (
+if not "!action!" == "!action:OFF=!" (
 	rem → PROXY [OFF] - SCRIPT DE INSTALACAO | PROXY MANUAL	| ENCERRAR E INICIAR stopwatch/python
 	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /f" "cmd.exe /c taskkill /IM stopwatch.exe /F & taskkill /IM python!project!_server.exe /F"
 	

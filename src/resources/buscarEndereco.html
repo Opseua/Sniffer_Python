@@ -11,8 +11,8 @@
 <body>
     <div id="timer">00:00:00</div>
     <div id="input-section">
-        <input type="text" id="address-input" placeholder="Digite o endereço ou CEP"> <button
-            onclick="getAddress()">CONSULTAR</button>
+        <input type="text" id="address-input" placeholder="Digite o endereço ou CEP">
+        <button id="consultar-button" onclick="getAddress()">CONSULTAR</button>
     </div>
     <table id="result-table">
         <thead>
@@ -164,7 +164,9 @@
         // ***************************************************************************************************************************************
 
         // CHAMAR A FUNÇÃO AO PRESSIONAR O ENTER | INICIAR COM FOCUS NO IMPUT | DEFINIR ÁREA DE TRANSFERÊNCIA
-        document.getElementById('address-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') { getAddress(); } }); document.getElementById('address-input').focus();
+        document.getElementById('address-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') { getAddress(); } });
+        function focus() { document.getElementById('address-input').focus(); }; focus(); document.addEventListener('visibilitychange', () => { if (!document.hidden) { focus() } });
+
         function clipboardSet(inf) { navigator.clipboard.writeText(inf).then(() => { }, (catchErr) => { console.log(`CLIPBOARD SET: ERRO | ${catchErr}`); }); }
 
         // PEGAR O NOME E ENDEREÇO DO GOOGLE MAPS
@@ -227,8 +229,8 @@
                     let queryOk = ''; Object.keys(query).forEach((key, index) => { if (query[key] && query[key] !== true && key !== 'tipo') { queryOk = `${queryOk}, ${query[key]}` } });
                     input = queryOk.replace(', ', query.tipo && query.tipo !== true ? query.tipo + ' ' : '');
                     let retFetch = await searchAddress({ 'input': input }); if (!retFetch.ok) { ret['msg'] = `FETCH [API SERVER]: ERRO | AO FAZER REQUISIÇÃO`; alert(ret.msg); retFetchs = false; return; } else {
-                        let data = await retFetch.text(); data = JSON.parse(data).res; if (data.code == 403) { ret['msg'] = `GET ADDRESS: ERRO | TOKEN INVÁLIDO`; alert(ret.msg); window.location.reload(); retFetchs = false; return }
-                        if (data.code == 200) { retFetchs.push(...JSON.parse(data.body).enderecos); }
+                        let d = await retFetch.text(); d = JSON.parse(d).res; if (d.code == 403) { ret['msg'] = `GET ADDRESS: ERRO | TOKEN INVÁLIDO`; alert(ret.msg); window.location.reload(); retFetchs = false; return }
+                        if (d.code == 200) { retFetchs.push(...JSON.parse(d.body).enderecos); }
                     };
                 };
 
@@ -293,9 +295,9 @@
         body {
             font-family: Arial, sans-serif;
             padding: 10px;
-            margin-top: 100px;
-            margin-left: 100px;
-            margin-right: 100px;
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
             background-color: #17191A;
             color: white;
         }
@@ -314,14 +316,13 @@
         }
 
         #consultar-button {
-            margin-left: 10px;
             padding: 8px 20px;
             cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 17px;
         }
 
         #consultar-button:hover {

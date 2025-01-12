@@ -32,3 +32,5 @@ gloWin['taskInfTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneri
 
 // SCRIPTS DESSE PROJETO
 gloWin['getResponseTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../scripts/getResponseTryRating.js', 'inf': inf, }); };
+
+

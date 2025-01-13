@@ -207,7 +207,7 @@ async function taskInfTryRating(inf = {}) {
                 let retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile; }; retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
                 if (!arrRequestId.includes(requestId)) { arrRequestId.push(requestId); arrBody.push({ 'path': value, 'body': retFile, }); }
             }
-        }; let pathReg = `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/reg.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'rewrite': false, 'text': 'x\n', }); };
+        }; let pathReg = `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/reg.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'text': 'x\n', }); };
 
         // ******************************************************************************************************************************************************************************************************************
 
@@ -237,7 +237,7 @@ async function taskInfTryRating(inf = {}) {
                 let qtdJudge = r.res.tasks['0'].qtdJudge; let qtdBlind = r.res.tasks['0'].qtdBlind; let qtdResp = r.res.tasks['0'].qtdResp; let t = [
                     type, conceptId, projectId, requestId, hitApp, targetLocalIds.length, path, blindNum, timeCreated, taskType, metadata, metadataName, metadataAssetType, metadataState,
                     metadataCreatedBy, metadataCreated, metadataStorageType, qtdJudge, qtdBlind, qtdResp,
-                ].join('*'); t = await file({ e, 'action': 'write', 'path': pathReg, 'rewrite': true, 'text': `${t}\n`, }); if (!t.ret) { return t; };
+                ].join('*'); t = await file({ e, 'action': 'write', 'path': pathReg, 'add': true, 'text': `${t}\n`, }); if (!t.ret) { return t; };
             };
             // qtdTask | res | blindNum | clip
             if (arrRes.qtdTask || arrRes.qtdTask === 0) { arrRes.qtdTask++; }; if (arrRes.res) { if (!arrRes.res[hitApp]) { arrRes.res[hitApp] = []; }; arrRes.res[hitApp].push(retReturnObj.res); }

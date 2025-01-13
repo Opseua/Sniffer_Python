@@ -19,7 +19,7 @@ async function serverRun(inf = {}) {
             let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let retFile;
             let res = 'function FindProxyForURL(url, host) {\n'; res += '    var proxyUrls = [\n'; res += Array.from(baseUrls).map(baseUrl => `        "*${baseUrl}*"`).join(',\n');
             res += '\n    ];\n'; res += '    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:8088" : "DIRECT";\n'; res += '}\n';
-            retFile = await file({ e, 'action': 'write', 'rewrite': false, 'path': `!letter!:/${gW.root}/Sniffer_Python/src/scripts/BAT/proxy.pac`, 'text': res, });
+            retFile = await file({ e, 'action': 'write', 'path': `!letter!:/${gW.root}/Sniffer_Python/src/scripts/BAT/proxy.pac`, 'text': res, });
             if (!retFile.ret) { logConsole({ e, ee, 'write': true, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
         }; pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 

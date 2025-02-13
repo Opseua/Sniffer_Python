@@ -8,8 +8,7 @@ if "!arg1!" == "" ( !3_BACKGROUND! /NOCONSOLE "cmd.exe /c !fileMsg! "[!local!\!a
 
 rem NET SESSION > nul 2>&1 & if !errorlevel! neq 0 ( set "adm=NAO" ) else ( set "adm=SIM" )
 
-rem echo WScript.Echo(new Date().getTime()); > !temp!\time.js & for /f "delims=" %%a in ('cscript //nologo !temp!\time.js') do set "timeNow=%%a"
-rem set "timeNow=!timeNow:~0,-3!" & set "dia=!DATE:~0,2!" & set "mes=!DATE:~3,2!"
+rem echo WScript.Echo(new Date().getTime()); > !temp!\time.js & for /f "delims=" %%a in ('cscript //nologo !temp!\time.js') do set "timeNow=%%a" & set "timeNow=!timeNow:~0,-3!" & set "dia=!DATE:~0,2!" & set "mes=!DATE:~3,2!"
 
 rem ********************************************************************************************************************************************************
 
@@ -47,7 +46,7 @@ if not "!action!" == "!action:ON=!" (
 	)
 	
 	rem → PROXY [ON] - SCRIPT DE INSTALACAO | ENCERRAR E INICIAR stopwatch
-	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8889/?act=getFilePac" /F" "cmd.exe /c taskkill /IM stopwatch.exe /F & !fileWindows!\PORTABLE_Stopwatch\Stopwatch.lnk"
+	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8889/?act=getFilePac" /F" "cmd.exe /c taskkill /IM stopwatch.exe /F & !fileWindows!\PORTABLE_Clavier\z_OUTROS\PORTABLE_Stopwatch\Stopwatch.vbs"
 
 	ping -n 1 -w 1000 127.0.0.1 > nul
 

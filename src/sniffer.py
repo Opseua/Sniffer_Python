@@ -29,8 +29,8 @@
 
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
-import json, os, sys, time, re, locale, base64, socket, io, gzip, zlib
 from datetime import datetime
+import json, os, sys, time, re, locale, base64, socket, io, gzip, zlib
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
 os.system("cls")
@@ -38,7 +38,8 @@ os.system("cls")
 # IGNORAR ERROS DO CTRL + C
 sys.stderr = open(os.devnull, "w")
 
-# BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install brotli mitmproxy
+# BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install asyncio brotli mitmproxy
+# BIBLIOTECAS: NECESSÁRIO DESINSTALAR (sem confirmação) → pip uninstall -y asyncio brotli mitmproxy
 import asyncio
 import brotli
 from mitmproxy import http

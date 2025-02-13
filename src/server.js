@@ -7,24 +7,23 @@ async function serverRun(inf = {}) {
         // IMPORTAR BIBLIOTECA [NODEJS]
         if (typeof _net === 'undefined') { await funLibrary({ 'lib': '_net', }); };
 
-        logConsole({ e, ee, 'write': true, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]`, });
+        logConsole({ e, ee, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]`, });
 
-        let infConSto, retConSto; // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
-        infConSto = { e, 'action': 'get', 'key': 'sniffer', }; retConSto = await configStorage(infConSto);
-        if (!retConSto.ret) { logConsole({ e, ee, 'write': true, 'msg': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
+        let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
+        if (!retConSto.ret) { logConsole({ e, ee, 'msg': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
         let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; global['platforms'] = retConSto.platforms;
-        let ori = `messageSendOrigin_${gW.devGet[1]}`; let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; global['ori'] = ori; global['des'] = des;
+        let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; global['des'] = des;
 
         async function pacFileCreate(arrUrl) {
             let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let retFile;
             let res = 'function FindProxyForURL(url, host) {\n'; res += '    var proxyUrls = [\n'; res += Array.from(baseUrls).map(baseUrl => `        "*${baseUrl}*"`).join(',\n');
             res += '\n    ];\n'; res += '    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:8088" : "DIRECT";\n'; res += '}\n';
             retFile = await file({ e, 'action': 'write', 'path': `!letter!:/${gW.root}/Sniffer_Python/src/scripts/BAT/proxy.pac`, 'text': res, });
-            if (!retFile.ret) { logConsole({ e, ee, 'write': true, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
+            if (!retFile.ret) { logConsole({ e, ee, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
         }; pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
         // CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL]  ||||  [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
-        client({ e, }); setTimeout(() => { listenerAcionar(ori, { destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); }, 1000);
+        client({ e, }); setTimeout(() => { messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); }, 1000);
 
         async function funGetSend(inf = {}) {
             let ret = { 'complete': true, res: {}, };
@@ -71,7 +70,7 @@ async function serverRun(inf = {}) {
 
                     // ######################################################################
                     if (!ret.complete) { showLog = 'REQ/RES CANCELADA'; } else if (ret.res && (ret.res.body || ret.res.headers)) { showLog = 'REQ/RES ALTERADA'; }
-                } else { showLog = `OUTRO URL | ${url}`; }; if (showLog) { logConsole({ e, ee, 'write': true, 'msg': `JS → ${showLog}`, }); }
+                } else { showLog = `OUTRO URL | ${url}`; }; if (showLog) { logConsole({ e, ee, 'msg': `JS → ${showLog}`, }); }
             } catch (catchErr) { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; };
             return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
         }

@@ -24,14 +24,14 @@ async function tryRating(inf = {}) {
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; };
         function runClavier(com) { commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "${com}"`, }); };
-        listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '', }, },], }, }); // BADGE (USUARIO_3): RESETAR
+        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); // BADGE (USUARIO_3): RESETAR
 
         /* [1] → INÍCIO */; urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */; }
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */; }
 
         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
+            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
                 runClavier(`[CTRL+F21][F21]`); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, }); // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
@@ -60,7 +60,7 @@ async function tryRating(inf = {}) {
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInfTryRating = await taskInfTryRating({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
-                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'write': true, 'msg': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; }; retTaskInfTryRating = retTaskInfTryRating.res;
+                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'msg': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; }; retTaskInfTryRating = retTaskInfTryRating.res;
                 let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum === 3) {
                     not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'resp', 'bC': '#19ff47', };
                     clipboard({ e, 'value': JSON.stringify(retTaskInfTryRating.clip[hitApp]['0'], null, 2), });
@@ -69,32 +69,45 @@ async function tryRating(inf = {}) {
                 else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
                 await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
-                let retLisAci = await listenerAcionar(ori, { 'destination': des, 'message': msgLis, }); logConsole({ e, ee, 'write': true, 'msg': `listenerAcionar\n${JSON.stringify(retLisAci)}`, });
+                messageSend({ 'destination': des, 'message': msgLis, });
 
                 if (blindNum === 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
-                    let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { 'hitApp': hitApp, 'path': retLog.res, }, },], };
-                    await listenerAcionar(ori, { 'destination': des, 'message': msgLis, });
+                    messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { 'hitApp': hitApp, 'path': retLog.res, }, },], }, });
                 }
 
                 // [Search20]: ALTERAR MODO DO MAPA
                 if (hitApp === 'Search20') {
-                    function fun(f) { let e = document.querySelector(f.e); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Hybrid'; }); e.click(); return true; };
-                    let actions = [
+                    // NOVO
+                    let actions; function fun1() {
+                        let t = Date.now(); setTimeout(function checkMenu() {
+                            let d = document; let s = d.querySelector('.mk-tile-layer-selector .mktls-value'); if (s) {
+                                s.click(); setTimeout(function checkOption() {
+                                    let h = [...d.querySelectorAll('.mktls-option'),].find(e => e.textContent.trim() === 'Hybrid'); if (h) h.click(); else if (Date.now() - t < 20000) { setTimeout(checkOption, 200); }
+                                }, 200);
+                            } else if (Date.now() - t < 20000) { setTimeout(checkMenu, 200); }
+                        }, 200);
+                    }; actions = [{ e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun1.toString()})()`, },]; for (let [index, value,] of actions.entries()) {
+                        let aaa = await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value, },], }, });
+                        console.log(aaa);
+                    };
+
+                    // ANTIGO
+                    function fun2(f) { let e = document.querySelector(f.ele); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Hybrid'; }); e.click(); return true; };
+                    actions = [
                         { e, 'action': 'elementAwait', 'target': `*tryrating*`, 'awaitElementMil': 20000, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: ESPERAR
                         { e, 'action': 'elementClick', 'target': `*tryrating*`, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: CLICAR
-                        { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun.toString()})(${JSON.stringify({ 'ele': '.mktls-option.mktls-show.mktls-value', })});`, }, // EXPANDIDA DO MAPA: SELECIONAR
+                        { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun2.toString()})(${JSON.stringify({ 'ele': '.mktls-option.mktls-show.mktls-value', })});`, }, // EXPANDIDA DO MAPA: SELECIONAR
                     ]; for (let [index, value,] of actions.entries()) {
-                        let retLisChrAct = await listenerAcionar(ori, { 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value, },], }, });
-                        if (!retLisChrAct.ret) { break; }; await new Promise(resolve => { setTimeout(resolve, index === 0 ? 3000 : 500); }); // console.log(retLisChrAct);
+                        let retMessageSend = await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value, },], }, });
+                        if (!retMessageSend.ret) { break; }; await new Promise(resolve => { setTimeout(resolve, index === 0 ? 3000 : 500); });
                     };
                 }
-
             }
         }
 
         /* [3] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/client_log`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'write': true, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); if (body) {
+            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); if (body) {
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
                 let pathJson = `./log/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
@@ -103,7 +116,7 @@ async function tryRating(inf = {}) {
                     if (judgeId === value.judgeId) {
                         pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
                         pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, 'pathNew': pathNew, });
-                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'get', 'key': `${platform}`, });
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'get', 'key': `${platform}`, });
                         if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {}, }, 'judges': [], }; } else { json = retConfigStorage.res; };
                         let dif = Number(time.tim) - value.tim; json.judges.push({
                             'hitApp': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
@@ -115,8 +128,8 @@ async function tryRating(inf = {}) {
                             }
                         }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksBlinds': tasksBlinds, 'judgesQtd': judgesQtd, 'judgesSec': judgesSec, 'judgesHour': dateHour(judgesSec).res, };
                         json.inf.hitApp[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksBlinds': tasksBlindsHitApp, 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'tasksHour': dateHour(judgesSecHitApp).res, };
-                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'functionLocal': false, 'action': 'set', 'key': `${platform}`, 'value': json, });
-                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'functionLocal': false, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, });
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'set', 'key': `${platform}`, 'value': json, });
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, });
                         for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec; };
 
                         // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
@@ -125,7 +138,7 @@ async function tryRating(inf = {}) {
                             let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { 'day': day, 'mon': mon, 'yea': yea, };
                         }; let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon;
 
-                        logConsole({ e, ee, 'write': true, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}`, });
+                        logConsole({ e, ee, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}`, });
 
                         let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key,]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt, };
                         let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; };

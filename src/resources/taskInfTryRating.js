@@ -88,7 +88,7 @@ async function taskInfTryRating(inf = {}) {
                         // ------------------------------------------------------------------- (NOVO) -------------------------------------------------------------------------------------------------------
                         if (!['Search20',].includes(tasks['0'].hitApp)) {
                             // [PELA CHAVE] | EXEMPLO → 'Relevance' *** { 'Relevance': 'aaa' }
-                            infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, 'keys': keys, 'filters': [{ 'includes': [`*${father}*`,], }, { 'includes': [`*${children}*`,], },], };
+                            infObjFilter = { e, 'obj': responses, 'noCaseSensitive': true, keys, 'filters': [{ 'includes': [`*${father}*`,], }, { 'includes': [`*${children}*`,], },], };
                             retObjFilter = await objFilter(infObjFilter); retObjFilter = retObjFilter.res; // console.log('1 byKey ***', JSON.stringify(keys), '\n→', JSON.stringify(retObjFilter), '\n');
                             res.searchByKey.push(...retObjFilter.map(v => ({ father, children, fieldType, ratingFieldKey, question, 'path': v.key, 'type': 'byKey', 'value': getValues(v.value), 'optionsIgnore': options, })));
 
@@ -130,7 +130,7 @@ async function taskInfTryRating(inf = {}) {
                 if (!(fieldType === 'checkbox' && value[0] !== true)) {
                     if ((path.toLowerCase() + '.').includes(`.${ratingFieldKey.toLowerCase()}.`) || alternativeMode) {
                         if (!res[father]) { res[father] = {}; }; if (!res[father][children]) { res[father][children] = {}; };
-                        if (!res[father][children][ratingFieldKey]) { res[father][children][ratingFieldKey] = { 'fieldType': fieldType, 'question': question, 'value': [], 'optionsIgnore': optionsIgnore, }; };
+                        if (!res[father][children][ratingFieldKey]) { res[father][children][ratingFieldKey] = { fieldType, question, 'value': [], optionsIgnore, }; };
                         res[father][children][ratingFieldKey]['fieldType'] = fieldType; res[father][children][ratingFieldKey]['question'] = question; res[father][children][ratingFieldKey]['value'].push(...value);
                         res[father][children][ratingFieldKey]['value'] = [...new Set(res[father][children][ratingFieldKey]['value']),];
                     }
@@ -146,9 +146,8 @@ async function taskInfTryRating(inf = {}) {
             for (let [index, value,] of Object.keys(tasks).filter(k => k !== '0').entries()) {
                 let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; };
                 for (let [index1, value1,] of childrens.entries()) {
-                    let children = value1; if (!res.tasks[father][children]) {
-                        delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { 'blindNum': 0, }, 'judge': 'x', 'task': tasks[father][children], };
-                    }; let judge = res.tasks[father][children]['task']; let blindNum = 0;
+                    let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { blindNum: 0, }, judge: 'x', task: tasks[father][children], }; };
+                    let judge = res.tasks[father][children]['task']; let blindNum = 0; let notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created;
                     // IDENTIFICAÇÃO DO JULGAMENTO
                     if (['Search20', 'AddressVerification',].includes(hitApp)) {
                         judge = `${judge?.value?.name || 'null'} = ${judge?.value?.address?.[0] || 'null'}`; judge = judge.replace(/, /g, ',').replace(/,/g, ', ');
@@ -162,10 +161,10 @@ async function taskInfTryRating(inf = {}) {
                         // 3 → [BLIND: SIM | RESP: SIM]
                         blindNum = 3; let r = responsesFilterObj[father][children]; if (compact) { Object.values(r).forEach(o => delete o.optionsIgnore); }; res.tasks[father][children]['response'] = r;
                         clip[`${judge} [${Math.random().toString(36).substring(2, 5)}]`] = Object.fromEntries(Object.entries(r).map(([k, v,]) => [k, v.value,]));
-                    } else if ((hitApp === 'Search20' && projectId === 1064208)) {
+                    } else if ((hitApp === 'Search20' && projectId === 1064208) || !notIsBlind) {
                         // 2 → [BLIND: SIM | RESP: NÃO]
                         blindNum = 2;
-                    } else if ((hitApp === 'Search20' && projectId === 111)) {
+                    } else if ((hitApp === 'Search20' && projectId === 111) || notIsBlind) {
                         // 1 → [BLIND: NÃO]
                         blindNum = 1;
                     }
@@ -241,7 +240,7 @@ async function taskInfTryRating(inf = {}) {
             };
             // qtdTask | res | blindNum | clip
             if (arrRes.qtdTask || arrRes.qtdTask === 0) { arrRes.qtdTask++; }; if (arrRes.res) { if (!arrRes.res[hitApp]) { arrRes.res[hitApp] = []; }; arrRes.res[hitApp].push(retReturnObj.res); }
-            if (arrRes.blindNum) { if (!arrRes.blindNum[blindNum][hitApp]) { arrRes.blindNum[blindNum][hitApp] = []; }; arrRes.blindNum[blindNum][hitApp].push({ 'date': timeCreated, 'path': path, }); }; if (arrRes.clip) {
+            if (arrRes.blindNum) { if (!arrRes.blindNum[blindNum][hitApp]) { arrRes.blindNum[blindNum][hitApp] = []; }; arrRes.blindNum[blindNum][hitApp].push({ 'date': timeCreated, path, }); }; if (arrRes.clip) {
                 if (!arrRes.clip[hitApp] && blindNum === 3) { arrRes.clip[hitApp] = []; }; if (blindNum === 3) {
                     let clip = retReturnObj.clip; let order = []; if (hitApp === 'Search20') { order = ['closed_dne', 'Relevance', 'Name', 'Address', 'Pin',]; };
                     clip = Object.fromEntries(Object.entries(clip).map(([k, v,]) => [k, keysOrder(v, order),])); arrRes.clip[hitApp].push(clip);
@@ -258,7 +257,7 @@ async function taskInfTryRating(inf = {}) {
         ret['res'] = res;
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
+        let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     };
 
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };

@@ -13,21 +13,21 @@ async function getResponseTryRating(inf = {}) {
 
         // TAREFAS: PEGAR CONTEÚDO
         function getTasks(inf = {}) {
-            let { obj, } = inf; let retGetTaskType = getTaskType({ 'obj': obj, }); let resOk = []; if (retGetTaskType === 'resultList') { obj.tasks[0].taskData.resultSet.resultList.forEach(item => { resOk.push(item); }); }
+            let { obj, } = inf; let retGetTaskType = getTaskType({ obj, }); let resOk = []; if (retGetTaskType === 'resultList') { obj.tasks[0].taskData.resultSet.resultList.forEach(item => { resOk.push(item); }); }
             else if (retGetTaskType === 'tasks') { obj.tasks.forEach(task => { resOk.push(task.taskData); }); }; return { 'type': retGetTaskType, 'tasks': resOk, };
         }
 
         // TAREFAS: PEGAR VALOR DA CHAVE
         function getValue(inf = {}) {
             let { obj, keysSearch, } = inf; for (let key of keysSearch) { if (obj[key] !== undefined) { return [obj[key],]; } };
-            for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ 'obj': obj[key], 'keysSearch': keysSearch, }); if (value.length > 0) { return value; } } }; return [];
+            for (let key in obj) { if (typeof obj[key] === 'object' && obj[key] !== null) { let value = getValue({ 'obj': obj[key], keysSearch, }); if (value.length > 0) { return value; } } }; return [];
         }
 
         // FILTRAR CHAVE
         function filterKey(inf = {}) {
             let { obj, search, eArray, } = inf; let result = eArray ? [] : {}; for (let key in obj) {
                 if (typeof obj[key] === 'object' && key !== search) {
-                    result[key] = filterKey({ 'obj': obj[key], 'search': search, 'eArray': Array.isArray(obj[key]), }); if (Object.keys(result[key]).length === 0) { delete result[key]; }
+                    result[key] = filterKey({ 'obj': obj[key], search, 'eArray': Array.isArray(obj[key]), }); if (Object.keys(result[key]).length === 0) { delete result[key]; }
                 } else if (key === search) { result[key] = obj[key]; } else if (obj[key] === search) { if (eArray) { result.push(key); } else { result[key] = obj[key]; } }
             }; return result;
         }
@@ -43,7 +43,7 @@ async function getResponseTryRating(inf = {}) {
 
         // PEGAR AS TAREFAS
         let responses = {}; if (body.includes(`{"serializedAnswer":{"`)) {
-            let obj = JSON.parse(body); let retGetTasks = getTasks({ 'obj': obj, }); for (let [index, value,] of retGetTasks.tasks.entries()) {
+            let obj = JSON.parse(body); let retGetTasks = getTasks({ obj, }); for (let [index, value,] of retGetTasks.tasks.entries()) {
                 let res = retGetTasks.type === 'tasks' ? value : value.value; let taskId = 'SEM_IDENTIFICACAO'; if (retGetTasks.type === 'resultList') {
                     if (value.surveyKeys) {
                         let serializedAnswer = JSON.stringify(obj.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer);
@@ -51,7 +51,7 @@ async function getResponseTryRating(inf = {}) {
                     }
                 }; let keysValue = ''; for (let [index, value,] of [['name', 'query', 'highlightMain', 'NAME', 'textQuery', 'keyword', 'pref_name', 'chave1', 'chave2',], ['address',],].entries()) {
                     let retGetValue = getValue({ 'obj': res, 'keysSearch': value, }); keysValue = retGetValue.length === 0 ? `${keysValue}SEM_IDENTIFICACAO = ` : `${keysValue}${retGetValue[0]} = `;
-                }; if (retGetTasks.type === 'resultList') { res = filterKey({ 'obj': obj, 'search': taskId, }); }; let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res, })); if (retGetPathObj !== '{}') {
+                }; if (retGetTasks.type === 'resultList') { res = filterKey({ obj, 'search': taskId, }); }; let retGetPathObj = JSON.stringify(getPathObj({ 'obj': res, })); if (retGetPathObj !== '{}') {
                     retGetPathObj = retGetPathObj.replace(/testQuestionInformation.answer.serializedAnswer./g, ''); retGetPathObj = retGetPathObj.replace(new RegExp(`${keysValue} \\.`, 'g'), '');
                     retGetPathObj = retGetPathObj.replace(new RegExp(`${taskId} \\.`, 'g'), ''); retGetPathObj = JSON.parse(retGetPathObj); responses[`${keysValue} [${Math.random().toString(36).substring(2, 5)}]`] = retGetPathObj;
                 }
@@ -100,7 +100,7 @@ async function getResponseTryRating(inf = {}) {
         }
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
+        let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     };
 
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };

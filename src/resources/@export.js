@@ -24,13 +24,13 @@ let qtd1 = 0; async function funImport(infOk) { let { path, inf, } = infOk; qtd1
 async function funGeneric(infOk) { let { path, inf, } = infOk; let name = funFile(path); let retDevAndFun = await devFun({ 'e': import.meta.url, 'enc': true, 'data': { name, 'par': inf, }, }); return retDevAndFun; };
 
 // PLATAFORMAS DESSE PROJETO
-gloWin['ewoq'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/ewoq.js', 'inf': inf, }); };
-gloWin['tryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/tryRating.js', 'inf': inf, }); };
+gloWin['ewoq'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/ewoq.js', inf, }); };
+gloWin['tryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../platforms/tryRating.js', inf, }); };
 
 // FUNÇÕES DESSE PROJETO
-gloWin['taskInfTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': './taskInfTryRating.js', 'inf': inf, }); };
+gloWin['taskInfTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': './taskInfTryRating.js', inf, }); };
 
 // SCRIPTS DESSE PROJETO
-gloWin['getResponseTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../scripts/getResponseTryRating.js', 'inf': inf, }); };
+gloWin['getResponseTryRating'] = (inf) => { let fun = (!eng) ? funImport : funGeneric; return fun({ 'path': '../scripts/getResponseTryRating.js', inf, }); };
 
 

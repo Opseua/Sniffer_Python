@@ -112,7 +112,7 @@ def errAll(exceptErr):
 def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
-    os.startfile(f"{fileProjetos}/Sniffer_Python/src/z_Outros_server/OFF.vbs")
+    os.startfile(f"{fileProjetos}/Sniffer_Python/src/z_OUTROS_server/OFF.vbs")
     # ENCERRAR SCRIPT
     os._exit(1)
 

@@ -38,40 +38,40 @@ async function serverRun(inf = {}) {
                     // #### EWOQ
                     if (platform.includes('EWOQ')) {
                         /* [1] → INÍCIO */; urlCurrent = `/home`;
-                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[1], 'text': url, })) { ewoq({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [2] → RECEBE A TASK */; urlCurrent = `/GetNewTasks`;
-                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[2], 'text': url, })) { ewoq({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [3] → SOLICITA O TEMPLATE */; urlCurrent = `/GetTemplate_[1-SEND]`;
-                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': url, })) { ewoq({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [4] → RECEBE O TEMPLATE */; urlCurrent = `/GetTemplate_[2-GET]`;
-                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[3], 'text': url, })) { ewoq({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [5] → TASK 100% CARREGADA */; urlCurrent = `/RecordTaskRenderingLatency_[TASK_100%_LOADED]`;
-                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[4], 'text': url, })) { ewoq({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [6] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/SubmitFeedback`;
-                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[5], 'text': url, })) { ewoq({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[5], 'text': url, })) { ewoq({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
                     }
 
                     // #### TryRating
                     if (platform.includes('TryRating')) {
                         /* [1] → INÍCIO */; urlCurrent = `/home`;
-                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': url, })) { tryRating({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[6], 'text': url, })) { tryRating({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
-                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': url, })) { tryRating({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'get') && regex({ 'simple': true, 'pattern': arrUrl[7], 'text': url, })) { tryRating({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
 
                         /* [3] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/client_log`;
-                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[8], 'text': url, })) { tryRating({ 'platform': platform, 'url': `${platform}${urlCurrent}`, 'body': body, }); }
+                        if ((getSend === 'send') && regex({ 'simple': true, 'pattern': arrUrl[8], 'text': url, })) { tryRating({ platform, 'url': `${platform}${urlCurrent}`, body, }); }
                     }
 
                     // ######################################################################
                     if (!ret.complete) { showLog = 'REQ/RES CANCELADA'; } else if (ret.res && (ret.res.body || ret.res.headers)) { showLog = 'REQ/RES ALTERADA'; }
                 } else { showLog = `OUTRO URL | ${url}`; }; if (showLog) { logConsole({ e, ee, 'msg': `JS → ${showLog}`, }); }
-            } catch (catchErr) { let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; };
+            } catch (catchErr) { let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; };
             return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
         }
 
@@ -114,7 +114,7 @@ async function serverRun(inf = {}) {
 
         // -------------------------------------------------------------------------------------------------
         // ERROS SERVIDOR (ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER)
-        async function serverErr(err) { let errString = err.toString(); if (errString.includes('EADDRINUSE') || !errString.includes('ECONNRESET')) { await regexE({ 'inf': inf, 'e': err, }); process.exit(1); } };
+        async function serverErr(err) { let errString = err.toString(); if (errString.includes('EADDRINUSE') || !errString.includes('ECONNRESET')) { await regexE({ inf, 'e': err, }); process.exit(1); } };
         let serverSocketReq = _net.createServer((socket) => { // ########### REQ [SEND]
             let g = ''; socket.on('data', async (chunk) => {
                 g += chunk.toString(); if (g.endsWith('#fim#')) {
@@ -136,7 +136,7 @@ async function serverRun(inf = {}) {
         }); serverSocketReq.listen((portSocket), () => { serverSocketRes.listen((portSocket + 1), () => { }).on('error', (err) => { serverErr(err); }); }).on('error', async (err) => { serverErr(err); });
         // -------------------------------------------------------------------------------------------------
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
+        let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }
 }
 // TODAS AS FUNÇÕES PRIMÁRIAS DO 'server.js' / 'serverC6.js' / 'serverJsf.js' DEVEM SE CHAMAR 'serverRun'!!!

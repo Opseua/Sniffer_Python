@@ -37,13 +37,13 @@ async function tryRating(inf = {}) {
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created); let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1;
                     tasksType = resultList > 0 ? 'resultList' : 'tasks'; tasksBlind += blind ? 1 : 0; tasksInf.push({
-                        'blind': blind, 'name': value.metadata?.name, 'assetType': value.metadata?.assetType, 'metadata': value.metadata?.metadata, 'state': value.metadata?.state,
+                        blind, 'name': value.metadata?.name, 'assetType': value.metadata?.assetType, 'metadata': value.metadata?.metadata, 'state': value.metadata?.state,
                         'createdBy': value.metadata?.createdBy, 'created': value.metadata?.created, 'storageType': value.metadata?.storageType,
                     });
                 }; let addGet = { 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': JSON.stringify(body.targetLocalIds), tasksInf, };
                 gO.inf[platform].log.push({
-                    'hitApp': hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': tasksQtd, 'tasksBlind': tasksBlind, 'judgeId': judgeId, 'judgesQtd': 1, 'tasksType': tasksType,
-                    'addGet': addGet, 'body': body, 'path': retLog.res,
+                    hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType,
+                    addGet, body, 'path': retLog.res,
                 });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
@@ -56,51 +56,55 @@ async function tryRating(inf = {}) {
                         };
                     }
                 }; Object.keys(platInf).forEach((k /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} `; } });
-                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}`, }); }
+                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}`, 'ntfy': false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
-                let not; let retTaskInfTryRating = await taskInfTryRating({ e, 'body': body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
+                let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
                 if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'msg': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; }; retTaskInfTryRating = retTaskInfTryRating.res;
                 let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum === 3) {
-                    not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'resp', 'bC': '#19ff47', };
+                    not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'RESP', 'bC': '#19ff47', };
                     clipboard({ e, 'value': JSON.stringify(retTaskInfTryRating.clip[hitApp]['0'], null, 2), });
-                } else if (blindNum === 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'blind', 'bC': '#EC1C24', }; }
-                else if (blindNum === 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'ok', 'bC': '#3F48CC', }; }
+                } else if (blindNum === 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'BLIN', 'bC': '#EC1C24', }; }
+                else if (blindNum === 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'OK', 'bC': '#3F48CC', }; }
                 else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
-                await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, });
+                await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
-                messageSend({ 'destination': des, 'message': msgLis, });
+                messageSend({ 'destination': des, 'message': msgLis, }); let actions;
 
                 if (blindNum === 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
-                    messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { 'hitApp': hitApp, 'path': retLog.res, }, },], }, });
+                    messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { hitApp, 'path': retLog.res, }, },], }, });
                 }
 
-                // [Search20]: ALTERAR MODO DO MAPA
-                if (hitApp === 'Search20') {
-                    // NOVO
-                    let actions; function fun1() {
-                        let t = Date.now(); setTimeout(function checkMenu() {
-                            let d = document; let s = d.querySelector('.mk-tile-layer-selector .mktls-value'); if (s) {
-                                s.click(); setTimeout(function checkOption() {
-                                    let h = [...d.querySelectorAll('.mktls-option'),].find(e => e.textContent.trim() === 'Hybrid'); if (h) h.click(); else if (Date.now() - t < 20000) { setTimeout(checkOption, 200); }
-                                }, 200);
-                            } else if (Date.now() - t < 20000) { setTimeout(checkMenu, 200); }
-                        }, 200);
-                    }; actions = [{ e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun1.toString()})()`, },]; for (let [index, value,] of actions.entries()) {
-                        let aaa = await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value, },], }, });
-                        console.log(aaa);
-                    };
+                // SALVAR VIEWPORT E USER NO STORAGE | ALTERAR MODO DO MAPA
+                if (['Search20', 'POIClosures',].includes(hitApp)) {
+                    function viewportUser(data) {
+                        let d0 = data.tasks[0].taskData; let viewportTime; let inputItemMessage = d0?.inputItem?.data?.message || {}; let tartMetadata = d0?.inputItem?.data?.tartMetadata || {};
+                        viewportTime = inputItemMessage.timeSinceMapViewportChanged !== void 0 ? inputItemMessage.timeSinceMapViewportChanged : tartMetadata.timeSinceMapViewportChanged;
+                        if (!viewportTime && inputItemMessage.place_request_parameters?.category_search_parameters?.viewport_info?.time_since_map_viewport_changed) {
+                            viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
+                        }; let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
+                        return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
+                    }; let retViewportUser = viewportUser(body);
 
-                    // ANTIGO
-                    function fun2(f) { let e = document.querySelector(f.ele); e = Array.from(document.querySelectorAll('.mktls-option')).find(l => { return l.textContent.trim() === 'Hybrid'; }); e.click(); return true; };
-                    actions = [
-                        { e, 'action': 'elementAwait', 'target': `*tryrating*`, 'awaitElementMil': 20000, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: ESPERAR
-                        { e, 'action': 'elementClick', 'target': `*tryrating*`, 'attribute': `class`, 'attributeValue': `mktls-option mktls-show mktls-value`, }, // EXPANDIDA DO MAPA: CLICAR
-                        { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun2.toString()})(${JSON.stringify({ 'ele': '.mktls-option.mktls-show.mktls-value', })});`, }, // EXPANDIDA DO MAPA: SELECIONAR
-                    ]; for (let [index, value,] of actions.entries()) {
-                        let retMessageSend = await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': value, },], }, });
-                        if (!retMessageSend.ret) { break; }; await new Promise(resolve => { setTimeout(resolve, index === 0 ? 3000 : 500); });
-                    };
+                    function fun1() {
+                        function h(s, c) { let e = document.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; }; function w(s, c) {
+                            if (h(s, c)) { return; }; let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } });
+                            o.observe(document.body, { childList: true, subtree: true, });
+                        }; function selectOption() {
+                            w('.mk-tile-layer-selector', (e1) => {
+                                setTimeout(() => {
+                                    let e2 = e1.querySelector('.mktls-option.mktls-show.mktls-value'); if (!e2) { return; }; let e3 = e2.textContent.trim(); if (!e3) { return; }; if (e3 === 'Hybrid') { return; };
+                                    let e4 = e1.querySelector('.mktls-option.mktls-show'); if (!e4) { return; }; e4.click(); setTimeout(() => {
+                                        let e5 = Array.from(e1.querySelectorAll('.mktls-option')).find(v => v.textContent.trim() === 'Hybrid');
+                                        if (!e5) { return; }; e5.dispatchEvent(new Event('click', { bubbles: true, }));
+                                    }, 700);
+                                }, 1000);
+                            });
+                        }; selectOption(); return true;
+                    }; actions = [
+                        { 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retViewportUser, }, },
+                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun1.toString()})()`, }, },
+                    ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); };
                 }
             }
         }
@@ -111,22 +115,22 @@ async function tryRating(inf = {}) {
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
                 let pathJson = `./log/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
-                pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, 'pathNew': pathNew, });
+                pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, pathNew, });
                 for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (judgeId === value.judgeId) {
                         pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
-                        pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, 'pathNew': pathNew, });
+                        pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, pathNew, });
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'get', 'key': `${platform}`, });
                         if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {}, }, 'judges': [], }; } else { json = retConfigStorage.res; };
                         let dif = Number(time.tim) - value.tim; json.judges.push({
-                            'hitApp': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
+                            hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
                             'judgesSec': dif, 'judgesHour': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'tasksType': value.tasksType, 'addGet': value.addGet,
                         }); if (!other[hitApp]) { lastHour = other.default.lastHour; } else { lastHour = other[hitApp].lastHour; }; for (let [index, value,] of json.judges.entries()) {
                             tasksQtd += value.tasksQtd; judgesQtd += value.judgesQtd; judgesSec += value.judgesSec; tasksBlinds += value.tasksBlind; if (value.hitApp === hitApp) {
                                 tasksQtdHitApp += value.tasksQtd; judgesQtdHitApp += value.judgesQtd; judgesSecHitApp += value.judgesSec; tasksBlindsHitApp += value.tasksBlind;
                                 if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) { judgesQtdHitAppLast += value.judgesQtd; judgesSecHitAppLast += value.judgesSec; }
                             }
-                        }; json.inf.reg = { 'tasksQtd': tasksQtd, 'tasksBlinds': tasksBlinds, 'judgesQtd': judgesQtd, 'judgesSec': judgesSec, 'judgesHour': dateHour(judgesSec).res, };
+                        }; json.inf.reg = { tasksQtd, tasksBlinds, judgesQtd, judgesSec, 'judgesHour': dateHour(judgesSec).res, };
                         json.inf.hitApp[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksBlinds': tasksBlindsHitApp, 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'tasksHour': dateHour(judgesSecHitApp).res, };
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'set', 'key': `${platform}`, 'value': json, });
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, });
@@ -135,7 +139,7 @@ async function tryRating(inf = {}) {
                         // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
                         function firstDayWeek(inf = {}) {
                             let { date, } = inf; let d = new Date(date); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
-                            let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { 'day': day, 'mon': mon, 'yea': yea, };
+                            let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { day, mon, yea, };
                         }; let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon;
 
                         logConsole({ e, ee, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}`, });
@@ -148,7 +152,7 @@ async function tryRating(inf = {}) {
                             `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`,
                         ]; infNotification = {
                             'duration': 2, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp}`,
-                            'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`,
+                            'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`, 'ntfy': false,
                         }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
                     }
                 }
@@ -159,7 +163,7 @@ async function tryRating(inf = {}) {
         ret['ret'] = true;
 
     } catch (catchErr) {
-        let retRegexE = await regexE({ 'inf': inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
+        let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     };
 
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };

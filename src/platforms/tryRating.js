@@ -18,18 +18,19 @@ async function tryRating(inf = {}) {
     try {
         let { platform, url, body, } = inf;
 
-        try { body = JSON.parse(body); } catch (catchErr) { esLintIgnore = catchErr; body = false; }; platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile;
+        try { body = JSON.parse(body); } catch (catchErr) { body = false; } platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile;
         let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
-        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; };
-        function runClavier(com) { commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "${com}"`, }); };
-        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); // BADGE (USUARIO_3): RESETAR
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; }
+        function runClavier(com) { commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "${com}"`, }); }
+        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); // RESETAR: BADGE (USUARIO_3) | TÍTULO ABA
+        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'tabAction', par: { e, 'action': `changeTitle`, 'search': `*tryrating*`, 'title': `TryRating`, }, },], }, });
 
-        /* [1] → INÍCIO */; urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */; }
+        /* [1] → INÍCIO */ urlCurrent = `/home`;
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
 
-        /* [2] → RECEBE A TASK */; urlCurrent = `/survey`;
+        /* [2] → RECEBE A TASK */ urlCurrent = `/survey`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
                 runClavier(`[CTRL+F21][F21]`); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
@@ -40,27 +41,24 @@ async function tryRating(inf = {}) {
                         blind, 'name': value.metadata?.name, 'assetType': value.metadata?.assetType, 'metadata': value.metadata?.metadata, 'state': value.metadata?.state,
                         'createdBy': value.metadata?.createdBy, 'created': value.metadata?.created, 'storageType': value.metadata?.storageType,
                     });
-                }; let addGet = { 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': JSON.stringify(body.targetLocalIds), tasksInf, };
-                gO.inf[platform].log.push({
-                    hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType,
-                    addGet, body, 'path': retLog.res,
-                });
+                } let addGet = { 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': JSON.stringify(body.targetLocalIds), tasksInf, };
+                gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/log/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, });
+                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, });
                 let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', 'get': '(2-GET_TASK-)', }; if (retFile.ret) {
                     platInf['folder'] = false; if (retFile.res.length > 0) {
                         for (let [/*i*/, v,] of retFile.res.entries()) {
-                            if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false; }; if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false; };
-                            if (v.name.includes('page_tryrating')) { platInf['page'] = false; }; if (v.name.includes('2-GET_TASK-')) { platInf['get'] = false; };
-                        };
+                            if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false; } if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false; }
+                            if (v.name.includes('page_tryrating')) { platInf['page'] = false; } if (v.name.includes('2-GET_TASK-')) { platInf['get'] = false; }
+                        }
                     }
-                }; Object.keys(platInf).forEach((k /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} `; } });
+                } Object.keys(platInf).forEach((k /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} `; } });
                 if (!!platInf.t) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}`, 'ntfy': false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
-                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'msg': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; }; retTaskInfTryRating = retTaskInfTryRating.res;
+                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'msg': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; } retTaskInfTryRating = retTaskInfTryRating.res;
                 let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum === 3) {
                     not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'RESP', 'bC': '#19ff47', };
                     clipboard({ e, 'value': JSON.stringify(retTaskInfTryRating.clip[hitApp]['0'], null, 2), });
@@ -82,70 +80,71 @@ async function tryRating(inf = {}) {
                         viewportTime = inputItemMessage.timeSinceMapViewportChanged !== void 0 ? inputItemMessage.timeSinceMapViewportChanged : tartMetadata.timeSinceMapViewportChanged;
                         if (!viewportTime && inputItemMessage.place_request_parameters?.category_search_parameters?.viewport_info?.time_since_map_viewport_changed) {
                             viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
-                        }; let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
+                        } let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
-                    }; let retViewportUser = viewportUser(body);
+                    } let retVU = viewportUser(body); let tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
 
                     function fun1() {
-                        function h(s, c) { let e = document.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; }; function w(s, c) {
-                            if (h(s, c)) { return; }; let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } });
+                        function h(s, c) { let e = document.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
+                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } });
                             o.observe(document.body, { childList: true, subtree: true, });
-                        }; function selectOption() {
+                        } function selectOption() {
                             w('.mk-tile-layer-selector', (e1) => {
                                 setTimeout(() => {
-                                    let e2 = e1.querySelector('.mktls-option.mktls-show.mktls-value'); if (!e2) { return; }; let e3 = e2.textContent.trim(); if (!e3) { return; }; if (e3 === 'Hybrid') { return; };
-                                    let e4 = e1.querySelector('.mktls-option.mktls-show'); if (!e4) { return; }; e4.click(); setTimeout(() => {
+                                    let e2 = e1.querySelector('.mktls-option.mktls-show.mktls-value'); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3 === 'Hybrid') { return; }
+                                    let e4 = e1.querySelector('.mktls-option.mktls-show'); if (!e4) { return; } e4.click(); setTimeout(() => {
                                         let e5 = Array.from(e1.querySelectorAll('.mktls-option')).find(v => v.textContent.trim() === 'Hybrid');
-                                        if (!e5) { return; }; e5.dispatchEvent(new Event('click', { bubbles: true, }));
+                                        if (!e5) { return; } e5.dispatchEvent(new Event('click', { bubbles: true, }));
                                     }, 700);
                                 }, 1000);
                             });
-                        }; selectOption(); return true;
-                    }; actions = [
-                        { 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retViewportUser, }, },
-                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', 'target': `*tryrating*`, 'fun': `(${fun1.toString()})()`, }, },
-                    ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); };
+                        } selectOption(); return true;
+                    } let target = '*tryrating*'; actions = [
+                        { 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, },
+                        { 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, },
+                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${fun1.toString()})()`, }, },
+                    ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
                 }
             }
         }
 
-        /* [3] → ENVIA A RESPOSTA DA TASK */; urlCurrent = `/client_log`;
+        /* [3] → ENVIA A RESPOSTA DA TASK */ urlCurrent = `/client_log`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); if (body) {
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
-                let pathJson = `./log/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
+                let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
                 pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, pathNew, });
                 for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (judgeId === value.judgeId) {
                         pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
                         pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, pathNew, });
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'get', 'key': `${platform}`, });
-                        if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {}, }, 'judges': [], }; } else { json = retConfigStorage.res; };
+                        if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBlinds': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {}, }, 'judges': [], }; } else { json = retConfigStorage.res; }
                         let dif = Number(time.tim) - value.tim; json.judges.push({
                             hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
                             'judgesSec': dif, 'judgesHour': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'tasksType': value.tasksType, 'addGet': value.addGet,
-                        }); if (!other[hitApp]) { lastHour = other.default.lastHour; } else { lastHour = other[hitApp].lastHour; }; for (let [index, value,] of json.judges.entries()) {
+                        }); if (!other[hitApp]) { lastHour = other.default.lastHour; } else { lastHour = other[hitApp].lastHour; } for (let [index, value,] of json.judges.entries()) {
                             tasksQtd += value.tasksQtd; judgesQtd += value.judgesQtd; judgesSec += value.judgesSec; tasksBlinds += value.tasksBlind; if (value.hitApp === hitApp) {
                                 tasksQtdHitApp += value.tasksQtd; judgesQtdHitApp += value.judgesQtd; judgesSecHitApp += value.judgesSec; tasksBlindsHitApp += value.tasksBlind;
                                 if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) { judgesQtdHitAppLast += value.judgesQtd; judgesSecHitAppLast += value.judgesSec; }
                             }
-                        }; json.inf.reg = { tasksQtd, tasksBlinds, judgesQtd, judgesSec, 'judgesHour': dateHour(judgesSec).res, };
+                        } json.inf.reg = { tasksQtd, tasksBlinds, judgesQtd, judgesSec, 'judgesHour': dateHour(judgesSec).res, };
                         json.inf.hitApp[hitApp] = { 'tasksQtd': tasksQtdHitApp, 'tasksBlinds': tasksBlindsHitApp, 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'tasksHour': dateHour(judgesSecHitApp).res, };
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'set', 'key': `${platform}`, 'value': json, });
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, });
-                        for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec; };
+                        for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec; }
 
                         // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
                         function firstDayWeek(inf = {}) {
                             let { date, } = inf; let d = new Date(date); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
                             let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { day, mon, yea, };
-                        }; let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon;
+                        } let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon;
 
                         logConsole({ e, ee, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}`, });
 
                         let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key,]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt, };
-                        let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; };
+                        let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; }
 
                         let notText = [
                             `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
@@ -164,10 +163,10 @@ async function tryRating(inf = {}) {
 
     } catch (catchErr) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
-    };
+    }
 
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
-};
+}
 
 // CHROME | NODEJS
 (eng ? window : global)['tryRating'] = tryRating;

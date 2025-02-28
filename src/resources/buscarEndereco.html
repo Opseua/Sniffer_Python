@@ -41,7 +41,7 @@
 
         async function pageOnLoad(duration) { // ONLOAD
             let t, h, m, s; await getSecPas(); let sP = securityPass; try {
-                let body = { 'fun': [{ 'securityPass': sP, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': '!fileProjetos!/Sniffer_Python/log/correios.txt', } }] }
+                let body = { 'fun': [{ 'securityPass': sP, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': '!fileProjetos!/Sniffer_Python/logs/correios.txt', } }] }
                 let retFetch = await fetch(`${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`, { 'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify(body) });
                 if (!retFetch.ok) { let err = `ERRO AO LER ARQUIVO CORREIOS`; alertConsole(err,); return }; let i, data = await retFetch.text();
                 data = JSON.parse(JSON.parse(data).res); let time = new Date(Number(`${data.time.replace(' ', '') - 10800}000`)); token = atob(data.txt.replace(' ', ''));
@@ -52,7 +52,7 @@
                 }, 1000);
 
 
-                // body = { 'fun': [{ 'securityPass': sP, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': '!fileProjetos!/Sniffer_Python/log/ibge.txt', } }] }
+                // body = { 'fun': [{ 'securityPass': sP, 'retInf': true, 'name': 'file', 'par': { 'action': 'read', 'path': '!fileProjetos!/Sniffer_Python/logs/ibge.txt', } }] }
                 // retFetch = await fetch(`${ipServer}?roo=OPSEUA-NODEJS-WEBSOCKET-SERVER`, { 'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify(body) });
                 // if (!retFetch.ok) { alert('ERRO AO LER ARQUIVO IBGE'); return }; data = await retFetch.text(); ibge = JSON.parse(JSON.parse(data).res);
                 // console.log(ibge)

@@ -1,18 +1,17 @@
-function startupFun(b, c) { let a = c - b; let s = Math.floor(a / 1000); let m = a % 1000; let f = m.toString().padStart(3, '0'); return `${s}.${f}`; } let startup = new Date();
-await import('./resources/@export.js'); let e = import.meta.url, ee = e;
+let startup = new Date(); await import('./resources/@export.js'); let e = import.meta.url, ee = e; let libs = false;
 
 async function serverRun(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
         // IMPORTAR BIBLIOTECA [NODEJS]
-        if (typeof _net === 'undefined') { await funLibrary({ 'lib': '_net', }); }
+        if (!libs) { await importLibs(['_net',]); libs = true; }
 
-        logConsole({ e, ee, 'msg': `**************** SERVER **************** [${startupFun(startup, new Date())}]`, });
+        logConsole({ e, ee, 'msg': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
 
         let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         if (!retConSto.ret) { logConsole({ e, ee, 'msg': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
-        let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; global['platforms'] = retConSto.platforms;
-        let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; global['des'] = des;
+        let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; globalThis['platforms'] = retConSto.platforms;
+        let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['des'] = des;
 
         async function pacFileCreate(arrUrl) {
             let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let retFile;
@@ -78,8 +77,8 @@ async function serverRun(inf = {}) {
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
         // let hitApps = [ // [platform] → COM OU SEM '_teste' | [hitAppType] → blindNao respNao respSim respSim_CLOSED_DNE 
-        //     // { 'platform': 'EWOQ_teste', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', 'hitAppType': 'blindNao' }, // [hitApp] → YouTube_Video_Inappropriateness_Evaluation
-        //     { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim_CLOSED_DNE', }, // [hitApp] → Search20 DrivingNavigation3DMaps
+        //     { 'platform': 'EWOQ_teste', 'hitApp': 'AlpacaBrandSafetyBrandDelicate', 'hitAppType': 'respSim', }, // [hitApp] → YouTube_Video_Inappropriateness_Evaluation / AlpacaBrandSafetyBrandDelicate
+        //     // { 'platform': 'TryRating_teste', 'hitApp': 'Search20', 'hitAppType': 'respSim_CLOSED_DNE', }, // [hitApp] → Search20 DrivingNavigation3DMaps
         // ];
 
         // let platformOption = {
@@ -89,10 +88,11 @@ async function serverRun(inf = {}) {
         //         { 'url': arrUrl[3], 'getSend': 'send', 'file': '3-SEND_TEMPLATE-${hitAppType}.txt', }, // [3] → SOLICITA O TEMPLATE
         //         { 'url': arrUrl[3], 'getSend': 'get', 'file': '4-GET_TEMPLATE-${hitAppType}.txt', }, // [4] → RECEBE O TEMPLATE
         //         { 'url': arrUrl[2], 'getSend': 'get', 'file': '2-GET_TASK_2-${hitAppType}.txt', }, // [2] → RECEBE A TASK
-        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_1_100_LOADED-${hitAppType}.txt', }, // [5] → TASK 100% CARREGADA
-        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_1-${hitAppType}.txt', }, // [6] → ENVIA A RESPOSTA DA TASK
-        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_2_100_LOADED-${hitAppType}.txt', }, // [5] → TASK 100% CARREGADA
-        //         { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_2-${hitAppType}.txt', }, // [6] → ENVIA A RESPOSTA DA TASK
+        //         { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_100_LOADED_1-${hitAppType}.txt', }, // [5] → TASK 100% CARREGADA
+        //         // { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_1-${hitAppType}.txt', }, // [6] → ENVIA A RESPOSTA DA TASK
+
+        //         // { 'url': arrUrl[4], 'getSend': 'send', 'file': '5-SEND_TASK_2_100_LOADED-${hitAppType}.txt', }, // [5] → TASK 100% CARREGADA
+        //         // { 'url': arrUrl[5], 'getSend': 'send', 'file': '6-SEND_TASK_2-${hitAppType}.txt', }, // [6] → ENVIA A RESPOSTA DA TASK
         //     ],
         //     'TryRating': [
         //         { 'url': arrUrl[6], 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt', }, // [1] → INÍCIO

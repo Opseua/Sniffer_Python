@@ -107,6 +107,6 @@ async function getResponseTryRating(inf = {}) {
 }
 
 // CHROME | NODEJS
-(eng ? window : global)['getResponseTryRating'] = getResponseTryRating;
+globalThis['getResponseTryRating'] = getResponseTryRating;
 
 

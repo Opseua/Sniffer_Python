@@ -47,8 +47,8 @@ async function ewoq(inf = {}) {
         /* [4] → RECEBE O TEMPLATE */ urlCurrent = `/GetTemplate_[2-GET]`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
-                let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/); if (hitApp.length > 0) {
-                    hitApp = hitApp[1].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
+                let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/)[1] || false; if (hitApp) {
+                    hitApp = hitApp.replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
                     retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': body, }); gO.inf[platform].token['path'] = retLog.res; if (gO.inf[platform].lastTemplate) {
                         pathNew = gO.inf[platform].lastTemplate; retFile = await file({ e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp), });
                         gO.inf[platform].lastTemplate = false; gO.inf[platform].token['pathLastTemplate'] = retFile.res;
@@ -67,12 +67,12 @@ async function ewoq(inf = {}) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['2']) {
                 runClavier(`[CTRL+F20][F20]`); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
-                        body = value.body; let text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
+                        let hitApp = value.hitApp; body = value.body; let text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
                         if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                             text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }; let retGoogleTranslate = await googleTranslate(infGoogleTranslate);
                             if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; }
                             notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'value': text, });
-                        } else if (value.hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
+                        } else if (hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
                             // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
                             let rg = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); rg = rg?.res?.['1'] ? rg.res['1'] : false;
                             if (!rg) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'ntfy': false, }); } else {
@@ -142,6 +142,6 @@ async function ewoq(inf = {}) {
 }
 
 // CHROME | NODEJS
-(eng ? window : global)['ewoq'] = ewoq;
+globalThis['ewoq'] = ewoq;
 
 

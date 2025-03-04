@@ -12,11 +12,10 @@ async function ewoq(inf = {}) {
         let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
-        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; }
-        function runClavier(com) { commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "${com}"`, }); }
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:8888/${a}`); } }
 
         /* [1] → INÍCIO */ urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F20]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_1`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
 
         /* [2] → RECEBE A TASK */ urlCurrent = `/GetNewTasks`;
         if ((url === `${platform}${urlCurrent}`)) {
@@ -65,7 +64,7 @@ async function ewoq(inf = {}) {
         /* [5] → TASK 100% CARREGADA */ urlCurrent = `/RecordTaskRenderingLatency_[TASK_100%_LOADED]`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['2']) {
-                runClavier(`[CTRL+F20][F20]`); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
+                runStopwatch([`reset_1`, `toggle_1`,]); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         let hitApp = value.hitApp; body = value.body; let text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
                         if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {

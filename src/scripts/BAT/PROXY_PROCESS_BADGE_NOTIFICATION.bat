@@ -42,10 +42,10 @@ if not "!action!" == "!action:ON=!" (
 		!3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title python!project!_server_CMD& start "python!project!_server_WIND" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileNircmdSetSize! python!project!_server_WIND WINTP3 EXATO"
 	)
 	
-	rem → PROXY [ON] - SCRIPT DE INSTALACAO | ENCERRAR E INICIAR stopwatch
-	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:8889/?act=getFilePac" /F" "cmd.exe /c taskkill /IM stopwatch.exe /F & !fileWindows!\PORTABLE_Clavier\z_OUTROS\PORTABLE_Stopwatch\Stopwatch.vbs"
+	rem → PROXY [ON] - SCRIPT DE INSTALACAO
+	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:!confPort!/?act=getFilePac" /F"
 
-	ping -n 1 -w 1000 127.0.0.1 > nul
+	ping -n 2 -w 1000 127.0.0.1 > nul
 
 	rem NOTIFICATION → SNIFFER ON
 	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"
@@ -56,8 +56,8 @@ if not "!action!" == "!action:ON=!" (
 
 rem ### OFF
 if not "!action!" == "!action:OFF=!" (
-	rem → PROXY [OFF] - SCRIPT DE INSTALACAO | PROXY MANUAL	| ENCERRAR E INICIAR stopwatch/python
-	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /f" "cmd.exe /c taskkill /IM stopwatch.exe /F & taskkill /IM python!project!_server.exe /F"
+	rem → PROXY [OFF] - SCRIPT DE INSTALACAO | PROXY MANUAL
+	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /f" "cmd.exe /c taskkill /IM python!project!_server.exe /F"
 	
 	rem NOTIFICATION → SNIFFER OFF
 	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"

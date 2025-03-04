@@ -45,6 +45,7 @@ import brotli
 from mitmproxy import http
 from mitmproxy.options import Options
 from mitmproxy.tools.dump import DumpMaster
+from threading import Thread
 
 # VARIÁVEIS
 bufferSocket = None  # fun → MITMPROXY REQ/RES
@@ -57,6 +58,9 @@ fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
 
 # FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
 locale.setlocale(locale.LC_TIME, "pt_BR")
+
+# FUNCOES ADICIONAIS
+from stopwatch import stopwatchRun
 
 
 # LOGCONSOLE
@@ -463,8 +467,9 @@ try:
 
     addons = [URLLogger()]
 
-    # #### INICIAR SERVIDOR
+    # #### INICIAR CRONOMETRO E SERVIDOR (CRONOMETRO PRECISAR SER PRIMEIRO!!!)
     if __name__ == "__main__":
+        Thread(target=stopwatchRun).start()
         asyncio.run(serverRun())
 
 # CHECAR ERROS

@@ -22,18 +22,18 @@ async function tryRating(inf = {}) {
         let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
-        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; }
-        function runClavier(com) { commandLine({ 'notBackground': true, 'command': `!fileWindows!/PORTABLE_Clavier/Clavier.exe /sendkeys "${com}"`, }); }
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:8888/${a}`); } }
+
         messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); // RESETAR: BADGE (USUARIO_3) | TÍTULO ABA
         messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'tabAction', par: { e, 'action': `changeTitle`, 'search': `*tryrating*`, 'title': `TryRating`, }, },], }, });
 
         /* [1] → INÍCIO */ urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_2`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
 
         /* [2] → RECEBE A TASK */ urlCurrent = `/survey`;
         if ((url === `${platform}${urlCurrent}`)) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
-                runClavier(`[CTRL+F21][F21]`); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
+                runStopwatch([`reset_2`, `toggle_2`,]); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, }); // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created); let resultList = value?.taskData?.resultSet?.resultList ? value.taskData.resultSet.resultList.length : 0; tasksQtd += resultList > 0 ? resultList : 1;
@@ -85,9 +85,8 @@ async function tryRating(inf = {}) {
                     } let retVU = viewportUser(body); let tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
 
                     function fun1() {
-                        function h(s, c) { let e = document.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
-                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } });
-                            o.observe(document.body, { childList: true, subtree: true, });
+                        let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
+                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
                         } function selectOption() {
                             w('.mk-tile-layer-selector', (e1) => {
                                 setTimeout(() => {
@@ -99,10 +98,17 @@ async function tryRating(inf = {}) {
                                 }, 1000);
                             });
                         } selectOption(); return true;
+                    } function fun2() {
+                        if (globalThis.observadorAtivo) { return; } globalThis.observadorAtivo = true;
+                        function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
+                        let l = [...document.querySelectorAll('.labeled-attribute__label span'),].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { return; }
+                        let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { return; } let p = t.textContent.trim(); title(`${p} [INI]`);
+                        new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
                     } let target = '*tryrating*'; actions = [
-                        { 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, },
+                        // { 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, },
                         { 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, },
                         { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${fun1.toString()})()`, }, },
+                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${fun2.toString()})()`, }, },
                     ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
                 }
             }
@@ -110,7 +116,7 @@ async function tryRating(inf = {}) {
 
         /* [3] → ENVIA A RESPOSTA DA TASK */ urlCurrent = `/client_log`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runClavier(`[CTRL+F21]`); if (body) {
+            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_2`,]); if (body) {
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
                 let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;

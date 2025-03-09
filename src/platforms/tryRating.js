@@ -45,16 +45,12 @@ async function tryRating(inf = {}) {
                 gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, });
-                let platInf = { 't': '', 'folder': '###', 'guideEn': '{Guide_EN}', 'guidePt': '{Guide_PT}', 'page': '(page_tryrating)', 'get': '(2-GET_TASK-)', }; if (retFile.ret) {
-                    platInf['folder'] = false; if (retFile.res.length > 0) {
-                        for (let [/*i*/, v,] of retFile.res.entries()) {
-                            if (v.name.includes('Guide_EN')) { platInf['guideEn'] = false; } if (v.name.includes('Guide_PT')) { platInf['guidePt'] = false; }
-                            if (v.name.includes('page_tryrating')) { platInf['page'] = false; } if (v.name.includes('2-GET_TASK-')) { platInf['get'] = false; }
-                        }
-                    }
-                } Object.keys(platInf).forEach((k /*i*/) => { if (k !== 't' && platInf[k]) { platInf['t'] = `${platInf['t']}${platInf[k]} `; } });
-                if (!!platInf.t) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${hitApp}\n${platInf.t}`, 'ntfy': false, }); }
+                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, }); if (retFile.ret) {
+                    function checkFiles(f, v) { v = v.map(g => f.some(n => regex({ 'simple': true, 'pattern': `*${g.r}*`, 'text': n, })) ? null : g.id).filter(Boolean); return v.length ? v.join(' | ') : false; } let f = [
+                        { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
+                        { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
+                    ]; retFile = checkFiles(retFile.res.map(f => f.path), f);
+                } if (retFile) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${retFile}`, 'ntfy': false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
@@ -67,7 +63,7 @@ async function tryRating(inf = {}) {
                 else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
                 await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
-                messageSend({ 'destination': des, 'message': msgLis, }); let actions;
+                messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle, funChangeMap, funTaskTime;
 
                 if (blindNum === 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
                     messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { hitApp, 'path': retLog.res, }, },], }, });
@@ -82,9 +78,9 @@ async function tryRating(inf = {}) {
                             viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
                         } let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
-                    } let retVU = viewportUser(body); let tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
-
-                    function fun1() {
+                    } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
+                    // actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, });
+                    actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, }); funChangeMap = function funChangeMap() {
                         let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
                             if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
                         } function selectOption() {
@@ -98,19 +94,16 @@ async function tryRating(inf = {}) {
                                 }, 1000);
                             });
                         } selectOption(); return true;
-                    } function fun2() {
-                        if (globalThis.observadorAtivo) { return; } globalThis.observadorAtivo = true;
-                        function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
-                        let l = [...document.querySelectorAll('.labeled-attribute__label span'),].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { return; }
-                        let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { return; } let p = t.textContent.trim(); title(`${p} [INI]`);
-                        new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
-                    } let target = '*tryrating*'; actions = [
-                        // { 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, },
-                        { 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, },
-                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${fun1.toString()})()`, }, },
-                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${fun2.toString()})()`, }, },
-                    ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
-                }
+                    }; actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
+                } funTaskTime = function fun2() {
+                    let e = document.querySelectorAll('.labeled-attribute__label span'); /* if (globalThis.observadorAtivo) { return; }; */ globalThis.observadorAtivo = true;
+                    function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
+                    let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
+                    let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
+                    new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
+                };  /* INJETAR */ let target = '*tryrating*'; actions = [
+                    { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },
+                ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
             }
         }
 

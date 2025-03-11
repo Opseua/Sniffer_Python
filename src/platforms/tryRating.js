@@ -22,7 +22,7 @@ async function tryRating(inf = {}) {
         let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
-        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:8888/${a}`); } }
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:${portStopwatch}/${a}`); } }
 
         messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); // RESETAR: BADGE (USUARIO_3) | TÍTULO ABA
         messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'tabAction', par: { e, 'action': `changeTitle`, 'search': `*tryrating*`, 'title': `TryRating`, }, },], }, });
@@ -45,7 +45,7 @@ async function tryRating(inf = {}) {
                 gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, }); if (retFile.ret) {
+                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, }); if (retFile.ret) {
                     function checkFiles(f, v) { v = v.map(g => f.some(n => regex({ 'simple': true, 'pattern': `*${g.r}*`, 'text': n, })) ? null : g.id).filter(Boolean); return v.length ? v.join(' | ') : false; } let f = [
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },

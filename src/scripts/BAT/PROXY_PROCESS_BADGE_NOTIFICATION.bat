@@ -42,14 +42,6 @@ if not "!action!" == "!action:ON=!" (
 	
 	rem → PROXY [ON] - SCRIPT DE INSTALACAO
 	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:!confPort!/?act=getFilePac" /F"
-
-	ping -n 2 -w 1000 127.0.0.1 > nul
-
-	rem NOTIFICATION → SNIFFER ON
-	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"
-	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"notification_1.png","title":"SNIFFER","text":"Ativado","ntfy":false}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":"ON","color":"#19ff47"}}  ]}"
-	set "pathRes=!local!\z_BODY_RES_!outrosAdd!.txt" & set "pathReq=!local!\z_BODY_REQ_!outrosAdd!.txt" & echo !body! > "!pathReq!" & "!wget!" "--post-file=!pathReq!" "!headers!" --quiet -O "!pathRes!" "http://127.0.0.1:!confPort!/?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_0"
-	del /F /Q "!pathRes!" & del /F /Q "!pathReq!"
 )
 
 rem ### OFF

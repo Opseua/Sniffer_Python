@@ -8,18 +8,19 @@ async function serverRun(inf = {}) {
         let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         if (!retConSto.ret) { logConsole({ e, ee, 'msg': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
         let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; globalThis['platforms'] = retConSto.platforms;
-        let des = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['des'] = des;
+        globalThis['des'] = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['portStopwatch'] = retConSto.portStopwatch;
 
         async function pacFileCreate(arrUrl) {
-            let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let retFile;
+            let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let rF;
             let res = 'function FindProxyForURL(url, host) {\n'; res += '    var proxyUrls = [\n'; res += Array.from(baseUrls).map(baseUrl => `        "*${baseUrl}*"`).join(',\n');
-            res += '\n    ];\n'; res += '    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:8088" : "DIRECT";\n'; res += '}\n';
-            retFile = await file({ e, 'action': 'write', 'path': `!letter!:/${gW.root}/Sniffer_Python/src/scripts/BAT/proxy.pac`, 'text': res, });
-            if (!retFile.ret) { logConsole({ e, ee, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
+            res += '\n    ];\n'; res += `    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:${retConSto.portMitm}" : "DIRECT";\n`; res += '}\n';
+            rF = await file({ e, 'action': 'write', 'path': `${fileProjetos}/${gW.project}/src/scripts/BAT/proxy.pac`, 'text': res, }); if (!rF.ret) { logConsole({ e, ee, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
         } pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
-        // CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL]  ||||  [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
-        client({ e, }); setTimeout(() => { messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); }, 1000);
+        async function wait() { // CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL]  ||||  [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
+            await new Promise(resolve => { setTimeout(resolve, 50); }); client({ e, }); await new Promise(resolve => { setTimeout(resolve, 1000); });
+            messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, })
+        } wait() // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
         async function funGetSend(inf = {}) {
             let ret = { 'complete': true, res: {}, };
@@ -100,7 +101,7 @@ async function serverRun(inf = {}) {
 
         // for (let [index, value,] of hitApps.entries()) {
         //     let platform = [value.platform.replace('_teste', ''),]; platform.push(`${platform[0]}_teste`);
-        //     let infFile, retFile, pathLogPlataform = `${fileProjetos}/Sniffer_Python/logs/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1,] of platformOption[platform[0]].entries()) {
+        //     let infFile, retFile, pathLogPlataform = `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1,] of platformOption[platform[0]].entries()) {
         //         infFile = { e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}`, };
         //         retFile = await file(infFile); if (!retFile.ret) { console.log('ARQUIVO NÃO ENCONTRADO', infFile.path); break; }
         //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res, }); await new Promise(resolve => { setTimeout(resolve, 2000); });

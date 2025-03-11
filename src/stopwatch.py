@@ -17,6 +17,8 @@
 # pylint: disable=C0116
 # ERRO DE IMPORT EM OUTRA PASTA
 # pylint: disable=E0401
+# ERRO DE IMPORT NAO IDENTIFICADO
+# pylint: disable=E0611
 # ERRO DE IMPORT ANTES DE USAR A VARIÁVEL
 # pylint: disable=C0413
 # pylint: disable=C0411
@@ -28,7 +30,7 @@
 # pylint: disable=W0613
 
 # BIBLIOTECAS: NATIVAS
-import sys, time
+import sys, time, json, os
 
 # BIBLIOTECAS: NECESSÁRIO INSTALAR
 from flask import Flask
@@ -37,6 +39,9 @@ from PyQt5.QtCore import QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from threading import Thread
 import logging
+
+# VARIÁVEIS
+fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 
 # IGNORAR ERROS DO SEERVIDOR HTTP
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
@@ -121,7 +126,14 @@ def control(action, id):
 
 
 def run_flask_server():
-    app.run(host="127.0.0.1", port=8888, debug=False, use_reloader=False)
+    # LER O CONFIG E DEFINIR AS VARIÁVEI
+    fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")
+    config = ""
+    with open(fullPathJson, "r", encoding="utf-8") as file:
+        config = json.load(file)
+    objSniffer = config["sniffer"]
+    portStopwatch = objSniffer["portStopwatch"]
+    app.run(host="127.0.0.1", port=portStopwatch, debug=False, use_reloader=False)
 
 
 def stopwatchRun():
@@ -133,7 +145,8 @@ def stopwatchRun():
     ]
     for i, (cor_fundo, cor_texto) in enumerate(cores, start=1):
         cronometro = Cronometro(cor_fundo, cor_texto)
-        cronometro.setGeometry(5, 963 + (i - 1) * 28, 75, 25)
+        # cronometro.setGeometry(5, 963 + (i - 1) * 28, 75, 25) # ACIMA DA BARRA DE TAREFAS
+        cronometro.setGeometry(120, 1023 + (i - 1) * 28, 75, 25)  # NA BARRA DE TAREFAS
         cronometro.show()
         cronometros[str(i)] = cronometro
 

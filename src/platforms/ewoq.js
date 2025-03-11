@@ -12,7 +12,7 @@ async function ewoq(inf = {}) {
         let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
-        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:8888/${a}`); } }
+        if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:${portStopwatch}/${a}`); } }
 
         /* [1] → INÍCIO */ urlCurrent = `/home`;
         if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_1`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }

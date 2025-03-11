@@ -186,7 +186,7 @@ async function taskInfTryRating(inf = {}) {
             arrBody.push({ 'path': false, 'body': (typeof body === 'object' ? body : JSON.parse(body)), });
         } else if (plataform) {
             // JULGAMENTOS (RECEBIDOS): PEGAR [EM MASSA] POR PLATAFORMA
-            let retFile = await file({ 'action': 'list', 'path': `${fileProjetos}/Sniffer_Python/logs/Plataformas/${plataform}`, 'max': 12, }); if (!retFile.ret) { return retFile; }
+            let retFile = await file({ 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/${plataform}`, 'max': 12, }); if (!retFile.ret) { return retFile; }
             for (let [index, value,] of retFile.res.entries()) {
                 if (value.isFolder && value.name.includes('MES_')) {
                     let retFile1 = await file({ 'action': 'list', 'path': value.path, 'max': 32, }); if (!retFile1.ret) { return retFile1; } for (let [index1, value1,] of retFile1.res.entries()) {
@@ -206,7 +206,7 @@ async function taskInfTryRating(inf = {}) {
                 let retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile; } retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
                 if (!arrRequestId.includes(requestId)) { arrRequestId.push(requestId); arrBody.push({ 'path': value, 'body': retFile, }); }
             }
-        } let pathReg = `${fileProjetos}/Sniffer_Python/logs/Plataformas/z_teste/reg.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'text': 'x\n', }); }
+        } let pathReg = `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/reg.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'text': 'x\n', }); }
 
         // ******************************************************************************************************************************************************************************************************************
 

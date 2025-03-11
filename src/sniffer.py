@@ -17,6 +17,8 @@
 # pylint: disable=C0116
 # ERRO DE IMPORT EM OUTRA PASTA
 # pylint: disable=E0401
+# ERRO DE IMPORT NAO IDENTIFICADO
+# pylint: disable=E0611
 # ERRO DE IMPORT ANTES DE USAR A VARIÁVEL
 # pylint: disable=C0413
 # pylint: disable=C0411
@@ -30,7 +32,7 @@
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
 from datetime import datetime
-import json, os, sys, time, re, locale, base64, socket, io, gzip, zlib
+import json, os, sys, time, re, locale, base64, socket, io, gzip, zlib, requests
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
 os.system("cls")
@@ -55,6 +57,7 @@ arrUrl = None  # fun → MITMPROXY REQ/RES
 # letter = os.getenv("letter")
 fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
+project = os.path.abspath(__file__).split("PROJETOS\\")[1].split("\\src")[0]
 
 # FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
 locale.setlocale(locale.LC_TIME, "pt_BR")
@@ -116,7 +119,7 @@ def errAll(exceptErr):
 def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
-    os.startfile(f"{fileProjetos}/Sniffer_Python/src/z_OUTROS_server/OFF.vbs")
+    os.startfile(f"{fileProjetos}/{project}/src/z_OUTROS_server/OFF.vbs")
     # ENCERRAR SCRIPT
     os._exit(1)
 
@@ -149,12 +152,16 @@ try:
         config = ""
         with open(fullPathJson, "r", encoding="utf-8") as file:
             config = json.load(file)
-        portSocket = config["sniffer"]["portSocket"]
-        portMitm = 8088
-        bufferSocket = config["sniffer"]["bufferSocket"] * 1000
-        # arrUrl = config["sniffer"]["arrUrl"]
+        objWebSocket = config["webSocket"]
+        objSniffer = config["sniffer"]
+        securityPass = objWebSocket["securityPass"]
+        portWebSocket = objWebSocket["server"]["1"]["port"]
+        portMitm = objSniffer["portMitm"]
+        portSocket = objSniffer["portSocket"]
+        bufferSocket = objSniffer["bufferSocket"] * 1000
+
         # MANTER APENAS URLS QUE COMEÇAM COM 'http'
-        arrUrl = [url for url in config["sniffer"]["arrUrl"] if url.startswith("http")]
+        arrUrl = [url for url in objSniffer["arrUrl"] if url.startswith("http")]
 
         # TENTAR SE CONECTAR AO SOCKET
         tryConnectSocketReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -171,6 +178,32 @@ try:
         )
         m = DumpMaster(options, with_termlog=False, with_dumper=False)
         m.addons.add(*addons)
+
+        # NOTIFICAÇÃO SNIFFER: ON
+        urlReq = f"http://127.0.0.1:{portWebSocket}/?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_0"
+        payload = {
+            "fun": [
+                {
+                    "securityPass": securityPass,
+                    "name": "notification",
+                    "par": {
+                        "duration": 2,
+                        "icon": "notification_1.png",
+                        "title": "SNIFFER",
+                        "text": "Ativado",
+                        "ntfy": False,
+                    },
+                },
+                {
+                    "securityPass": securityPass,
+                    "name": "chromeActions",
+                    "par": {"action": "badge", "text": "ON", "color": "#19ff47"},
+                },
+            ]
+        }
+        headers = {"Content-Type": "application/json"}
+        requests.post(urlReq, json=payload, headers=headers, timeout=1)
+
         try:
             console(f"MITMPROXY RODANDO NA PORTA: {portMitm}")
             await m.run()
@@ -471,6 +504,7 @@ try:
     if __name__ == "__main__":
         Thread(target=stopwatchRun).start()
         asyncio.run(serverRun())
+        print("ok")
 
 # CHECAR ERROS
 except Exception as exceptErr:

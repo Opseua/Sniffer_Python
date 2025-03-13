@@ -78,7 +78,7 @@ async function tryRating(inf = {}) {
                             viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
                         } let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
-                    } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
+                    } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT'; let target = '*tryrating*';
                     // actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, });
                     actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, }); funChangeMap = function funChangeMap() {
                         let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
@@ -101,7 +101,7 @@ async function tryRating(inf = {}) {
                     let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
                     let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
                     new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
-                };  /* INJETAR */ let target = '*tryrating*'; actions = [
+                };  /* INJETAR */ actions = [
                     { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },
                 ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
             }

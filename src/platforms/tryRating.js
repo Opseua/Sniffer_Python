@@ -45,12 +45,12 @@ async function tryRating(inf = {}) {
                 gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                retFile = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, }); if (retFile.ret) {
+                let text = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/TryRating/${hitApp}`, 'max': 30, }); text = text.res || false; if (text) {
                     function checkFiles(f, v) { v = v.map(g => f.some(n => regex({ 'simple': true, 'pattern': `*${g.r}*`, 'text': n, })) ? null : g.id).filter(Boolean); return v.length ? v.join(' | ') : false; } let f = [
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
-                    ]; retFile = checkFiles(retFile.res.map(f => f.path), f);
-                } if (retFile) { await notification({ 'duration': 4, 'icon': 'notification_3.png', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, 'text': `${retFile}`, 'ntfy': false, }); }
+                    ]; text = checkFiles(text.map(f => f.path), f); if (text) { notification({ duration: 4, icon: 'notification_3.png', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
+                }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
@@ -61,7 +61,7 @@ async function tryRating(inf = {}) {
                 } else if (blindNum === 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'BLIN', 'bC': '#EC1C24', }; }
                 else if (blindNum === 1) { not = { 'duration': 2, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'OK', 'bC': '#3F48CC', }; }
                 else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
-                await notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
+                notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
                 messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle, funChangeMap, funTaskTime;
 
@@ -152,7 +152,7 @@ async function tryRating(inf = {}) {
                         ]; infNotification = {
                             'duration': 2, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp}`,
                             'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`, 'ntfy': false,
-                        }; await notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
+                        }; notification(infNotification); gO.inf[platform].log.splice(index, 1); // csf([gO.inf]);
                     }
                 }
             }

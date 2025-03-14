@@ -66,7 +66,7 @@ async function ewoq(inf = {}) {
             logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['2']) {
                 runStopwatch([`reset_1`, `toggle_1`,]); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
-                        let hitApp = value.hitApp; body = value.body; let text; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
+                        let hitApp = value.hitApp; body = value.body; let text = ''; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
                         if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                             text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }; let retGoogleTranslate = await googleTranslate(infGoogleTranslate);
                             if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; }
@@ -82,7 +82,7 @@ async function ewoq(inf = {}) {
                                     if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'notification_3.png', 'title': `${platform} | YouTube`, 'text': rg, 'ntfy': false, }); }
                                 }
                             }
-                        } text = body['1'][0]['10']['1'][0]['2']; clipboard({ 'value': text, }); // csf([gO.inf]);
+                        } text = `${body['1'][0]['10']['1'][0]['2']}\n\n${text}`; clipboard({ 'value': text, }); // csf([gO.inf]);
                     }
                 }
 

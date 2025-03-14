@@ -16,13 +16,13 @@ await getPath({ 'e': new Error(), devChildren, });
 // console.log(`devGet:\n${gW.devGet[0]}\n${gW.devGet[1]}`); console.log('conf:', gW.conf); console.log('root:', gW.root); console.log('functions:', gW.functions); console.log('project:', gW.project);
 
 /* FUNÇÕES DESSE PROJETO */ let project = gW.project;
-globalThis['ewoq'] = (inf) => { return importFun({ 'importOk': (!eng), 'path': `./src/platforms/ewoq.js`, inf, project, }); };
-globalThis['tryRating'] = (inf) => { return importFun({ 'importOk': (!eng), 'path': `./src/platforms/tryRating.js`, inf, project, }); };
+globalThis['ewoq'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/ewoq.js`, inf, project, }); };
+globalThis['tryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/tryRating.js`, inf, project, }); };
 
 // FUNÇÕES DESSE PROJETO
-globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'importOk': (!eng), 'path': `./src/resources/taskInfTryRating.js`, inf, project, }); };
+globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/taskInfTryRating.js`, inf, project, }); };
 
 // SCRIPTS DESSE PROJETO
-globalThis['getResponseTryRating'] = (inf) => { return importFun({ 'importOk': (!eng), 'path': `./src/scripts/getResponseTryRating.js`, inf, project, }); };
+globalThis['getResponseTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/scripts/getResponseTryRating.js`, inf, project, }); };
 
 

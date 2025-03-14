@@ -95,15 +95,16 @@ async function tryRating(inf = {}) {
                             });
                         } selectOption(); return true;
                     }; actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
-                } funTaskTime = function fun2() {
-                    let e = document.querySelectorAll('.labeled-attribute__label span'); /* if (globalThis.observadorAtivo) { return; }; */ globalThis.observadorAtivo = true;
-                    function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
-                    let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
-                    let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
-                    new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
-                };  /* INJETAR */ actions = [
-                    { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },
-                ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
+                    funTaskTime = function fun2() {
+                        let e = document.querySelectorAll('.labeled-attribute__label span'); /* if (globalThis.observadorAtivo) { return; }; */ globalThis.observadorAtivo = true;
+                        function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
+                        let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
+                        let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
+                        new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
+                    };  /* INJETAR */ actions = [
+                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },
+                    ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
+                }
             }
         }
 

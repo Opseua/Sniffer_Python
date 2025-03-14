@@ -1,9 +1,11 @@
-let startup = new Date(); await import('./resources/@export.js'); let e = import.meta.url, ee = e; let libs = ['net',];
+let startup = new Date(); await import('./resources/@export.js'); let e = import.meta.url, ee = e; let libs = { 'net': {}, };
 
 async function serverRun(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
         logConsole({ e, ee, 'msg': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
+
+        /* IMPORTAR BIBLIOTECA [NODEJS] */ if (libs['net']) { libs['net']['net'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]'); }
 
         let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         if (!retConSto.ret) { logConsole({ e, ee, 'msg': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
@@ -19,8 +21,8 @@ async function serverRun(inf = {}) {
 
         async function wait() { // CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL]  ||||  [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
             await new Promise(resolve => { setTimeout(resolve, 50); }); client({ e, }); await new Promise(resolve => { setTimeout(resolve, 1000); });
-            messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, })
-        } wait() // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
+            messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, });
+        } wait(); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
         async function funGetSend(inf = {}) {
             let ret = { 'complete': true, res: {}, };
@@ -109,9 +111,6 @@ async function serverRun(inf = {}) {
         // }
 
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-        // -------------------------------------------------------------------------------------------------
-        /* IMPORTAR BIBLIOTECA [NODEJS] */ if (libs.length > 0) { libs = await importLibs(libs, [{ 'm': 'net', 'l': ['net',], },]); }
 
         // ERROS SERVIDOR (ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER)
         async function serverErr(err) { let errString = err.toString(); if (errString.includes('EADDRINUSE') || !errString.includes('ECONNRESET')) { await regexE({ inf, 'e': err, }); process.exit(1); } }

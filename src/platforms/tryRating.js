@@ -18,7 +18,7 @@ async function tryRating(inf = {}) {
     try {
         let { platform, url, body, } = inf;
 
-        try { body = JSON.parse(body); } catch (catchErr) { body = false; } platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent, retFile;
+        try { body = JSON.parse(body); } catch (catchErr) { body = false; } platform = platform || 'Teste'; let retConfigStorage, infNotification, retLog, pathNew, urlCurrent;
         let time = dateHour().res; let time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`; let pathLogPlataform = `Plataformas/${platform}`; let other = platforms[platform.replace('_teste', '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
@@ -63,7 +63,7 @@ async function tryRating(inf = {}) {
                 else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
                 notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
-                messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle, funChangeMap, funTaskTime;
+                messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle, funChangeMap, funTaskTime; let target = '*tryrating*';
 
                 if (blindNum === 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
                     messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { hitApp, 'path': retLog.res, }, },], }, });
@@ -78,7 +78,7 @@ async function tryRating(inf = {}) {
                             viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
                         } let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
-                    } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT'; let target = '*tryrating*';
+                    } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
                     // actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, });
                     actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, }); funChangeMap = function funChangeMap() {
                         let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
@@ -95,16 +95,29 @@ async function tryRating(inf = {}) {
                             });
                         } selectOption(); return true;
                     }; actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
-                    funTaskTime = function fun2() {
-                        let e = document.querySelectorAll('.labeled-attribute__label span'); /* if (globalThis.observadorAtivo) { return; }; */ globalThis.observadorAtivo = true;
-                        function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
-                        let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
-                        let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
-                        new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
-                    };  /* INJETAR */ actions = [
-                        { 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },
-                    ]; for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
                 }
+
+                // TEMPO DA TASK
+                // funTaskTime = function fun2() {
+                //     let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis.observadorAtivo = true;
+                //     function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
+                //     let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
+                //     let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
+                //     new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
+                // };
+
+
+                funTaskTime = function fun2() {
+                    let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis.observadorAtivo = true; function title(t) {
+                        let n = t.match(/\d+/g).map(Number); let m = 0, s = 0; if (n.length === 1) { s = n[0]; } else { [m, s,] = n; } document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                    } let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; } let t = l.closest('.labeled-attribute')?.querySelector('.label-value');
+                    if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
+                    new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
+                };
+
+
+                actions = [{ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },]; // INJETAR
+                for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
             }
         }
 

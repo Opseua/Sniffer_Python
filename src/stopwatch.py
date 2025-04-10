@@ -59,10 +59,12 @@ class Cronometro(QWidget):
         self.inicio = 0
         self.tempo_decorrido = 0
         self.cronometro_iniciar_signal.connect(self.iniciar_cronometro)
-        self.setWindowOpacity(0.2)
+        self.setWindowOpacity(0.4)
 
     def initUI(self, cor_fundo_rgb, cor_texto_rgb):
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(
+            Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint
+        )  # Qt.Popup | Qt.ToolTip
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -96,7 +98,7 @@ class Cronometro(QWidget):
         self.pausado = True
         self.timer.stop()
         self.label.setText("00:00:0")
-        self.setWindowOpacity(0.2)
+        self.setWindowOpacity(0.4)
 
     def toggle_cronometro(self):
         if self.pausado:
@@ -105,7 +107,7 @@ class Cronometro(QWidget):
             self.pausado = True
             self.timer.stop()
             self.tempo_decorrido += time.time() - self.inicio
-            self.setWindowOpacity(0.5)
+            self.setWindowOpacity(0.7)
 
 
 app = Flask(__name__)
@@ -145,8 +147,12 @@ def stopwatchRun():
     ]
     for i, (cor_fundo, cor_texto) in enumerate(cores, start=1):
         cronometro = Cronometro(cor_fundo, cor_texto)
-        # cronometro.setGeometry(5, 963 + (i - 1) * 28, 75, 25) # ACIMA DA BARRA DE TAREFAS
-        cronometro.setGeometry(120, 1023 + (i - 1) * 28, 75, 25)  # NA BARRA DE TAREFAS
+        # ACIMA DA BARRA DE TAREFAS
+        # cronometro.setGeometry(5, 963 + (i - 1) * 28, 75, 25)
+        # NA BARRA DE TAREFAS (SEM O MONITOR DE CONSUMO DE CPU E RAM)
+        # cronometro.setGeometry(120, 1023 + (i - 1) * 28, 75, 25)
+        # NA BARRA DE TAREFAS (COM O MONITOR DE CONSUMO DE CPU E RAM)
+        cronometro.setGeometry(190, 1023 + (i - 1) * 28, 75, 25)
         cronometro.show()
         cronometros[str(i)] = cronometro
 

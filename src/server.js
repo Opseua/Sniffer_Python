@@ -1,14 +1,14 @@
-let startup = new Date(); await import('./resources/@export.js'); let e = import.meta.url, ee = e; let libs = { 'net': {}, };
+let startup = new Date(); globalThis['sP'] = import.meta.url; await import('./resources/@export.js'); let e = sP, ee = e; let libs = { 'net': {}, };
 
 async function serverRun(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
-        logConsole({ e, ee, 'msg': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
+        logConsole({ e, ee, 'txt': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
 
         /* IMPORTAR BIBLIOTECA [NODEJS] */ if (libs['net']) { libs['net']['net'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]'); }
 
         let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
-        if (!retConSto.ret) { logConsole({ e, ee, 'msg': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
+        if (!retConSto.ret) { logConsole({ e, ee, 'txt': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
         let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; globalThis['platforms'] = retConSto.platforms;
         globalThis['des'] = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['portStopwatch'] = retConSto.portStopwatch;
 
@@ -16,11 +16,11 @@ async function serverRun(inf = {}) {
             let baseUrls = new Set(arrUrl.filter(url => url.startsWith('http')).map(url => url.replace(/^https?:\/\//, '')).map(url => url.split('/')[0])); let rF;
             let res = 'function FindProxyForURL(url, host) {\n'; res += '    var proxyUrls = [\n'; res += Array.from(baseUrls).map(baseUrl => `        "*${baseUrl}*"`).join(',\n');
             res += '\n    ];\n'; res += `    return proxyUrls.some(function(currentUrl) { return shExpMatch(url, currentUrl); }) ? "PROXY 127.0.0.1:${retConSto.portMitm}" : "DIRECT";\n`; res += '}\n';
-            rF = await file({ e, 'action': 'write', 'path': `${fileProjetos}/${gW.project}/src/scripts/BAT/proxy.pac`, 'text': res, }); if (!rF.ret) { logConsole({ e, ee, 'msg': `ERRO AO ESCREVER ARQUIVO pac`, }); }
+            rF = await file({ e, 'action': 'write', 'path': `${fileProjetos}/${gW.project}/src/scripts/BAT/proxy.pac`, 'text': res, }); if (!rF.ret) { logConsole({ e, ee, 'txt': `ERRO AO ESCREVER ARQUIVO pac`, }); }
         } pacFileCreate(arrUrl); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
         async function wait() { // CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL]  ||||  [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
-            await new Promise(resolve => { setTimeout(resolve, 50); }); client({ e, }); await new Promise(resolve => { setTimeout(resolve, 1000); });
+            await new Promise(r => { setTimeout(r, 50); }); client({ e, }); await new Promise(r => { setTimeout(r, 1000); });
             messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, });
         } wait(); // NÃO POR COMO 'await' PARA ACELERAR O CÓDIGO
 
@@ -69,7 +69,7 @@ async function serverRun(inf = {}) {
 
                     // ######################################################################
                     if (!ret.complete) { showLog = 'REQ/RES CANCELADA'; } else if (ret.res && (ret.res.body || ret.res.headers)) { showLog = 'REQ/RES ALTERADA'; }
-                } else { showLog = `OUTRO URL | ${url}`; } if (showLog) { logConsole({ e, ee, 'msg': `JS → ${showLog}`, }); }
+                } else { showLog = `OUTRO URL | ${url}`; } if (showLog) { logConsole({ e, ee, 'txt': `JS → ${showLog}`, }); }
             } catch (catchErr) { let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; }
             return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
         }
@@ -106,7 +106,7 @@ async function serverRun(inf = {}) {
         //     let infFile, retFile, pathLogPlataform = `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/${platform[0]}/${value.hitApp}`; for (let [index, value1,] of platformOption[platform[0]].entries()) {
         //         infFile = { e, 'action': 'read', 'path': `${pathLogPlataform}/${value1.file.replace('${hitAppType}', value.hitAppType)}`, };
         //         retFile = await file(infFile); if (!retFile.ret) { console.log('ARQUIVO NÃO ENCONTRADO', infFile.path); break; }
-        //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res, }); await new Promise(resolve => { setTimeout(resolve, 2000); });
+        //         await funGetSend({ 'platform': platform[1], 'getSend': value1.getSend, 'url': value1.url, 'body': retFile.res, }); await new Promise(r=> { setTimeout(r, 2000); });
         //     }
         // }
 

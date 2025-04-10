@@ -28,11 +28,11 @@ async function tryRating(inf = {}) {
         messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'tabAction', par: { e, 'action': `changeTitle`, 'search': `*tryrating*`, 'title': `TryRating`, }, },], }, });
 
         /* [1] → INÍCIO */ urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_2`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_2`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
 
         /* [2] → RECEBE A TASK */ urlCurrent = `/survey`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); if (body) {
                 runStopwatch([`reset_2`, `toggle_2`,]); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, }); // CAPTURAR TODAS AS TASKS DO JULGAMENTO
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
@@ -54,7 +54,7 @@ async function tryRating(inf = {}) {
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
-                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'msg': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; } retTaskInfTryRating = retTaskInfTryRating.res;
+                if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'txt': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; } retTaskInfTryRating = retTaskInfTryRating.res;
                 let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum === 3) {
                     not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'RESP', 'bC': '#19ff47', };
                     clipboard({ e, 'value': JSON.stringify(retTaskInfTryRating.clip[hitApp]['0'], null, 2), });
@@ -63,7 +63,7 @@ async function tryRating(inf = {}) {
                 else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
                 notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
-                messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle, funChangeMap, funTaskTime; let target = '*tryrating*';
+                messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle = ''; let target = '*tryrating*';
 
                 if (blindNum === 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
                     messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { hitApp, 'path': retLog.res, }, },], }, });
@@ -79,51 +79,35 @@ async function tryRating(inf = {}) {
                         } let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
                     } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
-                    // actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, });
-                    actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, }); funChangeMap = function funChangeMap() {
+                    actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, });
+                    actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, }); function funChangeMap() {
                         let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
                             if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
                         } function selectOption() {
                             w('.mk-tile-layer-selector', (e1) => {
                                 setTimeout(() => {
-                                    let e2 = e1.querySelector('.mktls-option.mktls-show.mktls-value'); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3 === 'Hybrid') { return; }
+                                    let e2 = e1.querySelector('.mktls-option.mktls-show.mktls-value'); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3.includes('Hybrid')) { return; }
                                     let e4 = e1.querySelector('.mktls-option.mktls-show'); if (!e4) { return; } e4.click(); setTimeout(() => {
-                                        let e5 = Array.from(e1.querySelectorAll('.mktls-option')).find(v => v.textContent.trim() === 'Hybrid');
-                                        if (!e5) { return; } e5.dispatchEvent(new Event('click', { bubbles: true, }));
+                                        let e5 = Array.from(e1.querySelectorAll('.mktls-option')).find(v => v.textContent.includes('Hybrid')); if (!e5) { return; } e5.dispatchEvent(new Event('click', { bubbles: true, }));
                                     }, 700);
                                 }, 1000);
                             });
                         } selectOption(); return true;
-                    }; actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
-                }
-
-                // TEMPO DA TASK
-                // funTaskTime = function fun2() {
-                //     let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis.observadorAtivo = true;
-                //     function title(t) { let [m, s = 0,] = t.match(/\d+/g).map(Number); document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; }
-                //     let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; }
-                //     let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
-                //     new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
-                // };
-
-
-                funTaskTime = function fun2() {
-                    let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis.observadorAtivo = true; function title(t) {
-                        let n = t.match(/\d+/g).map(Number); let m = 0, s = 0; if (n.length === 1) { s = n[0]; } else { [m, s,] = n; } document.title = `TryRating ${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                    } let l = [...e,].find(el => el.textContent.trim() === 'Estimated Rating Time'); if (!l) { setTimeout(fun2, 500); return; } let t = l.closest('.labeled-attribute')?.querySelector('.label-value');
-                    if (!t) { setTimeout(fun2, 500); return; } let p = t.textContent.trim(); title(`${p} [INI]`);
-                    new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; title(`${n} [ALT]`); } }).observe(t, { characterData: true, subtree: true, });
-                };
-
-
-                actions = [{ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, },]; // INJETAR
+                    } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
+                }/* TEMPO DA TASK */ function funTaskTime() {
+                    let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis.observadorAtivo = true; let l = [...e,].find(el => el.textContent.includes('Estimated Rating Time'));
+                    if (!l) { setTimeout(funTaskTime, 500); return; } let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(funTaskTime, 500); return; }
+                    function eRT(t) { return `${String((t.match(/(\d+)\s?minute/) || [])[1] || 0).padStart(2, '0')}:${String((t.match(/(\d+)\s?second/) || [])[1] || 0).padStart(2, '0')}`; }
+                    function tabTit(s) { let t = document.title; let r = /(^TryRating\s)(\d{2}:\d{2})/; r = r.test(t) ? t.replace(r, `$1${s}`) : t.replace('TryRating', `TryRating ${s}`); document.title = r; }
+                    let p = t.textContent.trim(); tabTit(eRT(p)); new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; tabTit(eRT(n)); } }).observe(t, { characterData: true, subtree: true, });
+                } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, }); // INJETAR
                 for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
             }
         }
 
         /* [3] → ENVIA A RESPOSTA DA TASK */ urlCurrent = `/client_log`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_2`,]); if (body) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_2`,]); if (body) {
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
                 let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
@@ -154,7 +138,7 @@ async function tryRating(inf = {}) {
                             let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { day, mon, yea, };
                         } let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon;
 
-                        logConsole({ e, ee, 'msg': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}`, });
+                        logConsole({ e, ee, 'txt': `DATA/HORA ${time.day}/${time.mon} ${time.hou}:${time.min}:${time.sec} | INÍCIO DA SEMANA ${staDay}`, });
 
                         let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key,]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt, };
                         let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; }

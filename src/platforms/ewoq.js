@@ -15,11 +15,11 @@ async function ewoq(inf = {}) {
         if (!gO.inf[platform]) { gO.inf[platform] = {}; gO.inf[platform]['log'] = []; gO.inf[platform]['token'] = {}; } async function runStopwatch(c) { for (let a of c) { await fetch(`http://127.0.0.1:${portStopwatch}/${a}`); } }
 
         /* [1] → INÍCIO */ urlCurrent = `/home`;
-        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_1`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
+        if ((url === `${platform}${urlCurrent}`)) { logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); runStopwatch([`reset_1`,]); gO.inf[platform]['log'] = []; /* csf([gO.inf]) */ }
 
         /* [2] → RECEBE A TASK */ urlCurrent = `/GetNewTasks`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['1']) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); if (body && body['1']) {
                 let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); let retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body, }); let addGet = {
                     'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false, '1': !!body['1'][0]['1'], '2': !!body['1'][0]['2'],
                     '3': !!body['1'][0]['3'], '4': !!body['1'][0]['4'], '5': !!body['1'][0]['5'], '6': !!body['1'][0]['6'], '7': !!body['1'][0]['7'], '8': !!body['1'][0]['8'],
@@ -37,7 +37,7 @@ async function ewoq(inf = {}) {
 
         /* [3] → SOLICITA O TEMPLATE */ urlCurrent = `/GetTemplate_[1-SEND]`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['1']) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); if (body && body['1']) {
                 let tk = body['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_template_AINDA_NAO_IDENTIFICADO.txt`, 'text': body, }); gO.inf[platform]['lastTemplate'] = retLog.res;
             }
@@ -45,7 +45,7 @@ async function ewoq(inf = {}) {
 
         /* [4] → RECEBE O TEMPLATE */ urlCurrent = `/GetTemplate_[2-GET]`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); if (body) {
                 let hitApp = inf.body.match(/raterVisibleName\\u003d\\"(.*?)\\\"\/\\u003e\\n  \\u003cinputTemplate/)[1] || false; if (hitApp) {
                     hitApp = hitApp.replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
                     retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': body, }); gO.inf[platform].token['path'] = retLog.res; if (gO.inf[platform].lastTemplate) {
@@ -63,7 +63,7 @@ async function ewoq(inf = {}) {
 
         /* [5] → TASK 100% CARREGADA */ urlCurrent = `/RecordTaskRenderingLatency_[TASK_100%_LOADED]`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['2']) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); if (body && body['2']) {
                 runStopwatch([`reset_1`, `toggle_1`,]); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         let hitApp = value.hitApp; body = value.body; let text = ''; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
@@ -91,7 +91,7 @@ async function ewoq(inf = {}) {
 
         /* [6] → ENVIA A RESPOSTA DA TASK */ urlCurrent = `/SubmitFeedback`;
         if ((url === `${platform}${urlCurrent}`)) {
-            logConsole({ e, ee, 'msg': `#### ${platform} | ${urlCurrent}`, }); if (body && body['6']) {
+            logConsole({ e, ee, 'txt': `#### ${platform} | ${urlCurrent}`, }); if (body && body['6']) {
                 let json; let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour; let tasksQtdMon = 0, tasksSecMon = 0;

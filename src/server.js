@@ -3,9 +3,9 @@ let startup = new Date(); globalThis['sP'] = import.meta.url; await import('./re
 async function serverRun(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
-        /* IMPORTAR BIBLIOTECA [NODEJS] */ libs['net']['net'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]');
+        /* IMPORTAR BIBLIOTECA [NODE] */ libs['net']['net'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]');
 
-        logConsole({ e, ee, 'txt': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
+        await logConsole({ e, ee, 'txt': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
 
         let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
         if (!retConSto.ret) { logConsole({ e, ee, 'txt': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }

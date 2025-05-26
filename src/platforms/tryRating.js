@@ -49,8 +49,8 @@ async function tryRating(inf = {}) {
                     function checkFiles(f, v) { v = v.map(g => f.some(n => regex({ 'simple': true, 'pattern': `*${g.r}*`, 'text': n, })) ? null : g.id).filter(Boolean); return v.length ? v.join(' | ') : false; } let f = [
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
-                    ]; text = checkFiles(text.map(f => f.path), f); if (text) { notification({ duration: 4, icon: 'notification_3.png', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
-                }
+                    ]; text = checkFiles(text.map(f => f.path), f);
+                } else { text = `Pasta do hitApp não existe!`; } if (text) { notification({ duration: 4, icon: 'notification_3.png', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
@@ -165,7 +165,7 @@ async function tryRating(inf = {}) {
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
 }
 
-// CHROME | NODEJS
+// CHROME | NODE
 globalThis['tryRating'] = tryRating;
 
 

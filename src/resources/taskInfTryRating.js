@@ -53,15 +53,13 @@ async function taskInfTryRating(inf = {}) {
             obj.tasks.forEach(task => {
                 let taskKey = task.taskKey; if (!res.tasks[taskKey]) { res.tasks[taskKey] = {}; }
                 if (!res.responses[taskKey]) { res.responses[taskKey] = {}; } if (task.taskData.resultSet && task.taskData.resultSet.resultList) {
-                    // [resultList]
-                    taskType = 'resultList'; let resultList = task.taskData.resultSet.resultList; resultList.forEach(item => {
-                        let surveyKey = Object.values(item.surveyKeys)[0]; if (!res.tasks[taskKey][surveyKey]) { res.tasks[taskKey][surveyKey] = {}; }
-                        Object.assign(res.tasks[taskKey][surveyKey], { 'taskType': 'resultList', 'metadata': { ...task.metadata || {}, }, ...item, });
-                    }); res.responses[taskKey]['FAKE_ID'] = { ...task.taskData.testQuestionInformation?.answer?.serializedAnswer || {}, };
+                   /* [resultList] */  taskType = 'resultList'; let resultList = task.taskData.resultSet.resultList; resultList.forEach(item => {
+                    let surveyKey = Object.values(item.surveyKeys)[0]; if (!res.tasks[taskKey][surveyKey]) { res.tasks[taskKey][surveyKey] = {}; }
+                    Object.assign(res.tasks[taskKey][surveyKey], { 'taskType': 'resultList', ...item, 'metadata': { ...task.metadata || {}, }, });
+                }); res.responses[taskKey]['FAKE_ID'] = { ...task.taskData.testQuestionInformation?.answer?.serializedAnswer || {}, };
                 } else {
-                    // [tasks]
-                    taskType = 'tasks'; let requestId = task.requestId; if (!res.tasks[taskKey][requestId]) { res.tasks[taskKey][requestId] = {}; }
-                    res.tasks[taskKey][requestId] = { 'taskType': 'tasks', 'metadata': { ...task.metadata || {}, }, ...task.taskData, }; res.responses[taskKey][requestId] = task.taskData;
+                   /* [tasks] */  taskType = 'tasks'; let requestId = task.requestId; if (!res.tasks[taskKey][requestId]) { res.tasks[taskKey][requestId] = {}; }
+                    res.tasks[taskKey][requestId] = { 'taskType': 'tasks', ...task.taskData, 'metadata': { ...task.metadata || {}, }, }; res.responses[taskKey][requestId] = task.taskData;
                 }
             }); res.tasks['0'].taskType = taskType; return res;
         }
@@ -147,7 +145,7 @@ async function taskInfTryRating(inf = {}) {
                 let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; }
                 for (let [index1, value1,] of childrens.entries()) {
                     let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { blindNum: 0, }, judge: 'x', task: tasks[father][children], }; }
-                    let judge = res.tasks[father][children]['task']; let blindNum = 0; let notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created;
+                    let judge = res.tasks[father][children]['task']; let blindNum = 0; let notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created; // SE TEM A CHAVE 'created' NÃO É BLIND
                     // IDENTIFICAÇÃO DO JULGAMENTO
                     if (['Search20', 'AddressVerification',].includes(hitApp)) {
                         judge = `${judge?.value?.name || 'null'} = ${judge?.value?.address?.[0] || 'null'}`; judge = judge.replace(/, /g, ',').replace(/,/g, ', ');
@@ -263,7 +261,7 @@ async function taskInfTryRating(inf = {}) {
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
 }
 
-// CHROME | NODEJS
+// CHROME | NODE
 globalThis['taskInfTryRating'] = taskInfTryRating;
 
 

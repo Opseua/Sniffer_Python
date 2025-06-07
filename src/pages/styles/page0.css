@@ -1,0 +1,84 @@
+ body {
+     font-family: Arial, sans-serif;
+     padding: 10px;
+     margin-top: 10px;
+     margin-left: 10px;
+     margin-right: 10px;
+     background-color: #17191A;
+     color: white;
+ }
+
+ #input-section {
+     display: flex;
+     align-items: center;
+     margin-bottom: 20px;
+ }
+
+ #address-input {
+     flex: 1;
+     padding: 8px;
+     font-size: 14px;
+     margin-right: 10px;
+     /*aaa*/
+     width: 100%;
+     margin-top: 1.5px;
+     height: 17px;
+     max-height: 100px;
+     overflow-y: auto;
+     resize: none;
+ }
+
+ #consultar-button {
+     padding: 8px 20px;
+     cursor: pointer;
+     background-color: #007bff;
+     color: white;
+     border: none;
+     border-radius: 4px;
+     font-size: 17px;
+ }
+
+ #consultar-button:hover {
+     background-color: #0056b3;
+ }
+
+ #result-table {
+     width: 100%;
+     border-collapse: collapse;
+     background-color: #333;
+     table-layout: auto;
+ }
+
+ #result-table th,
+ #result-table td {
+     border: 1px solid #555;
+     padding: 8px;
+     color: #ccc;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+ }
+
+ #result-table th {
+     background-color: #555;
+     font-weight: bold;
+     text-align: left
+ }
+
+ #result-table tbody tr:nth-child(odd) {
+     background-color: rgb(46, 46, 46);
+ }
+
+ #result-table tbody tr:nth-child(even) {
+     background-color: #555;
+ }
+
+ .copy-icon {
+     cursor: pointer;
+ }
+
+ #timer {
+     font-size: 24px;
+     margin-bottom: 10px;
+     text-align: center;
+ }

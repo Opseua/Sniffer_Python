@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar endereço</title>
+    <meta name="darkreader-lock">
+</head>
+
+<body>
+    <div id="timer">00:00:00</div>
+    <div id="input-section">
+        <textarea id="address-input" placeholder="Digite o endereço ou CEP"></textarea>
+        <button id="consultar-button" onclick="getAddress()">CONSULTAR</button>
+    </div>
+    <table id="result-table">
+        <thead>
+            <tr>
+                <th>Endereços (0)</th>
+                <th style="width: 18%;">Complemento</th>
+                <th style="width: 15%;">Bairro</th>
+                <th style="width: 17%;">Município</th>
+                <th style="width: 4%;">UF</th>
+                <th style="width: 7%;">CEP</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function getParams(u) { let p = {}; (u.split('?')[1] || '').split('&').forEach(e => { let [k, v] = e.split('='); if (k) p[decodeURIComponent(k)] = decodeURIComponent(decodeURIComponent(v || '')); }); return p; }
+        globalThis['alertConsole'] = function (e, c = false) { console.log(`${e}${c ? '\n' + c : ''}`); alert(e); }; async function serverRun(inf = {}) {
+            let ret = { 'ret': false, }; try {
+                // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+                globalThis['hostPortLoc'] = `${window.location.origin.split('//')[1]}`; let temp = getParams(window.location.href); globalThis['securityPass'] = `${temp['act'].split('-')[0]}`;
+                globalThis['roo'] = `${temp['roo']}`; globalThis['urlServer'] = `http://${hostPortLoc}/?roo=${roo}`; globalThis['dc'] = document; globalThis['inputEle'] = dc.getElementById('address-input'); let files = [
+                    `D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/@export.js`, 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/estadosMunicipios.js',
+                    'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/correios.js', 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/addressParseGoogleMaps.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/dateHour.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/logConsole.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/regex.js',
+                ]; for (let mes of files) { let url = `${urlServer}&act=${securityPass}-webfile&mes=${mes}&mode=htm`; try { await import(url); } catch (err) { console.error(`IMPORT: ERRO | '${mes}' → ${err}`); } }
+
+                // FAVICON
+                let old, x = document.createElement('link'); x.rel = 'icon'; x.type = 'image/x-icon'; x.href = `${urlServer}&act=${securityPass}-webfile&mes=!fileWindows!/BAT/z_ICONES/correios.ico&mode=dow`;
+                old = document.querySelector('link[rel="icon"]'); if (old) { document.head.removeChild(old); } document.head.appendChild(x);
+
+                //"D:\ARQUIVOS\PROJETOS\Sniffer_Python\src\pages\resources\addressParseGoogleMaps.js"
+
+                //CSS
+                x = document.createElement('link'); x.rel = 'stylesheet'; x.type = 'text/css'; x.href = `${urlServer}&act=${securityPass}-webfile&mes=!fileProjetos!/Sniffer_Python/src/pages/styles/page0.css&mode=dow`;
+                old = document.querySelector('link[rel="stylesheet"]'); if (old) { document.head.removeChild(old); } document.head.appendChild(x);
+
+                // ***************************************************************************************************************************************
+
+                // CONSULTAR ENDEREÇO
+                globalThis['inputText'] = ''; async function getAddress() {
+                    let ret = { 'ret': false, }; try {
+                        // PEGAR VALOR DO IMPUT | CHECAR SE ALGO FOI IMPUTADO | SUBSTITUIR: DIVISOR DE COLUNA
+                        inputPro(); if (!inputText) { ret['msg'] = `GET ADDRESS: ERRO | NENHUM VALOR INSERIDO`; alertConsole(`${ret.msg}`,); return ret }; input = inputText; let isGoogleMaps = false;
+                        // NOME E ENDEREÇO GOOGLE
+                        if (input.includes('maps.app.goo.gl')) {
+                            let gM = await addressParseGoogleMaps({ 'texto': input, }); if (!gM.ret) { return gM } gM = gM.res; let gOk = {}; gOk['name'] = gM.poi || 'POI'; gOk['category'] = gM.categoria || 'CATEGORIA';
+                            let r = []; for (let k of ['logradouro', 'numero', 'bairro', 'municipio', 'estado', 'cep']) { if (gM[k]) { r.push(gM[k]) } };
+                            gOk['address'] = `${gM.logradouroTipo ? `${gM.logradouroTipo} ` : ''}${r.join(', ')}`; gOk['urlGoogleMaps'] = input; isGoogleMaps = gOk; input = gOk.address;
+                        }; let arrRep = ['nº ', 'Nº ', 'nº', 'Nº', 'n° ', 'N° ', 'n°', 'N°', '/[A-Z0-9]{2,4}\\+[A-Z0-9]{2,4}, /', '/[A-Z0-9]{2,4}\\+[A-Z0-9]{2,4} - /',]
+                        for (let v of arrRep) { if (v.startsWith('/')) { input = input.replace(new RegExp(v.slice(1, -1), 'g'), '') } else { input = input.replace(v, '') } }; inputEle.value = input; let inputKeep = input
+
+                        // PESQUISAR APENAS PELO CEP SE A CONSULTA FOR 'Endereço + CEP' | SUBSTITUIR: HÍFEN DO CEP (SE O IMPUT FOR CEP) | PEGAR O TOKEN
+                        let matchCep = input.match(/(\d{5}-?\d{3})/g); input = matchCep ? matchCep[0] : input; if (/^\d{5}-\d{3}$/.test(input)) { input = input.replace(/\D/g, ''); }
+                        // DEFINIR CABEÇALHO DOS RESULTADOS | PARSE DO IMPUT
+                        let tbody = dc.querySelector('#result-table tbody'); tbody.innerHTML = ''; let addressParseOk = addressParse({ 'address': inputKeep }); // console.log(addressParseOk);
+
+                        // FAZER BUSCAS
+                        let retFetchs = []; async function getResultsCorreios(inf = {}) {
+                            let { tipo, logradouro, bairro, municipio, estado, cep, legacy } = inf;
+                            if (legacy) { addressParseOk = { 'logradouro': inputKeep }; logradouro = true; }; let ok = addressParseOk;
+                            tipo = !tipo ? true : ok.tipo || false; logradouro = !logradouro ? true : ok.logradouro || false; bairro = !bairro ? true : ok.bairro || false;
+                            municipio = !municipio ? true : ok.municipio || false; estado = !estado ? true : ok.estado || false; cep = !cep ? true : ok.cep || false;
+                            if (!tipo || !logradouro || !bairro || !municipio || !estado || !cep) { return };
+                            let query = { 'tipo': tipo, 'logradouro': logradouro, 'bairro': bairro, 'municipio': municipio, 'estado': estado, 'cep': cep && cep !== true ? cep.replace('-', '') : cep, };
+                            let queryOk = ''; Object.keys(query).forEach((key, index) => { if (query[key] && query[key] !== true && key !== 'tipo') { queryOk = `${queryOk}, ${query[key]}` } });
+                            input = queryOk.replace(', ', query.tipo && query.tipo !== true ? query.tipo + ' ' : '');
+                            logConsole({ 'txt': `${inf.inf}\n${input}`, }); let retCorreios = await correios({ 'search': `${input}` })
+                            if (!retCorreios.ret) { alert(retCorreios.msg); retFetchs = false; return; } else { retFetchs.push(...retCorreios.res); };
+                        };
+
+                        // BUSCAR: TIPO + RUA + BAIRRO + MUNÍCIPIO + ESTADO | BAIRRO + MUNÍCIPIO + ESTADO |TIPO + RUA + MUNÍCIPIO + ESTADO | LEGACY (DA MANEIRA QUE ESTÁ) | CEP
+                        await getResultsCorreios({ 'tipo': true, 'logradouro': true, 'bairro': true, 'municipio': true, 'estado': true, 'cep': false, 'inf': 'TIPO_RUA+BAIRRO+MUNÍCIPIO+ESTADO', }); if (!retFetchs) { return }
+                        await getResultsCorreios({ 'tipo': true, 'logradouro': true, 'bairro': false, 'municipio': true, 'estado': true, 'cep': false, 'inf': 'TIPO_RUA+MUNÍCIPIO+ESTADO', }); if (!retFetchs) { return }
+                        // await getResultsCorreios({ 'tipo': false, 'logradouro': false, 'bairro': true, 'municipio': true, 'estado': true, 'cep': false, 'inf': 'BAIRRO+MUNÍCIPIO+ESTADO', }); if (!retFetchs) { return }
+                        if (addressParseOk.arr.length > 0 && addressParseOk.arr.length < 4 && !addressParseOk.cep) { await getResultsCorreios({ 'legacy': true, 'inf': 'LEGACY', }); if (!retFetchs) { return } }
+                        await getResultsCorreios({ 'tipo': false, 'logradouro': false, 'bairro': false, 'municipio': false, 'estado': false, 'cep': true, 'inf': 'CEP', }); if (!retFetchs) { return }
+
+                        if (Array.isArray(retFetchs)) {
+                            let enderecos = retFetchs; let seen = new Set(); enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; }); let enderecosQtd = enderecos.length;
+                            if (enderecosQtd == 0) {
+                                ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>'; tbody.appendChild(row);
+                                dc.querySelector('#result-table th:first-child').textContent = `Endereços (0) [${enderecosQtd}]`; // alert(ret.msg);
+                            } else {
+                                let retResultScore = resultScore({ objeto1: addressParseOk, objeto2: enderecos, }), enderecosOk = [], retScoreBest = scoreBest({ pontucaoIndice: retResultScore, objeto2: enderecos, });
+                                enderecosOk = retScoreBest; if (addressParseOk.numero) { enderecosOk = sideStreet({ numero: addressParseOk.numero, 'obj': enderecosOk, }) };
+                                if (addressParseOk.cep) { for (let [index, value] of enderecos.entries()) { if (addressParseOk.cep && addressParseOk.cep.replace('-', '') == value.cep) { enderecosOk.push(value); break } }; }
+                                if (!addressParseOk.numero && !addressParseOk.cep) { enderecosOk = retScoreBest }; enderecos = enderecosOk; seen = new Set();
+                                enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; });
+                                dc.querySelector('#result-table th:first-child').textContent = `Endereços (${enderecos.length}) [${enderecosQtd}]`; if (enderecos.length == 0) {
+                                    ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>';
+                                    tbody.appendChild(row); dc.querySelector('#result-table th:first-child').textContent = `Endereços (0) [${enderecosQtd}]`;
+                                } else {
+                                    enderecos.forEach(end => {
+                                        let row = dc.createElement('tr'); let html = ''; let clipboard = {
+                                            'tipo': end.tipoLogradouro || addressParseOk.tipo || '', 'logradouro': end.nomeLogradouro || addressParseOk.logradouro || '', 'numero': addressParseOk.numero || '',
+                                            'andar': addressParseOk.andar || '', 'loja': addressParseOk.loja || '', 'bairro': end.bairro || addressParseOk.bairro || '', 'municipio': end.localidade || addressParseOk.municipio || '',
+                                            'estado': end.uf || addressParseOk.estado || '', 'cep': end.cep || addressParseOk.cep || '',
+                                        }; if (clipboard.cep) { clipboard.cep = clipboard.cep.replace(/(\d{5})(\d{3})/, "$1-$2") }
+                                        let clipboardOk = ''; Object.keys(clipboard).forEach((key, index) => { if (clipboard[key] && key !== 'tipo') { clipboardOk = `${clipboardOk}, ${clipboard[key]}` } });
+                                        clipboardOk = clipboardOk.replace(', ', clipboard.tipo ? clipboard.tipo + ' ' : ''); if (isGoogleMaps) {
+                                            isGoogleMaps['address'] = clipboardOk; clipboardOk = JSON.stringify(isGoogleMaps);
+                                            clipboardOk = `${isGoogleMaps.name} 🟢 ${isGoogleMaps.category} 🔴 ${isGoogleMaps.address} 🔵 ${isGoogleMaps.urlGoogleMaps}`
+                                        }; clipboardOk = clipboardOk.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                                        let html1 = `<td><span class="copy-icon" onclick="clipboardSet('${clipboardOk}')">`; let html2 = `</span></td>`
+                                        html += `${html1}${end.tipoLogradouro ? `${end.tipoLogradouro} ` : ''}${end.nomeLogradouro || ''}${html2}`; html += `${html1}${end.complemento || ''}${html2}`;
+                                        html += `${html1}${end.bairro || ''}${html2}`; html += `${html1}${end.localidade || ''}${html2}`; html += `${html1}${end.uf || ''}${html2}`;
+                                        html += `${html1}${end.cep.replace(/(\d{5})(\d{3})/, "$1-$2")}${html2}`; row.innerHTML = html; tbody.appendChild(row);
+                                    });
+                                }
+                            }
+
+                            ret['msg'] = `GET ADDRESS: OK`; ret['ret'] = true;
+                        }
+                    } catch (catchErr) { ret['msg'] = 'GET ADDRESS: ERRO | TRYCATCH'; alertConsole(`${ret.msg}`, catchErr,); };
+
+                    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+                } globalThis['getAddress'] = getAddress;
+
+                // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+            } catch (catchErr) {
+                alertConsole(`SERVER RUN: ERRO\n${catchErr}`); ret['msg'] = catchErr; ret['ret'] = false; delete ret['res'];
+            }
+        }; window.onload = function () { serverRun(); };
+    </script>
+</body>
+
+</html>

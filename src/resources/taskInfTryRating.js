@@ -20,7 +20,7 @@
 // infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], };
 // retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
 
-let e = import.meta.url, ee = e;
+let e = currentFile(), ee = e;
 async function taskInfTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {

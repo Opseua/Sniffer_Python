@@ -12,7 +12,7 @@
 // // tasks[1].taskData.query
 // // tasks[2].taskData.query
 
-let e = import.meta.url, ee = e;
+let e = currentFile(), ee = e;
 async function tryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {
@@ -95,7 +95,7 @@ async function tryRating(inf = {}) {
                         } selectOption(); return true;
                     } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
                 }/* TEMPO DA TASK */ function funTaskTime() {
-                    let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis.observadorAtivo = true; let l = [...e,].find(el => el.textContent.includes('Estimated Rating Time'));
+                    let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis['observadorAtivo'] = true; let l = [...e,].find(el => el.textContent.includes('Estimated Rating Time'));
                     if (!l) { setTimeout(funTaskTime, 500); return; } let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(funTaskTime, 500); return; }
                     function eRT(t) { return `${String((t.match(/(\d+)\s?minute/) || [])[1] || 0).padStart(2, '0')}:${String((t.match(/(\d+)\s?second/) || [])[1] || 0).padStart(2, '0')}`; }
                     function tabTit(s) { let t = document.title; let r = /(^TryRating\s)(\d{2}:\d{2})/; r = r.test(t) ? t.replace(r, `$1${s}`) : t.replace('TryRating', `TryRating ${s}`); document.title = r; }

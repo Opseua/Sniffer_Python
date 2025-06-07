@@ -2,7 +2,7 @@
 // infEwoq = { e, 'platform': platform, 'url': `${platform}/home`, 'body': body, };
 // retEwoq = await ewoq(infEwoq); console.log(retEwoq);
 
-let e = import.meta.url, ee = e;
+let e = currentFile(), ee = e;
 async function ewoq(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e; // gO.inf[platform].log = { 'a': '4' }; csf([gO.inf]) // SET
     try {

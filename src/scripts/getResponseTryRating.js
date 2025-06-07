@@ -2,7 +2,7 @@
 // infGetResponseTryRating = { e, 'body': inf.body, };
 // retGetResponseTryRating = await getResponseTryRating(infGetResponseTryRating); console.log(retGetResponseTryRating);
 
-let e = import.meta.url, ee = e;
+let e = currentFile(), ee = e;
 async function getResponseTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {

@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 
-
 async function addressParseGoogleMaps(inf = {}) {
     let ret = { 'ret': false, };
     try {

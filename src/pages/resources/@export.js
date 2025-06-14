@@ -3,16 +3,15 @@
 (async () => {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     globalThis['regexE'] = function () { }; globalThis['eng'] = true; globalThis['currentFile'] = function () { return new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)?.[0].replace(/[()]/g, ''); };
-    let currentFileOk = currentFile().split('mes=')[1];
+    // let currentFileOk = currentFile().split('mes=')[1]; let project = window.location.href.split('PROJETOS/')[1].split('/')[0];
 
     // REMOVER ACENTOS | ENDEREÇO: TOKENIZAR ENDEREÇO | // ENDEREÇO: TIPO DE LOGRADOURO
     function normalizeString(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
     globalThis['normalizeString'] = normalizeString;
 
     function addressTokenize(add) {
-        let ceps = []; add = add.replace(/\d{5}-\d{3}/g, match => { ceps.push(match); return '#CEP#'; });
-        add = add.replace(/\b\d{8}\b/g, match => { ceps.push(`${match.substring(0, 5)}-${match.substring(5)}`); return '#CEP#'; });
-        add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/\s*-\s*/g, '#SPLIT#'); let parts = add.split('#SPLIT#');
+        let ceps = []; add = add.replace(/\d{5}-\d{3}/g, match => { ceps.push(match); return '#CEP#'; }); add = add.replace(/\b\d{8}\b/g,
+            match => { ceps.push(`${match.substring(0, 5)}-${match.substring(5)}`); return '#CEP#'; }); add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/\s*-\s*/g, '#SPLIT#'); let parts = add.split('#SPLIT#');
         parts = parts.map(part => part.trim()); for (let i = 0; i < parts.length; i++) { if (parts[i] === '#CEP#') { parts[i] = ceps.shift(); } } parts = parts.filter(part => /\w/.test(part));
         let partsOk = []; for (let [index, v,] of parts.entries()) { if (/^\d.*\d$/.test(v) && !/\d{5}-\d{3}/.test(v)) { partsOk.push(v.replace(/\D+/g, '')); } else { partsOk.push(v); } } parts = partsOk; return parts;
     }
@@ -46,19 +45,23 @@
     // PONTUAÇÃO: DO RESULTADO
     function resultScore(inf = {}) {
         let { objeto1, objeto2, } = inf; let chavesOk = { ...objeto1, }; delete chavesOk.pontucao; let chaves = Object.keys(chavesOk); let pontucaoIndice = []; for (let [index, value,] of objeto2.entries()) {
-            let pontucao = { 'indice': 999, 'pontuacao': 0, }; let obj = {}; let pontuacaoOk = { tipo: 10, logradouro: 51, numero: 9, bairro: 10, municipio: 40, cep: 100, };
-            obj['tipo'] = value.tipoLogradouro; obj['logradouro'] = value.nomeLogradouro; obj['numeroInicial'] = value.numeroInicial;
-            obj['numeroFinal'] = value.numeroFinal; obj['bairro'] = value.bairro; obj['municipio'] = value.localidade; obj['estado'] = value.uf; obj['cep'] = value.cep; for (let [index1, value1,] of chaves.entries()) {
+            let pontucao = { 'indice': 999, 'pontuacao': 0, }; let obj = {}; let pontuacaoOk = { tipo: 10, logradouro: 51, numero: 91 /*9*/, bairro: 10, municipio: 40, cep: 100, };
+            obj['tipo'] = value.logradouroTipo; obj['logradouro'] = value.logradouro; obj['numInicial'] = value.numInicial;
+            obj['numFinal'] = value.numFinal; obj['bairro'] = value.bairro; obj['municipio'] = value.municipio; obj['estado'] = value.estado; obj['cep'] = value.cep; for (let [index1, value1,] of chaves.entries()) {
                 let retPontucaoDaChave; pontucao['indice'] = index; if (value1 !== 'arr') {
                     let key1, key2; if (value1 !== 'numero') { // É STRING (CHECAR SE CONTÉM)
                         if (value1 === 'logradouro') {
                             if (objeto1.tipo && obj.tipo) { key1 = `${objeto1.tipo} ${objeto1.logradouro}`; key2 = `${obj.tipo} ${obj.logradouro}`; } else { key1 = `${objeto1.logradouro}`; key2 = `${obj.logradouro}`; }
                         } else { key1 = objeto1[value1]; key2 = obj[value1]; } retPontucaoDaChave = keyScore({ 'chaveA': key1, 'chaveB': key2, 'pontucao': pontuacaoOk[value1], });
-                    } else { retPontucaoDaChave = keyScore({ 'chaveA': objeto1[value1], 'chaveB': obj['numeroInicial'], 'chaveC': obj['numeroFinal'], 'pontucao': pontuacaoOk[value1], }); }
+                    } else { retPontucaoDaChave = keyScore({ 'chaveA': objeto1[value1], 'chaveB': obj['numInicial'], 'chaveC': obj['numFinal'], 'pontucao': pontuacaoOk[value1], }); }
                     pontucao.pontuacao += retPontucaoDaChave; pontucao[value1] = retPontucaoDaChave;
                 }
             } pontucaoIndice.push(pontucao);
-        } return pontucaoIndice;
+        }
+
+        console.log(pontucaoIndice);
+
+        return pontucaoIndice;
     }
     globalThis['resultScore'] = resultScore;
 
@@ -73,7 +76,7 @@
     // ENDEREÇO: LADO PAR OU IMPAR
     function sideStreet({ numero, obj, }) {
         if (!numero) { return []; } let num = parseInt(numero, 10); let isPar = n => n % 2 === 0; return obj.filter(item => {
-            let numInicial = parseInt(item.numeroInicial, 10); let numFinal = parseInt(item.numeroFinal, 10); if (num < numInicial || num > numFinal) { return false; }
+            let numInicial = parseInt(item.numInicial, 10); let numFinal = parseInt(item.numFinal, 10); if (num < numInicial || num > numFinal) { return false; }
             if (!item.lado || item.lado === 'A') { return true; } else if (item.lado === 'P' && isPar(num)) { return true; } else if (item.lado === 'I' && !isPar(num)) { return true; } return false;
         });
     }
@@ -110,7 +113,7 @@
     function inputGet() { return inputEle.value.trim(); } function inputSet(v) { inputEle.value = v; } inputEle.addEventListener('paste', function () { setTimeout(function () { inputPro(); }, 0); });
     globalThis['inputGet'] = inputGet; globalThis['inputSet'] = inputSet;
 
-    inputEle.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); getAddress(); } }); let project = window.location.href.split('PROJETOS/')[1].split('/')[0];
+    inputEle.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); getAddress(); } });
 
 
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

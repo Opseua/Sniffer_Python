@@ -9,7 +9,7 @@ async function serverRun(inf = {}) {
         await logConsole({ e, ee, 'txt': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
 
         let retConSto = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); // cs = await csf([{}]); gO.inf = cs.res // ***** CS ***** GET
-        if (!retConSto.ret) { logConsole({ e, ee, 'txt': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; }
+        if (!retConSto.ret) { logConsole({ e, ee, 'txt': retConSto.msg, }); return retConSto; } else { retConSto = retConSto.res; } correiosServer(); // SERVIDOR CORREIOS
         let portSocket = retConSto.portSocket, bufferSocket = retConSto.bufferSocket, arrUrl = retConSto.arrUrl; globalThis['platforms'] = retConSto.platforms;
         globalThis['des'] = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['portStopwatch'] = retConSto.portStopwatch;
 

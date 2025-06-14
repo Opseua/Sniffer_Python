@@ -25,4 +25,7 @@ globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 
 // SCRIPTS DESSE PROJETO
 globalThis['getResponseTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/scripts/getResponseTryRating.js`, inf, project, }); };
 
+// FUNÇÕES/SCRIPTS [PAGES]
+globalThis['correiosServer'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/pages/resources/correiosServer.js`, inf, project, }); };
+
 

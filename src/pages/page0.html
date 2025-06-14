@@ -9,7 +9,6 @@
 </head>
 
 <body>
-    <div id="timer">00:00:00</div>
     <div id="input-section">
         <textarea id="address-input" placeholder="Digite o endereço ou CEP"></textarea>
         <button id="consultar-button" onclick="getAddress()">CONSULTAR</button>
@@ -36,9 +35,9 @@
                 globalThis['hostPortLoc'] = `${window.location.origin.split('//')[1]}`; let temp = getParams(window.location.href); globalThis['securityPass'] = `${temp['act'].split('-')[0]}`;
                 globalThis['roo'] = `${temp['roo']}`; globalThis['urlServer'] = `http://${hostPortLoc}/?roo=${roo}`; globalThis['dc'] = document; globalThis['inputEle'] = dc.getElementById('address-input'); let files = [
                     `D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/@export.js`, 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/estadosMunicipios.js',
-                    'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/correios.js', 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/addressParseGoogleMaps.js',
+                    'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/addressParseGoogleMaps.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/regex.js',
                     'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/dateHour.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/logConsole.js',
-                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/regex.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js',
                 ]; for (let mes of files) { let url = `${urlServer}&act=${securityPass}-webfile&mes=${mes}&mode=htm`; try { await import(url); } catch (err) { console.error(`IMPORT: ERRO | '${mes}' → ${err}`); } }
 
                 // FAVICON
@@ -73,24 +72,26 @@
 
                         // FAZER BUSCAS
                         let retFetchs = []; async function getResultsCorreios(inf = {}) {
-                            let { tipo, logradouro, bairro, municipio, estado, cep, legacy } = inf;
-                            if (legacy) { addressParseOk = { 'logradouro': inputKeep }; logradouro = true; }; let ok = addressParseOk;
-                            tipo = !tipo ? true : ok.tipo || false; logradouro = !logradouro ? true : ok.logradouro || false; bairro = !bairro ? true : ok.bairro || false;
+                            let { tipo, logradouro, numero, bairro, municipio, estado, cep, legacy } = inf;
+                            if (legacy) { addressParseOk = { 'logradouro': inputKeep }; logradouro = true; }; let ok = addressParseOk; numero = ok.numero ? numero : false
+                            tipo = !tipo ? true : ok.tipo || false; logradouro = !logradouro ? true : ok.logradouro || false; numero = !numero ? true : ok.numero || false; bairro = !bairro ? true : ok.bairro || false;
                             municipio = !municipio ? true : ok.municipio || false; estado = !estado ? true : ok.estado || false; cep = !cep ? true : ok.cep || false;
-                            if (!tipo || !logradouro || !bairro || !municipio || !estado || !cep) { return };
-                            let query = { 'tipo': tipo, 'logradouro': logradouro, 'bairro': bairro, 'municipio': municipio, 'estado': estado, 'cep': cep && cep !== true ? cep.replace('-', '') : cep, };
+                            if (!tipo || !logradouro || !numero || !bairro || !municipio || !estado || !cep) { return };
+                            let query = { 'tipo': tipo, 'logradouro': logradouro, 'numero': numero, 'bairro': bairro, 'municipio': municipio, 'estado': estado, 'cep': cep && cep !== true ? cep.replace('-', '') : cep, };
                             let queryOk = ''; Object.keys(query).forEach((key, index) => { if (query[key] && query[key] !== true && key !== 'tipo') { queryOk = `${queryOk}, ${query[key]}` } });
-                            input = queryOk.replace(', ', query.tipo && query.tipo !== true ? query.tipo + ' ' : '');
-                            logConsole({ 'txt': `${inf.inf}\n${input}`, }); let retCorreios = await correios({ 'search': `${input}` })
-                            if (!retCorreios.ret) { alert(retCorreios.msg); retFetchs = false; return; } else { retFetchs.push(...retCorreios.res); };
+                            input = queryOk.replace(', ', query.tipo && query.tipo !== true ? query.tipo + ' ' : ''); logConsole({ 'txt': `${inf.inf}\n${input}`, }); input = input.replaceAll(',', ';')
+                            let retApi = await api({
+                                'method': 'POST', 'url': urlServer, 'maxConnect': 5, 'headers': { 'raw': true, },
+                                'body': { 'fun': [{ securityPass, 'retInf': true, 'name': 'api', 'par': { 'method': 'GET', 'object': true, 'url': `http://localhost:7777/buscaAqui?termos=${input}`, }, },], },
+                            }); if (!retApi.ret) { ret['msg'] = `PAGE 0: ERRO | ${retApi.ret}`; alertConsole(`${ret.msg}`); return ret; } retApi = JSON.parse(retApi.res.body);
+                            if (!retApi.ret || retApi.res.code !== 200) { return retApi; } retApi = retApi.res.body.res || []; retFetchs.push(...retApi);
                         };
 
                         // BUSCAR: TIPO + RUA + BAIRRO + MUNÍCIPIO + ESTADO | BAIRRO + MUNÍCIPIO + ESTADO |TIPO + RUA + MUNÍCIPIO + ESTADO | LEGACY (DA MANEIRA QUE ESTÁ) | CEP
-                        await getResultsCorreios({ 'tipo': true, 'logradouro': true, 'bairro': true, 'municipio': true, 'estado': true, 'cep': false, 'inf': 'TIPO_RUA+BAIRRO+MUNÍCIPIO+ESTADO', }); if (!retFetchs) { return }
-                        await getResultsCorreios({ 'tipo': true, 'logradouro': true, 'bairro': false, 'municipio': true, 'estado': true, 'cep': false, 'inf': 'TIPO_RUA+MUNÍCIPIO+ESTADO', }); if (!retFetchs) { return }
-                        // await getResultsCorreios({ 'tipo': false, 'logradouro': false, 'bairro': true, 'municipio': true, 'estado': true, 'cep': false, 'inf': 'BAIRRO+MUNÍCIPIO+ESTADO', }); if (!retFetchs) { return }
-                        if (addressParseOk.arr.length > 0 && addressParseOk.arr.length < 4 && !addressParseOk.cep) { await getResultsCorreios({ 'legacy': true, 'inf': 'LEGACY', }); if (!retFetchs) { return } }
-                        await getResultsCorreios({ 'tipo': false, 'logradouro': false, 'bairro': false, 'municipio': false, 'estado': false, 'cep': true, 'inf': 'CEP', }); if (!retFetchs) { return }
+                        await getResultsCorreios({ tipo: true, logradouro: true, numero: true, bairro: true, municipio: true, estado: true, cep: false, inf: 'TIPO_RUA+{NUMERO}+BAIRRO+MUNÍCIPIO+ESTADO', });
+                        await getResultsCorreios({ tipo: true, logradouro: true, numero: true, bairro: false, municipio: true, estado: true, cep: false, inf: 'TIPO_RUA+{NUMERO}+MUNÍCIPIO+ESTADO', });
+                        if (addressParseOk.arr.length > 0 && addressParseOk.arr.length < 4 && !addressParseOk.cep) { await getResultsCorreios({ 'legacy': true, 'inf': 'LEGACY', }); }
+                        await getResultsCorreios({ tipo: false, logradouro: false, numero: false, bairro: false, municipio: false, estado: false, cep: true, inf: 'CEP', });
 
                         if (Array.isArray(retFetchs)) {
                             let enderecos = retFetchs; let seen = new Set(); enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; }); let enderecosQtd = enderecos.length;
@@ -99,7 +100,10 @@
                                 dc.querySelector('#result-table th:first-child').textContent = `Endereços (0) [${enderecosQtd}]`; // alert(ret.msg);
                             } else {
                                 let retResultScore = resultScore({ objeto1: addressParseOk, objeto2: enderecos, }), enderecosOk = [], retScoreBest = scoreBest({ pontucaoIndice: retResultScore, objeto2: enderecos, });
+
+                                // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
                                 enderecosOk = retScoreBest; if (addressParseOk.numero) { enderecosOk = sideStreet({ numero: addressParseOk.numero, 'obj': enderecosOk, }) };
+
                                 if (addressParseOk.cep) { for (let [index, value] of enderecos.entries()) { if (addressParseOk.cep && addressParseOk.cep.replace('-', '') == value.cep) { enderecosOk.push(value); break } }; }
                                 if (!addressParseOk.numero && !addressParseOk.cep) { enderecosOk = retScoreBest }; enderecos = enderecosOk; seen = new Set();
                                 enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; });
@@ -109,9 +113,9 @@
                                 } else {
                                     enderecos.forEach(end => {
                                         let row = dc.createElement('tr'); let html = ''; let clipboard = {
-                                            'tipo': end.tipoLogradouro || addressParseOk.tipo || '', 'logradouro': end.nomeLogradouro || addressParseOk.logradouro || '', 'numero': addressParseOk.numero || '',
-                                            'andar': addressParseOk.andar || '', 'loja': addressParseOk.loja || '', 'bairro': end.bairro || addressParseOk.bairro || '', 'municipio': end.localidade || addressParseOk.municipio || '',
-                                            'estado': end.uf || addressParseOk.estado || '', 'cep': end.cep || addressParseOk.cep || '',
+                                            'tipo': end.logradouroTipo || addressParseOk.tipo || '', 'logradouro': end.logradouro || addressParseOk.logradouro || '', 'numero': addressParseOk.numero || '',
+                                            'andar': addressParseOk.andar || '', 'loja': addressParseOk.loja || '', 'bairro': end.bairro || addressParseOk.bairro || '', 'municipio': end.municipio || addressParseOk.municipio || '',
+                                            'estado': end.estado || addressParseOk.estado || '', 'cep': end.cep || addressParseOk.cep || '',
                                         }; if (clipboard.cep) { clipboard.cep = clipboard.cep.replace(/(\d{5})(\d{3})/, "$1-$2") }
                                         let clipboardOk = ''; Object.keys(clipboard).forEach((key, index) => { if (clipboard[key] && key !== 'tipo') { clipboardOk = `${clipboardOk}, ${clipboard[key]}` } });
                                         clipboardOk = clipboardOk.replace(', ', clipboard.tipo ? clipboard.tipo + ' ' : ''); if (isGoogleMaps) {
@@ -119,8 +123,8 @@
                                             clipboardOk = `${isGoogleMaps.name} 🟢 ${isGoogleMaps.category} 🔴 ${isGoogleMaps.address} 🔵 ${isGoogleMaps.urlGoogleMaps}`
                                         }; clipboardOk = clipboardOk.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                                         let html1 = `<td><span class="copy-icon" onclick="clipboardSet('${clipboardOk}')">`; let html2 = `</span></td>`
-                                        html += `${html1}${end.tipoLogradouro ? `${end.tipoLogradouro} ` : ''}${end.nomeLogradouro || ''}${html2}`; html += `${html1}${end.complemento || ''}${html2}`;
-                                        html += `${html1}${end.bairro || ''}${html2}`; html += `${html1}${end.localidade || ''}${html2}`; html += `${html1}${end.uf || ''}${html2}`;
+                                        html += `${html1}${end.logradouroTipo ? `${end.logradouroTipo} ` : ''}${end.logradouro || ''}${html2}`; html += `${html1}${end.complemento || ''}${html2}`;
+                                        html += `${html1}${end.bairro || ''}${html2}`; html += `${html1}${end.municipio || ''}${html2}`; html += `${html1}${end.estado || ''}${html2}`;
                                         html += `${html1}${end.cep.replace(/(\d{5})(\d{3})/, "$1-$2")}${html2}`; row.innerHTML = html; tbody.appendChild(row);
                                     });
                                 }

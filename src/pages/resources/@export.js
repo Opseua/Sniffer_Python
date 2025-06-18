@@ -10,10 +10,10 @@
     globalThis['normalizeString'] = normalizeString;
 
     function addressTokenize(add) {
-        let ceps = []; add = add.replace(/\d{5}-\d{3}/g, match => { ceps.push(match); return '#CEP#'; }); add = add.replace(/\b\d{8}\b/g,
-            match => { ceps.push(`${match.substring(0, 5)}-${match.substring(5)}`); return '#CEP#'; }); add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/\s*-\s*/g, '#SPLIT#'); let parts = add.split('#SPLIT#');
-        parts = parts.map(part => part.trim()); for (let i = 0; i < parts.length; i++) { if (parts[i] === '#CEP#') { parts[i] = ceps.shift(); } } parts = parts.filter(part => /\w/.test(part));
-        let partsOk = []; for (let [index, v,] of parts.entries()) { if (/^\d.*\d$/.test(v) && !/\d{5}-\d{3}/.test(v)) { partsOk.push(v.replace(/\D+/g, '')); } else { partsOk.push(v); } } parts = partsOk; return parts;
+        let ceps = []; add = add.replace(/\d{5}-\d{3}|\d{8}|\d{4}-\d{3}|\d{7}/g, m => { let c = m.replace('-', ''); c = c.padStart(8, '0'); c = c.substring(0, 5) + '-' + c.substring(5); ceps.push(c); return '#CEP#'; });
+        add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/\s*-\s*/g, '#SPLIT#'); let parts = add.split('#SPLIT#'); parts = parts.map(part => part.trim());
+        for (let i = 0; i < parts.length; i++) { if (parts[i] === '#CEP#') { parts[i] = ceps.shift(); } } parts = parts.filter(part => /\w/.test(part)); let partsOk = [];
+        for (let [index, v,] of parts.entries()) { if (/^\d.*\d$/.test(v) && !/\d{5}-\d{3}/.test(v)) { partsOk.push(v.replace(/\D+/g, '')); } else { partsOk.push(v); } } parts = partsOk; return parts;
     }
     globalThis['addressTokenize'] = addressTokenize;
 
@@ -57,11 +57,7 @@
                     pontucao.pontuacao += retPontucaoDaChave; pontucao[value1] = retPontucaoDaChave;
                 }
             } pontucaoIndice.push(pontucao);
-        }
-
-        console.log(pontucaoIndice);
-
-        return pontucaoIndice;
+        } return pontucaoIndice;
     }
     globalThis['resultScore'] = resultScore;
 

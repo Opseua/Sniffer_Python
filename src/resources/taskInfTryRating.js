@@ -5,12 +5,6 @@
 // pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_10_OUT/DIA_25/OK/13.17.39.840_GET_TimeSensitiveEmailCategorizationPortugueseLanguage.txt'; // BLIND + RESP
 // pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/08.12.18.436_GET_EmailCategorizationPortugueseLanguage.txt'; // NÃO
 // // ***
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_08_AGO/DIA_27/OK/13.02.11.995_GET_Search20.txt'; // BLIND + RESP [1]
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_25/OK/06.50.21.014_GET_Search20.txt'; // BLIND + RESP [2]
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/z_teste/TryRating/Search20/2-GET_TASK-respSim_###_CLOSED_DNE.txt'; // BLIND + RESP [2] CLOSED_DNE
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_07/OK/03.08.24.366_GET_Search20.txt'; // BLIND
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_26/OK/22.26.11.890_GET_Search20.txt'; // NÃO
-// // ***
 // pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_21/OK/12.59.14.688_GET_SearchAdsRelevance.txt'; // NÃO
 // // ###
 // body = await file({ 'action': 'read', 'path': pathTxt }); body = JSON.parse(body.res);
@@ -166,6 +160,7 @@ async function taskInfTryRating(inf = {}) {
                         // 1 → [BLIND: NÃO]
                         blindNum = 1;
                     }
+
                     // ATRIBUIR [geral|father|children]: blindNum
                     if (blindNum > res.tasks['0'].blindNum) { res.tasks['0'].blindNum = blindNum; }
                     if (blindNum > res.tasks[father]['0'].blindNum) { res.tasks[father]['0'].blindNum = blindNum; } res.tasks[father][children]['0'].blindNum = blindNum;
@@ -184,7 +179,7 @@ async function taskInfTryRating(inf = {}) {
             arrBody.push({ 'path': false, 'body': (typeof body === 'object' ? body : JSON.parse(body)), });
         } else if (plataform) {
             // JULGAMENTOS (RECEBIDOS): PEGAR [EM MASSA] POR PLATAFORMA
-            let retFile = await file({ 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/${plataform}`, 'max': 12, }); if (!retFile.ret) { return retFile; }
+            let retFile = await file({ 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/${plataform}`, 'max': 24, }); if (!retFile.ret) { return retFile; }
             for (let [index, value,] of retFile.res.entries()) {
                 if (value.isFolder && value.name.includes('MES_')) {
                     let retFile1 = await file({ 'action': 'list', 'path': value.path, 'max': 32, }); if (!retFile1.ret) { return retFile1; } for (let [index1, value1,] of retFile1.res.entries()) {

@@ -76,7 +76,8 @@ async function tryRating(inf = {}) {
                         viewportTime = inputItemMessage.timeSinceMapViewportChanged !== void 0 ? inputItemMessage.timeSinceMapViewportChanged : tartMetadata.timeSinceMapViewportChanged;
                         if (!viewportTime && inputItemMessage.place_request_parameters?.category_search_parameters?.viewport_info?.time_since_map_viewport_changed) {
                             viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
-                        } let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
+                        } if (!d0?.inputItem?.data?.tartMetadata?.deviceLocation || !d0?.inputItem?.data?.tartMetadata?.mapRegion) { return { 'viewport': '#####', 'user': '#####', }; }
+                        let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
                     } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
                     actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, });

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-async function addressParseGoogleMaps(inf = {}) {
+async function parseGoogleMaps(inf = {}) {
     let ret = { 'ret': false, };
     try {
         let { texto, } = inf;
@@ -128,7 +128,7 @@ async function addressParseGoogleMaps(inf = {}) {
     return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
 }
 
-globalThis['addressParseGoogleMaps'] = addressParseGoogleMaps;
+globalThis['parseGoogleMaps'] = parseGoogleMaps;
 
 // let texto;
 
@@ -136,50 +136,50 @@ globalThis['addressParseGoogleMaps'] = addressParseGoogleMaps;
 // // → 'LOGRADOURO - BAIRRO · BAIRRO (DUPLICADO), MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'R. Traipu - Ricardo de Albuquerque · Ricardo de Albuquerque, Rio de Janeiro - RJ, 21665-084';
 // texto = 'https://maps.app.goo.gl/fVNCmbuAe5Z1tuZS7';
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // // → 'POI · LOGRADOURO, NUMERO - BAIRRO, MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'Encontro Mineiro · R. Bento Branco de Andrade Filho, 111 - Jardim Dom Bosco, São Paulo - SP, 04757-010';
 // texto = 'https://maps.app.goo.gl/ytH2EbJQ3Gwp8qYm9';
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // // → 'POI · LOGRADOURO, NUMERO - BAIRRO, MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'Auto Escola Campeão · R. Ademar de Barros, Qd 01 Lt 07 - Jardim de Todos Os Santos, Sen. Canedo - GO, 75250-000';
 // texto = 'https://maps.app.goo.gl/GSnKX2EF8VaYYFMPA';
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'POI · LOGRADOURO - BAIRRO, MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'Mercado Compre Mais · R. Maria Silva - Campo Grande, Rio de Janeiro - RJ, 23013-440';
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'BAIRRO · MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'Jardim Nova Independencia I · Sarandi - PR, 87114-665';
 // texto = 'https://maps.app.goo.gl/U1vEE52LUZ42PmG46';
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'LOGRADOURO · MUNICIPIO - ESTADO' [✅]
 // texto = 'Estr. dos Três Rios · Rio de Janeiro - RJ';
 // // texto = regex({ pattern: `name="Description">  <meta content="(.*?)" itemprop="name"`, text: (await api({ e, method: 'GET', url: `https://maps.app.goo.gl/DpY6RxAUTC5Vvm4c9`, })).res.body.replace(/\\n/g, '') }).res['1'];
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'BAIRRO · MUNICIPIO - ESTADO' [✅]
 // texto = 'Campo Grande · Rio de Janeiro - RJ';
 // // texto = regex({ pattern: `name="Description">  <meta content="(.*?)" itemprop="name"`, text: (await api({ e, method: 'GET', url: `https://maps.app.goo.gl/rgiGtEGKLJg3Rmgc8`, })).res.body.replace(/\\n/g, '') }).res['1'];
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'CEP · LOGRADOURO - BAIRRO, MUNICIPIO - ESTADO' [✅]
 // texto = '23013-440 · R. Ten. Agenor Brito - Sen. Vasconcelos, Rio de Janeiro - RJ';
 // // texto = regex({ pattern: `name="Description">  <meta content="(.*?)" itemprop="name"`, text: (await api({ e, method: 'GET', url: `https://maps.app.goo.gl/XsotUSFLKG5u5VGYA`, })).res.body.replace(/\\n/g, '') }).res['1'];
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'LOGRADOURO, NUMERO - BAIRRO · LOGRADOURO (DUPLICADO), NUMERO (DUPLICADO) - BAIRRO (DUPLICADO), MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'R. Artur Rios, 99-7 - Sen. Vasconcelos · R. Artur Rios, 99-7 - Sen. Vasconcelos, Rio de Janeiro - RJ, 23013-470';
 // // texto = regex({ pattern: `name="Description">  <meta content="(.*?)" itemprop="name"`, text: (await api({ e, method: 'GET', url: `https://maps.app.goo.gl/gDKd2PJDRotJnCm79`, })).res.body.replace(/\\n/g, '') }).res['1'];
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 // // → 'BAIRRO · BAIRRO (DUPLICADO), MUNICIPIO - ESTADO, CEP' [✅]
 // texto = 'Senador Vasconcelos · Sen. Vasconcelos, Rio de Janeiro - RJ, 23013-470';
 // // texto = regex({ pattern: `name="Description">  <meta content="(.*?)" itemprop="name"`, text: (await api({ e, method: 'GET', url: `https://maps.app.goo.gl/Nh3mnTqMPMhn16B78`, })).res.body.replace(/\\n/g, '') }).res['1'];
-// console.log((await addressParseGoogleMaps({ texto })).res);
+// console.log((await parseGoogleMaps({ texto })).res);
 
 

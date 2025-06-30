@@ -87,9 +87,9 @@
     globalThis['keyScore'] = keyScore;
 
     // CHAMAR A FUNÇÃO AO PRESSIONAR O ENTER | INICIAR COM FOCUS NO IMPUT | DEFINIR ÁREA DE TRANSFERÊNCIA
-    function f() { inputEle.focus(); } f(); dc.addEventListener('visibilitychange', () => { if (!dc.hidden) { f(); } });
+    function focus() { inputEle.focus(); } focus(); dc.addEventListener('visibilitychange', () => { if (!dc.hidden) { focus(); } });
     function clipboardSet(inf) { navigator.clipboard.writeText(inf).then(() => { }, (catchErr) => { alertConsole(`CLIPBOARD SET: ERRO`, catchErr); }); }
-    globalThis['clipboardSet'] = clipboardSet;
+    globalThis['clipboardSet'] = clipboardSet; globalThis['focus'] = focus;
 
     function addressType(inf = {}) {
         let { address, } = inf; address = address.trim(); let found = false; let search = [

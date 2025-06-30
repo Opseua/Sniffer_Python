@@ -79,14 +79,14 @@ async function tryRating(inf = {}) {
                         } if (!d0?.inputItem?.data?.tartMetadata?.deviceLocation || !d0?.inputItem?.data?.tartMetadata?.mapRegion) { return { 'viewport': '#####', 'user': '#####', }; }
                         let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
                         return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
-                    } retVU = viewportUser(body); tabTitle = retVU.viewport === 'STALE' ? 'USER' : retVU.user === 'INSIDE' ? 'USER' : 'VIEWPORT';
+                    } retVU = viewportUser(body); tabTitle = ['USER <S>Acc', 'VIEW <N>',]; tabTitle = retVU.viewport === 'STALE' ? tabTitle[0] : retVU.user === 'INSIDE' ? tabTitle[0] : tabTitle[1];
                     actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, });
-                    actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating → ${tabTitle}`, }, }); function funChangeMap() {
+                    actions.push({ 'name': 'tabAction', 'par': { e, 'action': `changeTitle`, 'search': target, 'title': `TryRating: ${tabTitle}`, }, }); function funChangeMapAndCorrectAddress() {
                         let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
                             if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
                         } function selectOption() {
-                            w('.mk-tile-layer-selector', (e1) => {
-                                setTimeout(() => {
+                            w('.mk-tile-layer-selector', (e1) => { // ADICIONAR VÍRGULA NO ENDEREÇO
+                                d.querySelectorAll('.sd-richtext-inner p').forEach(function (el) { el.innerHTML = el.innerHTML.replace(/<br>/g, ', <br>').replace(/(<br>)*<\/p>/, ', </p>'); }); setTimeout(() => {
                                     let e2 = e1.querySelector('.mktls-option.mktls-show.mktls-value'); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3.includes('Hybrid')) { return; }
                                     let e4 = e1.querySelector('.mktls-option.mktls-show'); if (!e4) { return; } e4.click(); setTimeout(() => {
                                         let e5 = Array.from(e1.querySelectorAll('.mktls-option')).find(v => v.textContent.includes('Hybrid')); if (!e5) { return; } e5.dispatchEvent(new Event('click', { bubbles: true, }));
@@ -94,7 +94,7 @@ async function tryRating(inf = {}) {
                                 }, 1000);
                             });
                         } selectOption(); return true;
-                    } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMap.toString()})()`, }, });
+                    } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMapAndCorrectAddress.toString()})()`, }, });
                 }/* TEMPO DA TASK */ function funTaskTime() {
                     let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis['observadorAtivo'] = true; let l = [...e,].find(el => el.textContent.includes('Estimated Rating Time'));
                     if (!l) { setTimeout(funTaskTime, 500); return; } let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(funTaskTime, 500); return; }

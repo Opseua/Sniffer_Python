@@ -6,8 +6,8 @@ async function correiosServer(inf = {}) {
     try {
         /* IMPORTAR BIBLIOTECA [NODE] */
         libs['http']['createServer'] = 1; libs['url']['parse'] = 1; libs['readline']['createInterface'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]'); let { promises, createReadStream, } = _fs;
-        let arruamento = `${fileProjetos}/Sniffer_Python/logs/z_Arruamento`; function normalizar(texto) { return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s]/g, '').trim(); }
-        function analisarComplemento(complemento) {
+        let path = `${fileProjetos}/Sniffer_Python/logs/z_Arruamento`; function normalizar(texto) { return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s]/g, '').trim(); }
+        let pathBancoDeDados = `${path}/bancoDeDados`, pathCorreios = `${path}/correios/eDNE_Basico/Delimitado`; function analisarComplemento(complemento) {
             let texto = complemento.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             if (!(texto.startsWith(`- ate `) || texto.startsWith(`- de `) || texto.startsWith(`- lado `))) { return { lado: 'A', numInicial: '1', numFinal: '99999', }; }
             let lado = 'A'; if (texto.includes('- lado impar')) { lado = 'I'; } else if (texto.includes('- lado par')) { lado = 'P'; }
@@ -21,28 +21,22 @@ async function correiosServer(inf = {}) {
             else if (numeros.length === 1) { numInicial = String(numeros[0]); numFinal = String(numeros[0]); } else { numInicial = (lado === 'P') ? '2' : '1'; numFinal = '99999'; } return { lado, numInicial, numFinal, };
         }
 
-        // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
         // BANCO DE DADOS
-        async function criarBancoDeDados(dir) {
-            // → MUNICÍPIOS
-            let municipios = {}; async function bancoDeDadosMunicipios(dir) {
-                let conteudo = await promises.readFile(`${dir}/correios/LOG_LOCALIDADE.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
+        async function dbMake() {
+            // APAGAR ARQUIVOS ANTIGOS | → MUNICÍPIOS | → BAIRROS
+            let p = pathBancoDeDados; for (let f of await promises.readdir(p)) { (await promises.stat(f = p + '\\' + f)).isFile() && await promises.unlink(f); } let municipios = {}; async function dbMunicipios() {
+                let conteudo = await promises.readFile(`${pathCorreios}/LOG_LOCALIDADE.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
                 for (let l of ls) { if (l.includes('@')) { let p = l.split('@'), codigo = p[0], nome = p[2]; municipios[codigo] = nome; } } logConsole({ e, ee, 'txt': `${Object.keys(municipios).length} → municipios`, });
-            } await bancoDeDadosMunicipios(arruamento);
-
-            // → BAIRROS
-            let bairros = {}; async function bancoDeDadosBairro(dir) {
-                let conteudo = await promises.readFile(`${dir}/correios/LOG_BAIRRO.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
+            } await dbMunicipios(); let bairros = {}; async function dbBairros() {
+                let conteudo = await promises.readFile(`${pathCorreios}/LOG_BAIRRO.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
                 for (let l of ls) { if (l.includes('@')) { let p = l.split('@'), codigo = p[0], nome = p[3]; bairros[codigo] = nome; } } logConsole({ e, ee, 'txt': `${Object.keys(bairros).length} → bairros`, });
-            } await bancoDeDadosBairro(arruamento);
+            } await dbBairros();
 
             // → LOGRADOUTO TIPO | LOGRADOUROS | COMPLEMENTOS
-
             let bairrosOk = { 'qtd': 0, 'tem': {}, 'obj': {}, }, cab = `logradouroTipo|logradouro|complemento|bairro|municipio|estado|cep\n`, logradourosOk = { 'qtd': 0, 'tem': {}, 'obj': {}, 'txt': cab, 'estados': {}, };
             let logradouroTiposOk = { 'qtd': 0, 'tem': {}, 'obj': {}, }, complementosOk = { 'qtd': 0, 'tem': {}, 'obj': {}, }, municipiosOk = { 'qtd': 0, 'tem': {}, 'obj': {}, }, estados = {}, qtd = 0;
-            let arquivosLogradouro = (await promises.readdir(`${dir}/correios`)).filter(nome => nome.startsWith('LOG_LOGRADOURO_') && nome.endsWith('.TXT')); for (let nome of arquivosLogradouro) {
-                let caminho = `${dir}/correios/${nome}`, conteudo = await promises.readFile(caminho, 'latin1'), linhas = conteudo.split(/\r?\n/); for (let linha of linhas) {
+            let arquivosLogradouro = (await promises.readdir(`${pathCorreios}`)).filter(nome => nome.startsWith('LOG_LOGRADOURO_') && nome.endsWith('.TXT')); for (let nome of arquivosLogradouro) {
+                let caminho = `${pathCorreios}/${nome}`, conteudo = await promises.readFile(caminho, 'latin1'), linhas = conteudo.split(/\r?\n/); for (let linha of linhas) {
                     if (!linha.includes('@')) { continue; } let partes = linha.split('@'); let estado = partes[1] || ''; let municipioCod = partes[2] || ''; let bairroCod = partes[3] || '';
                     let logradouro = partes[5] || ''; let complemento = partes[6] || ''; let cep = partes[7] || ''; let logradouroTipo = partes[8] || ''; qtd++;
 
@@ -51,22 +45,22 @@ async function correiosServer(inf = {}) {
                         logradouroTiposOk.qtd++; logradouroTiposOk.tem[logradouroTipo] = logradouroTiposOk.qtd; logradouroTiposOk.obj[logradouroTiposOk.qtd] = logradouroTipo; codLogradouroTipo = logradouroTiposOk.qtd;
                     } else { codLogradouroTipo = logradouroTiposOk.tem[logradouroTipo]; }
 
-                    // LOGRADOURO
+                    // LOGRADOURO [MAIOR: 'Setor Polo de Desenvolvimento Juscelino Kubitschek Trecho 5 Comércio Local 13/15, DF, 72549-805']
                     let codLogradouro = 0; if (!logradourosOk.tem[logradouro]) {
                         logradourosOk.qtd++; logradourosOk.tem[logradouro] = logradourosOk.qtd; logradourosOk.obj[logradourosOk.qtd] = logradouro; codLogradouro = logradourosOk.qtd;
                     } else { codLogradouro = logradourosOk.tem[logradouro]; }
 
-                    // COMPLEMENTO
+                    // COMPLEMENTO [MAIOR: '(Rio Branco-Cruzeiro do Sul) - do km, AC, 69922-415']
                     let codComplemento = 0; if (!complementosOk.tem[complemento]) {
                         complementosOk.qtd++; complementosOk.tem[complemento] = complementosOk.qtd; complementosOk.obj[complementosOk.qtd] = complemento; codComplemento = complementosOk.qtd;
                     } else { codComplemento = complementosOk.tem[complemento]; }
 
-                    // BAIRRO
+                    // BAIRRO [MAIOR 'Conjunto Habitacional Doutor Ovídio Rodrigues Tucunduva Junior (Tibiriçá, Piraju, SP, 18810-542']
                     let codBairro = 0; let bairro = bairros[bairroCod]; if (!bairrosOk.tem[bairro]) {
                         bairrosOk.qtd++; bairrosOk.tem[bairro] = bairrosOk.qtd; bairrosOk.obj[bairrosOk.qtd] = bairro; codBairro = bairrosOk.qtd;
                     } else { codBairro = bairrosOk.tem[bairro]; }
 
-                    // MUNICIPIO
+                    // MUNICIPIO (MAIOR: Santo Antônio do Descoberto, GO)
                     let codMunicio = 0; let municipio = municipios[municipioCod]; if (!municipiosOk.tem[municipio]) {
                         municipiosOk.qtd++; municipiosOk.tem[municipio] = municipiosOk.qtd; municipiosOk.obj[municipiosOk.qtd] = municipio; codMunicio = municipiosOk.qtd;
                     } else { codMunicio = municipiosOk.tem[municipio]; }
@@ -81,14 +75,14 @@ async function correiosServer(inf = {}) {
             } await logConsole({ e, ee, txt: `${qtd} → logradouros`, });
 
             async function dataSave(f, d, o, n, k, c) {
-                if (o) { k = Object.keys(d).length; d = JSON.stringify(d); } await promises.writeFile(`${dir}/bancoDeDados/${f}`, d, c || 'latin1'); if (n) { await logConsole({ e, ee, txt: `${k} → ${n}`, }); }
+                if (o) { k = Object.keys(d).length; d = JSON.stringify(d); } await promises.writeFile(`${pathBancoDeDados}/${f}`, d, c || 'latin1'); if (n) { await logConsole({ e, ee, txt: `${k} → ${n}`, }); }
             } await dataSave(`_logradouroTipos.json`, logradouroTiposOk.obj, true, `OK logradouroTipos`); await dataSave(`_logradouros.json`, logradourosOk.obj, true, `OK logradouros`);
             await dataSave(`_complementos.json`, complementosOk.obj, true, `OK complementos`); await dataSave(`_bairros.json`, bairrosOk.obj, true, `OK bairros`);
             await dataSave(`_municipios.json`, municipiosOk.obj, true, `OK municipios`); let obj = JSON.stringify(Object.fromEntries(Object.entries(estados).map(([u, s,]) => [u, Array.from(s),])));
             await dataSave(`estadosMunicipios.js`, `let estadosMunicipios = ${obj}; globalThis['estadosMunicipios'] = estadosMunicipios;`, false, `estados+municipios`, Object.keys(estados).length, 'utf8');
-            for (let k in logradourosOk.estados) { await dataSave(`index_${k}.txt`, logradourosOk.estados[k], false); }
-            logradouroTiposOk = {}; logradourosOk = {}; complementosOk = {}; bairrosOk = {}; bairros = {}; municipiosOk = {}; municipios = {}; estados = {};
-        } // await criarBancoDeDados(arruamento);
+            for (let k in logradourosOk.estados) { await dataSave(`index_${k}.txt`, logradourosOk.estados[k], false); } logradouroTiposOk = {}; logradourosOk = {}; complementosOk = {}; bairrosOk = {};
+            bairros = {}; municipiosOk = {}; municipios = {}; estados = {}; await logConsole({ e, ee, txt: `BANCO DE DADOS CRIADO!`, });
+        } // await dbMake();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -101,12 +95,12 @@ async function correiosServer(inf = {}) {
             } return dados;
         } function buscarLinhas(d, t, estados) {
             t = t.map(t => t.toLowerCase()); let r = []; for (let estado of estados) {
-                let o = d[estado].lins; let l = d[estado].linsLow; for (let i = 0; i < o.length && r.length < 100; i++) { let w = l[i]; if (t.every(t => w.includes(t))) { r.push(o[i]); } } if (r.length >= 100) { break; }
+                let o = d[estado].lins; let l = d[estado].linsLow; for (let i = 0; i < o.length && r.length < 20; i++) { let w = l[i]; if (t.every(t => w.includes(t))) { r.push(o[i]); } } if (r.length >= 100) { break; }
             } return r;
         }
 
         async function iniciarServidor() {
-            let s = Date.now(), dir = `${arruamento}/bancoDeDados`; logConsole({ e, ee, 'txt': `CARREGANDO DADOS...`, }); async function dataGet(f) { return JSON.parse(await promises.readFile(`${dir}/${f}`, 'latin1')); }
+            let s = Date.now(), dir = `${pathBancoDeDados}`; logConsole({ e, ee, 'txt': `CARREGANDO DADOS...`, }); async function dataGet(f) { return JSON.parse(await promises.readFile(`${dir}/${f}`, 'latin1')); }
             let logradouroTipos = (await dataGet(`_logradouroTipos.json`)); let logradouros = (await dataGet(`_logradouros.json`)); let complementos = (await dataGet(`_complementos.json`));
             let bairros = (await dataGet(`_bairros.json`)); let municipios = (await dataGet(`_municipios.json`)); let index = { logradouroTipos, logradouros, complementos, bairros, municipios, };
             let retEstados = await carregarEnderecos(`${dir}`); logConsole({ e, ee, 'txt': `DADOS CARREGADO ${(Date.now() - s) / 1000} segundos`, }); let ceps = {
@@ -119,8 +113,6 @@ async function correiosServer(inf = {}) {
                 'SE': { 'min': 49000000, 'max': 49999999, }, 'SP': { 'min': 1000000, 'max': 19999999, }, 'TO': { 'min': 77000000, 'max': 77999999, },
             }; function estadosPorCep(cep) { for (let uf in ceps) { let c = ceps[uf]; if (cep >= c.min && cep <= c.max) { return uf; } } return false; }
 
-            // 17031429
-
             let server = _createServer((req, res) => {
                 let reqUrl = _parse(req.url, true); function resEnd(d) { res.writeHead(200, { 'Content-Type': 'application/json', }).end(JSON.stringify(d)); } if (reqUrl.pathname === '/buscaAqui' && req.method === 'GET') {
                     let termosRaw = reqUrl.query.termos; if (!termosRaw) { resEnd({ 'ret': false, 'msg': `CORREIOS SERVER: ERRO | INFORMAR O 'termos'`, }); return; }
@@ -129,14 +121,14 @@ async function correiosServer(inf = {}) {
                     else { termos = termosRaw.split(';').map(x => x.trim()).filter(x => x); } termos = Array.from(new Set(termos)); let num, est, cep; for (let i = termos.length - 1; i >= 0; i--) {
                         let v = normalizar(termos[i]); termos[i] = v; if (/\d{7,8}/.test(v)) { cep = v.padStart(8, '0'); termos[i] = cep; cep = estadosPorCep(cep); }
                         if (/^\d+$/.test(v) && !(v.length > 6)) { num = Number(v); termos.splice(i, 1); } if (rE.test(v)) { est = v.toUpperCase(); termos.splice(i, 1); }
-                    }
+                    } let arr = ((t => t.length ? t : Object.keys(ceps))([...new Set([est, cep,].filter(Boolean)),])), resultados = { 'estados': arr.length, 'res': [], };
 
-                    let resultados = [], arr = ((t => t.length ? t : Object.keys(ceps))([...new Set([est, cep,].filter(Boolean)),])); for (let [idx, v,] of buscarLinhas(retEstados, termos, arr).entries()) {
+                    for (let [idx, v,] of buscarLinhas(retEstados, termos, arr).entries()) {
                         let [codLogradouroTipo, codLogradouro, codComplemento, codBairro, codMunicio,] = v.match(/#(.*?)#/)[1].split('|'), m = v.match(/( [a-z]{2}) (\d{7,8}) $/i), estado = m[1].toUpperCase(), cep = m[2];
                         let complemento = index.complementos[codComplemento] || ''; let retCom = analisarComplemento(complemento);
 
                         if (!num || (num >= retCom.numInicial && num <= retCom.numFinal && (retCom.lado === 'A' || retCom.lado === 'I' && num % 2 || retCom.lado === 'P' && num % 2 === 0))) {
-                            resultados.push({
+                            resultados.res.push({
                                 'logradouroTipo': index.logradouroTipos[codLogradouroTipo], 'logradouro': index.logradouros[codLogradouro], complemento,
                                 'bairro': index.bairros[codBairro], 'municipio': index.municipios[codMunicio], 'estado': estado.trim(), cep, ...retCom,
                             });
@@ -147,8 +139,7 @@ async function correiosServer(inf = {}) {
             }); let port = 7777; server.listen(port, () => { logConsole({ e, ee, 'txt': `SERVIDOR CORREIOS RODANDO http://localhost:${port}`, }); });
         } await iniciarServidor();
 
-        ret['msg'] = `ADDRESS FIND: OK`;
-        ret['ret'] = true;
+        ret['msg'] = `ADDRESS FIND: OK`; ret['ret'] = true;
 
     } catch (catchErr) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];

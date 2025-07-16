@@ -23,10 +23,11 @@ async function correiosServer(inf = {}) {
 
         // BANCO DE DADOS
         async function dbMake() {
-            // APAGAR ARQUIVOS ANTIGOS | → MUNICÍPIOS | → BAIRROS
+            // APAGAR ARQUIVOS ANTIGOS | → MUNICÍPIOS | → BAIRROS [https://www2.correios.com.br/sistemas/edne/download/eDNE_Basico.zip]
             let p = pathBancoDeDados; for (let f of await promises.readdir(p)) { (await promises.stat(f = p + '\\' + f)).isFile() && await promises.unlink(f); } let municipios = {}; async function dbMunicipios() {
                 let conteudo = await promises.readFile(`${pathCorreios}/LOG_LOCALIDADE.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
-                for (let l of ls) { if (l.includes('@')) { let p = l.split('@'), codigo = p[0], nome = p[2]; municipios[codigo] = nome; } } logConsole({ e, ee, 'txt': `${Object.keys(municipios).length} → municipios`, });
+                for (let l of ls) { if (l.includes('@')) { let p = l.split('@'); municipios[p[0]] = p[2]; if (!municipios[p[1]]) { municipios[p[1]] = []; } if (p[3]) { municipios[p[1]].push([p[2], p[3],]); } } }
+                logConsole({ e, ee, 'txt': `${Object.keys(municipios).length} → municipios`, });
             } await dbMunicipios(); let bairros = {}; async function dbBairros() {
                 let conteudo = await promises.readFile(`${pathCorreios}/LOG_BAIRRO.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
                 for (let l of ls) { if (l.includes('@')) { let p = l.split('@'), codigo = p[0], nome = p[3]; bairros[codigo] = nome; } } logConsole({ e, ee, 'txt': `${Object.keys(bairros).length} → bairros`, });

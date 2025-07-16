@@ -17,13 +17,13 @@ await getPath({ 'e': new Error(), devChildren, });
 
 /* FUNÇÕES DESSE PROJETO */ let project = gW.project;
 globalThis['ewoq'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/ewoq.js`, inf, project, }); };
+globalThis['scilliance'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/scilliance.js`, inf, project, }); };
 globalThis['tryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/tryRating.js`, inf, project, }); };
 
 // FUNÇÕES DESSE PROJETO
+globalThis['audioTranscribe'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/audioTranscribe.js`, inf, project, }); };
+globalThis['getResponseTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/getResponseTryRating.js`, inf, project, }); };
 globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/taskInfTryRating.js`, inf, project, }); };
-
-// SCRIPTS DESSE PROJETO
-globalThis['getResponseTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/scripts/getResponseTryRating.js`, inf, project, }); };
 
 // FUNÇÕES/SCRIPTS [PAGES]
 globalThis['correiosServer'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/pages/resources/correiosServer.js`, inf, project, }); };

@@ -42,7 +42,7 @@ if not "!action!" == "!action:ON=!" (
 	
 	rem → PROXY [ON] - SCRIPT DE INSTALACAO
 	set "eComercial=&"
-	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:!confPort!/?act=!confSecurityPass!-webfile!eComercial!roo=OPSEUA-NODE-WEBSOCKET-SERVER!eComercial!mes=!fileProjetos!/Sniffer_Python/src/scripts/BAT/proxy.pac!eComercial!download=true" /F"
+	!3_BACKGROUND! /NOCONSOLE "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /F" "reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v AutoConfigURL /t REG_SZ /d "http://127.0.0.1:!confPort!/?act=!confSecurityPass!-webfile!eComercial!roo=OPSEUA-NODE-WEBSOCKET-SERVER!eComercial!mes=!fileProjetos!/Sniffer_Python/src/scripts/BAT/proxy.pac!eComercial!mode=dow" /F"
 )
 
 rem ### OFF

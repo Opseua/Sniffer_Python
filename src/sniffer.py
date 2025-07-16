@@ -32,7 +32,7 @@
 # BIBLIOTECAS: NATIVAS
 from urllib.parse import urlparse
 from datetime import datetime
-import json, os, sys, time, re, locale, base64, socket, io, gzip, zlib, requests
+import json, os, sys, time, re, locale, base64, socket, requests
 
 # LIMPAR CONSOLE (MANTER NO INÍCIO)
 os.system("cls")
@@ -40,25 +40,18 @@ os.system("cls")
 # IGNORAR ERROS DO CTRL + C
 sys.stderr = open(os.devnull, "w")
 
-# BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install asyncio brotli mitmproxy
-# BIBLIOTECAS: NECESSÁRIO DESINSTALAR (sem confirmação) → pip uninstall -y asyncio brotli mitmproxy
+# BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install asyncio brotli mitmproxy | DESINSTALAR pip uninstall -y asyncio brotli mitmproxy
 import asyncio
-import brotli
 from mitmproxy import http
 from mitmproxy.options import Options
 from mitmproxy.tools.dump import DumpMaster
 from threading import Thread
 
 # VARIÁVEIS
-bufferSocket = None  # fun → MITMPROXY REQ/RES
-sockReq = None  # fun → MITMPROXY REQ/RES
-sockRes = None  # fun → MITMPROXY REQ/RES
-arrUrl = None  # fun → MITMPROXY REQ/RES
-# letter = os.getenv("letter")
+bufferSocket = sockReq = sockRes = arrUrl = portSocket = None
 fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
 project = os.path.abspath(__file__).split("PROJETOS\\")[1].split("\\src")[0]
-
 # FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
 locale.setlocale(locale.LC_TIME, "pt_BR")
 
@@ -120,18 +113,42 @@ def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
     os.startfile(f"{fileProjetos}/{project}/src/z_OUTROS_server/OFF.vbs")
-    # ENCERRAR SCRIPT
-    os._exit(1)
+    os._exit(1)  # ENCERRAR SCRIPT
+
+
+def socketSendReceive(port, obj):
+    global bufferSocket
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(("127.0.0.1", port))
+        sendB64 = base64.b64encode(json.dumps(obj).encode("utf-8"))
+        for i in range(0, len(sendB64), bufferSocket):
+            sock.send(sendB64[i : i + bufferSocket])
+        sock.send("#fim#".encode("utf-8"))
+        received = ""
+        while True:
+            chunk = sock.recv(bufferSocket)
+            if not chunk:
+                break
+            received += chunk.decode()
+            if "#fim#" in received:
+                received = received.split("#fim#")[0].rstrip()
+                break
+        sock.close()
+        data = json.loads(base64.b64decode(received).decode("utf-8"))
+        return data
+    except Exception as e:
+        errAll(e)
+        notifyAndConsole(f"Socket send/receive error on port {port}")
+        raise
 
 
 try:
     # REGEX DE URL
     def rgxMat(a, b):
-        c = re.escape(b).replace(r"\*", ".*")
-        return re.match(f"^{c}$", a) is not None
+        return re.match(f"^{re.escape(b).replace(r"\*", ".*")}$", a) is not None
 
-    # CONEXÃO DO SOCKET
-    def tryConnectSocket(sock, port):
+    def tryConnectSocket(sock, port):  # CONEXÃO DO SOCKET
         attempts, maxAttempts = 0, 12
         while attempts < maxAttempts:
             try:
@@ -146,8 +163,8 @@ try:
 
     # SERVER
     async def serverRun():
-        global bufferSocket, sockReq, sockRes, arrUrl
-        # LER O CONFIG E DEFINIR AS VARIÁVEI
+        global bufferSocket, arrUrl, portSocket
+        # LER O CONFIG E DEFINIR AS VARIÁVEL
         fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")
         config = ""
         with open(fullPathJson, "r", encoding="utf-8") as file:
@@ -159,26 +176,18 @@ try:
         portMitm = objSniffer["portMitm"]
         portSocket = objSniffer["portSocket"]
         bufferSocket = objSniffer["bufferSocket"] * 1000
-
-        # MANTER APENAS URLS QUE COMEÇAM COM 'http'
-        arrUrl = [url for url in objSniffer["arrUrl"] if url.startswith("http")]
-
-        # TENTAR SE CONECTAR AO SOCKET
-        tryConnectSocketReq = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tryConnectSocketRes = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sockReq = tryConnectSocket(tryConnectSocketReq, portSocket)
-        sockRes = tryConnectSocket(tryConnectSocketRes, portSocket + 1)
+        # MANTER APENAS URLS QUE CONTENHAM MAIS DE 7 CARACTERES
+        arrUrl = objSniffer["arrUrl"]
+        arrUrl = [v for val in arrUrl.values() if val for v in val if len(v) > 7]
         # MITMPROXY: INICIAR
         options = Options(
             listen_host="127.0.0.1",
             listen_port=portMitm,
-            # MANTER APENAS O HOST
-            allow_hosts=[urlparse(url).netloc for url in arrUrl],
+            # allow_hosts=[ "host1.com", "host2.com", "www.host3.com.br", ], # INTERCEPTAR APENAS ESSES HOSTS
             ssl_insecure=True,
         )
         m = DumpMaster(options, with_termlog=False, with_dumper=False)
         m.addons.add(*addons)
-
         # NOTIFICAÇÃO SNIFFER: ON
         urlReq = f"http://127.0.0.1:{portWebSocket}/?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_0"
         payload = {
@@ -203,106 +212,31 @@ try:
         }
         headers = {"Content-Type": "application/json"}
         requests.post(urlReq, json=payload, headers=headers, timeout=1)
-
         try:
             console(f"MITMPROXY RODANDO NA PORTA: {portMitm}")
             await m.run()
         except KeyboardInterrupt:
             m.shutdown()
 
-    # MITMPROXY: REQ [SEND]
     class URLLogger:
+
+        #################################################################################################################################################################
+
+        # MITMPROXY: REQ [SEND]
         def request(self, flow: http.HTTPFlow) -> None:
-            global bufferSocket, sockReq, arrUrl
+            global arrUrl, portSocket
             regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
             if regex is not None:
-                objReq = None
-                if not flow.request.content:
-                    reqBody, typeOk, compress = "NULL", "utf-8", "NULL"
-                else:
-                    type1 = flow.request.headers.get("Content-Type")
-                    if type1 and ";" in type1:
-                        try:
-                            typeOk = type1.split("; ")[1].split("=")[1]
-                        except Exception:
-                            typeOk = "utf-8"
-                    else:
-                        typeOk = "utf-8"
-                    compress = flow.request.headers.get("content-encoding", "").lower()
-                    if "gzip" in compress:
-                        try:
-                            gzippedContent = io.BytesIO(flow.request.content)
-                            decompressedContent = gzip.GzipFile(
-                                fileobj=gzippedContent
-                            ).read()
-                            reqBody = decompressedContent.decode(typeOk)
-                        except Exception:
-                            reqBody = flow.request.content.decode(
-                                "utf-8", errors="ignore"
-                            )
-                    elif "deflate" in compress:
-                        try:
-                            decompressedContent = zlib.decompress(
-                                flow.request.content, wbits=zlib.MAX_WBITS | 16
-                            )
-                            reqBody = decompressedContent.decode(typeOk)
-                        except Exception:
-                            reqBody = flow.request.content.decode(
-                                "utf-8", errors="ignore"
-                            )
-                    elif "br" in compress:
-                        try:
-                            decodedData = brotli.decompress(flow.request.content)
-                            reqBody = decodedData.decode(typeOk)
-                        except Exception:
-                            reqBody = flow.request.content.decode(
-                                "utf-8", errors="ignore"
-                            )
-                    else:
-                        compress = "NULL"
-                        try:
-                            reqBody = flow.request.content.decode(
-                                typeOk, errors="ignore"
-                            )
-                        except Exception:
-                            reqBody = flow.request.content.decode(
-                                "utf-8", errors="ignore"
-                            )
                 objReq = {
                     "getSend": "send",
                     "method": flow.request.method,
                     "host": urlparse(flow.request.url).hostname,
                     "url": flow.request.url,
                     "headers": dict(flow.request.headers),
-                    "body": reqBody,
-                    "compress": compress,
-                    "type": typeOk,
+                    "body": base64.b64encode(flow.request.content).decode("ascii"),
                 }
-                # SOCKET REQ [SEND]
                 try:
-                    sendSockReq = json.dumps(objReq)
-                    sendB64Req = base64.b64encode(sendSockReq.encode("utf-8"))
-                    for i in range(0, len(sendB64Req), bufferSocket):
-                        part = sendB64Req[i : i + bufferSocket]
-                        sockReq.send(part)
-                    sockReq.send("#fim#".encode("utf-8"))
-                    # console('SOCKET REQUISICAO [SEND]: OK')
-                except Exception as exceptErr:
-                    errAll(exceptErr)
-                    notifyAndConsole("Socket REQ [SEND]")
-                    raise
-
-                # SOCKET REQ [GET]
-                try:
-                    getSockReq = ""
-                    while True:
-                        chunk = sockReq.recv(bufferSocket)
-                        getSockReq += chunk.decode()
-                        if "#fim#" in getSockReq:
-                            getSockReq = getSockReq.split("#fim#")[0].rstrip()
-                            break
-                    # console('SOCKET REQ [GET]: OK')
-                    dataReq = json.loads(base64.b64decode(getSockReq).decode("utf-8"))
+                    dataReq = socketSendReceive(portSocket, objReq)
                     if dataReq:
                         retReq = None
                         try:
@@ -310,19 +244,12 @@ try:
                             if retReq.get("complete", True):
                                 if len(retReq["res"]) > 1:
                                     newReq = {
-                                        # EDITAVEL: NAO
                                         "getSend": retReq.get("res", {}).get("getSend"),
                                         "method": retReq.get("res", {}).get("method"),
                                         "host": retReq.get("res", {}).get("host"),
                                         "url": retReq.get("res", {}).get("url"),
-                                        # EDITAVEL: SIM
                                         "headers": retReq.get("res", {}).get("headers"),
                                         "body": retReq.get("res", {}).get("body"),
-                                        # EDITAVEL: SIM (pelo header)
-                                        "compress": retReq.get("res", {}).get(
-                                            "compress"
-                                        ),
-                                        "type": retReq.get("res", {}).get("type"),
                                     }
                                     if newReq["headers"]:
                                         for key in newReq["headers"]:
@@ -330,7 +257,7 @@ try:
                                                 "headers"
                                             ][key]
                                     if newReq["body"]:
-                                        flow.request.content = str.encode(
+                                        flow.request.content = base64.b64decode(
                                             newReq["body"]
                                         )
                                     console("REQ ALTERADA")
@@ -351,100 +278,26 @@ try:
                 # console('OUTRO URL REQ |', urlparse(flow.request.url).hostname)
                 pass
 
+        #################################################################################################################################################################
+
         # MITMPROXY: RES [GET]
         def response(self, flow: http.HTTPFlow) -> None:
-            global bufferSocket, sockRes, arrUrl
+            global arrUrl, portSocket
             regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
             if regex is not None:
-                # DISABILITAR CACHE
                 flow.response.headers["Cache-Control"] = "no-store, max-age=0"
-                objRes = None
-                if not flow.response.content:
-                    resBody, typeOk, compress = "NULL", "utf-8", "NULL"
-                else:
-                    type1 = flow.response.headers.get("Content-Type")
-                    if type1 and ";" in type1:
-                        try:
-                            typeOk = type1.split("; ")[1].split("=")[1]
-                        except Exception:
-                            typeOk = "utf-8"
-                    else:
-                        typeOk = "utf-8"
-                    compress = flow.response.headers.get("content-encoding", "").lower()
-                    if "gzip" in compress:
-                        try:
-                            gzippedContent = io.BytesIO(flow.response.content)
-                            decompressedContent = gzip.GzipFile(
-                                fileobj=gzippedContent
-                            ).read()
-                            resBody = decompressedContent.decode(typeOk)
-                        except Exception:
-                            resBody = flow.response.content.decode(
-                                "utf-8", errors="ignore"
-                            )
-                    elif "deflate" in compress:
-                        try:
-                            decompressedContent = zlib.decompress(
-                                flow.response.content, wbits=zlib.MAX_WBITS | 16
-                            )
-                            resBody = decompressedContent.decode(typeOk)
-                        except Exception:
-                            resBody = flow.response.content.decode(
-                                "utf-8", errors="ignore"
-                            )
-                    elif "br" in compress:
-                        try:
-                            decodedData = brotli.decompress(flow.response.content)
-                            resBody = decodedData.decode(typeOk)
-                        except Exception:
-                            resBody = flow.response.content.decode(
-                                "utf-8", errors="ignore"
-                            )
-                    else:
-                        compress = "NULL"
-                        try:
-                            resBody = flow.response.content.decode(
-                                typeOk, errors="ignore"
-                            )
-                        except Exception:
-                            resBody = flow.response.content.decode(
-                                "utf-8", errors="ignore"
-                            )
                 objRes = {
                     "getSend": "get",
                     "method": flow.request.method,
                     "host": urlparse(flow.request.url).hostname,
                     "url": flow.request.url,
                     "headers": dict(flow.response.headers),
-                    "body": resBody,
-                    "compress": compress,
-                    "type": typeOk,
+                    "body": base64.b64encode(flow.response.content).decode("ascii"),
                     "status": flow.response.status_code,
                 }
-                # SOCKET RES [SEND]
+                # SOCKET RES [SEND] e [GET]
                 try:
-                    sendSockRes = json.dumps(objRes)
-                    sendB64Res = base64.b64encode(sendSockRes.encode("utf-8"))
-                    for i in range(0, len(sendB64Res), bufferSocket):
-                        part = sendB64Res[i : i + bufferSocket]
-                        sockRes.send(part)
-                    sockRes.send("#fim#".encode("utf-8"))
-                    # console('SOCKET RES [SEND]: OK')
-                except Exception as exceptErr:
-                    errAll(exceptErr)
-                    notifyAndConsole("Socket RES [SEND]")
-                    raise
-                # SOCKET RES [GET]
-                try:
-                    getSockRes = ""
-                    while True:
-                        chunk = sockRes.recv(bufferSocket)
-                        getSockRes += chunk.decode()
-                        if "#fim#" in getSockRes:
-                            getSockRes = getSockRes.split("#fim#")[0].rstrip()
-                            break
-                    # console('SOCKET RES [GET]: OK')
-                    dataRes = json.loads(base64.b64decode(getSockRes).decode("utf-8"))
+                    dataRes = socketSendReceive(portSocket + 1, objRes)
                     if dataRes:
                         retRes = None
                         try:
@@ -452,20 +305,13 @@ try:
                             if retRes.get("complete", True):
                                 if len(retRes["res"]) > 1:
                                     newRes = {
-                                        # EDITAVEL: NAO
                                         "getSend": retRes.get("res", {}).get("getSend"),
                                         "method": retRes.get("res", {}).get("method"),
                                         "host": retRes.get("res", {}).get("host"),
                                         "url": retRes.get("res", {}).get("url"),
-                                        # EDITAVEL: SIM
                                         "headers": retRes.get("res", {}).get("headers"),
                                         "body": retRes.get("res", {}).get("body"),
                                         "status": retRes.get("res", {}).get("status"),
-                                        # EDITAVEL: SIM (pelo header)
-                                        "compress": retRes.get("res", {}).get(
-                                            "compress"
-                                        ),
-                                        "type": retRes.get("res", {}).get("type"),
                                     }
                                     if newRes["headers"]:
                                         for key in newRes["headers"]:
@@ -473,7 +319,7 @@ try:
                                                 "headers"
                                             ][key]
                                     if newRes["body"]:
-                                        flow.response.content = str.encode(
+                                        flow.response.content = base64.b64decode(
                                             newRes["body"]
                                         )
                                     if newRes["status"]:
@@ -496,7 +342,7 @@ try:
                 # console('OUTRO URL RES |', urlparse(flow.request.url).hostname)
                 pass
 
-    # **************************************************************************************************
+    #################################################################################################################################################################
 
     addons = [URLLogger()]
 
@@ -504,7 +350,6 @@ try:
     if __name__ == "__main__":
         Thread(target=stopwatchRun).start()
         asyncio.run(serverRun())
-        print("ok")
 
 # CHECAR ERROS
 except Exception as exceptErr:

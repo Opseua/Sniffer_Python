@@ -28,7 +28,7 @@
         // PEGAR O SECURITY PASS
         let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecPas(inf = {}) {
             try {
-                let url = `${ipServer}?act=getSecurityPass&roo=&mes=`; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'raw': true }, });
+                let url = `${ipServer}?act=getSecurityPass&roo=&mes=`; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'mode': 'raw', }, });
                 if (!retFetch.ok) { alert('FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO'); } else { let data = await retFetch.text(); securityPass = JSON.parse(data).res; }
             } catch (catchErr) { alert('GET SECURITY PASS: ERRO | TRYCATCH', catchErr); };
         }; window.onload = function () { getSecPas(); };
@@ -40,7 +40,7 @@
                 document.getElementById('input1').placeholder = 'Nada foi inserido'; setTimeout(() => { document.getElementById('input1').placeholder = 'Digite algo...'; }, 1000);
             } else {
                 let url = `${ipServer}?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_3`; let retFetch = await fetch(url, {
-                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'raw': true }, 'body': JSON.stringify({
+                    'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'mode': 'raw', }, 'body': JSON.stringify({
                         'fun': [{
                             'securityPass': securityPass, 'retInf': true, 'name': 'command1', 'par': {
                                 'origin': 'web', 'urlGoogleMaps': valueInput1, 'nome': valueInput2, 'endereco': valueInput3,

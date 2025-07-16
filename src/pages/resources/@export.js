@@ -93,8 +93,17 @@
 
     function addressType(inf = {}) {
         let { address, } = inf; address = address.trim(); let found = false; let search = [
-            { 'found': 'Rua', 'arr': ['rua ', 'r. ',], }, { 'found': 'Avenida', 'arr': ['avenida ', 'av. ', 'av ', ,], }, { 'found': 'Travessa', 'arr': ['TRAVESSA ', 'travessa ', 'tv. ', 'tv ',], },
-            { 'found': 'Rodovia', 'arr': ['RODOVIA ', 'rodovia ', 'rod. ', 'rod ',], }, { 'found': 'Estrada', 'arr': ['estrada ', 'estr. ', 'estr ',], },
+            { 'found': 'Aeroporto', 'arr': ['aeroporto ',], }, { 'found': 'Alameda', 'arr': ['alameda ', 'al. ',], }, { 'found': 'Área', 'arr': ['área ',], },
+            { 'found': 'Chácara', 'arr': ['chácara ', 'chác. ', 'chác ',], }, { 'found': 'Colônia', 'arr': ['colônia ', 'col. ',], }, { 'found': 'Condomínio', 'arr': ['condomínio ', 'cond. ',], },
+            { 'found': 'Conjunto', 'arr': ['conjunto ', 'cj. ',], }, { 'found': 'Distrito', 'arr': ['distrito ', 'distr. ', 'dist. ',], }, { 'found': 'Esplanada', 'arr': ['esplanada ',], },
+            { 'found': 'Estação', 'arr': ['estação ',], }, { 'found': 'Estrada', 'arr': ['estrada ', 'estr. ', 'estr ',], }, { 'found': 'Fazenda', 'arr': ['fazenda ',], },
+            { 'found': 'Jardim', 'arr': ['jardim ', 'jd. ', 'jd ',], }, { 'found': 'Ladeira', 'arr': ['ladeira ',], }, { 'found': 'Largo', 'arr': ['largo ',], },
+            { 'found': 'Loteamento', 'arr': ['loteamento ', 'lot. ',], }, { 'found': 'Núcleo', 'arr': ['núcleo ', 'núc. ',], }, { 'found': 'Parque', 'arr': ['parque ', 'pq. ', 'pq ',], },
+            { 'found': 'Praça', 'arr': ['praça ', 'pç. ', 'pça ', 'pça. ',], }, { 'found': 'Quadra', 'arr': ['quadra ', 'qd. ',], }, { 'found': 'Residencial', 'arr': ['residencial ', 'res. ',], },
+            { 'found': 'Rodovia', 'arr': ['rodovia ', 'rod. ', 'rod ',], }, { 'found': 'Rua', 'arr': ['rua ', 'r. ',], }, { 'found': 'Setor', 'arr': ['setor ', 'st. ',], },
+            { 'found': 'Sítio', 'arr': ['sítio ', 'sit. ',], }, { 'found': 'Travessa', 'arr': ['travessa ', 'tv. ', 'tv ',], }, { 'found': 'Via', 'arr': ['via ',], },
+            { 'found': 'Viaduto', 'arr': ['viaduto ',], }, { 'found': 'Viela', 'arr': ['viela ',], }, { 'found': 'Vila', 'arr': ['vila ',], }, { 'found': 'Pátio', 'arr': ['pátio ',], },
+            { 'found': 'Avenida', 'arr': ['avenida ', 'av. ', 'av ',], },
         ]; for (let obj of search) { for (let key of obj.arr) { if (address.toLowerCase().startsWith(key)) { address = address.substring(key.length).trim(); found = obj.found; break; } } if (found) { break; } }
         return { 'found': found || false, 'address': found ? `#LOG#${address}` : address, };
     }

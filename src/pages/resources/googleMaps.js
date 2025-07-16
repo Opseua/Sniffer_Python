@@ -8,7 +8,7 @@ async function googleMaps(inf = {}) {
         let match, pass = false, propNam, propDes, end = { 'poi': null, 'categoria': null, 'logradouroTipo': null, 'logradouro': null, 'numero': null, 'bairro': null, 'municipio': null, 'estado': null, 'cep': null, };
 
         let retApi = await api({
-            method: 'POST', url: urlServer, maxConnect: 7, headers: { raw: true, }, body: JSON.stringify({ fun: [{ securityPass, retInf: true, name: 'api', par: { method: 'GET', url: texto, maxConnect: 7, }, },], }),
+            method: 'POST', url: urlServer, maxConnect: 7, headers: { mode: 'raw', }, body: JSON.stringify({ fun: [{ securityPass, retInf: true, name: 'api', par: { method: 'GET', url: texto, maxConnect: 7, }, },], }),
         }); if (!retApi.ret) { ret['msg'] = `ADDRESS PARSE GOOGLE MAPS: ERRO | ${retApi.ret}`; alertConsole(`${ret.msg}`); return ret; }
         retApi = JSON.parse(retApi.res.body).res.body; retApi = retApi.replace(`name="Description">  <meta content='`, `name="Description">  <meta content="`).replace(`' itemprop="name"`, `" itemprop="name"`);
         propNam = regex({ 'pattern': `name="Description">  <meta content="(.*?)" itemprop="name"`, 'text': retApi.replace(/\\n/g, ''), }).res['1']; texto = propNam;

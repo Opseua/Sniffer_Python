@@ -81,7 +81,7 @@
                         }; async function searchCorreios(inf = {}) {
                             for (let [index, value,] of Object.values(Object.fromEntries(retFetchs.inp.map(o => [o.i, o]))).entries()) {
                                 logConsole({ 'txt': `${value.s}\n${value.i}`, }); let r = await api({
-                                    'method': 'POST', 'url': urlServer, 'maxConnect': 7, 'headers': { 'raw': true, },
+                                    'method': 'POST', 'url': urlServer, 'maxConnect': 7, 'headers': { 'mode': 'raw', },
                                     body: { fun: [{ securityPass, retInf: true, name: 'api', par: { method: 'GET', object: true, url: `http://localhost:7777/buscaAqui?termos=${value.i.replaceAll(',', ';')}`, }, },], },
                                 }); if (!r.ret) { ret['msg'] = `PAGE 0: ERRO | ${r.ret}`; alertConsole(`${ret.msg}`); return ret; } r = JSON.parse(r.res.body);
                                 if (!r.ret || r.res.code !== 200) { return r; } retFetchs.res.push(...r.res.body.res.res || []); retFetchs.estados = r.res.body.res.estados || 0;

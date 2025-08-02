@@ -30,14 +30,12 @@
 # pylint: disable=W0613
 
 # BIBLIOTECAS: NATIVAS
-from urllib.parse import urlparse
+import json, os, sys, re, locale, requests
 from datetime import datetime
-import json, os, sys, time, re, locale, base64, socket, requests
+import http.client as http_client
 
-# LIMPAR CONSOLE (MANTER NO INÍCIO)
+# LIMPAR CONSOLE (MANTER NO INÍCIO) | IGNORAR ERROS DO CTRL + C
 os.system("cls")
-
-# IGNORAR ERROS DO CTRL + C
 sys.stderr = open(os.devnull, "w")
 
 # BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install asyncio brotli mitmproxy | DESINSTALAR pip uninstall -y asyncio brotli mitmproxy
@@ -48,7 +46,7 @@ from mitmproxy.tools.dump import DumpMaster
 from threading import Thread
 
 # VARIÁVEIS
-bufferSocket = sockReq = sockRes = arrUrl = portSocket = None
+arrUrl = portSocket = bufferSocket = None
 fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
 fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
 project = os.path.abspath(__file__).split("PROJETOS\\")[1].split("\\src")[0]
@@ -59,23 +57,30 @@ locale.setlocale(locale.LC_TIME, "pt_BR")
 from stopwatch import stopwatchRun
 
 
+# DATEHOUR
+def dateHour():
+    now = datetime.now()
+    return {
+        "day": f"{now.strftime('%d')}",
+        "mon": f"{now.strftime('%m')}",
+        "hou": f"{now.strftime('%H')}",
+        "min": f"{now.strftime('%M')}",
+        "sec": f"{now.strftime('%S')}",
+        "mil": f"{now.microsecond // 1000:03d}",
+        "monNam": f"{now.strftime('%b').upper()}",
+    }
+
+
 # LOGCONSOLE
 def logConsole(inf):
-    dateNow = datetime.now()
-    dateNowMon = f"MES_{dateNow.strftime('%m')}_{dateNow.strftime('%b').upper()}"
-    dateNowDay = f"DIA_{dateNow.strftime('%d')}"
-    dateNowHou = f"{dateNow.strftime('%H')}"
-    dateNowMin = f"{dateNow.strftime('%M')}"
-    dateNowSec = f"{dateNow.strftime('%S')}"
-    dateNowMil = f"{dateNow.microsecond // 1000:03d}"
-    dateInFile = f"→ {dateNowHou}:{dateNowMin}:{dateNowSec}.{dateNowMil}\n{str(inf)}"
-    fileName = (
-        f"logs/Python/{dateNowMon}/{dateNowDay}/{dateNowHou}.00-{dateNowHou}.59_log.txt"
-    )
+    retDateHour = dateHour()
+    day, hou = f"DIA_{retDateHour['day']}", f"{retDateHour['hou']}"
+    min_, sec = f"{retDateHour['min']}", f"{retDateHour['sec']}"
+    mil = f"{retDateHour['mil']}"
+    fileName = f"logs/Python/MES_{retDateHour['mon']}_{retDateHour['monNam']}/{day}/{hou}.00-{hou}.59_log.txt"
     os.makedirs(os.path.dirname(fileName), exist_ok=True)
-    err = f"{dateInFile}\n\n"
     with open(fileName, "a", encoding="utf-8") as file:
-        file.write(err)
+        file.write(f"→ {hou}:{min_}:{sec}.{mil}\n{str(inf)}\n\n")
 
 
 # CONSOLE
@@ -94,18 +99,14 @@ console.counter = 0
 
 # REGISTRAR ERROS
 def errAll(exceptErr):
-    dateNow = datetime.now()
-    dateNowMon = f"MES_{dateNow.strftime('%m')}_{dateNow.strftime('%b').upper()}"
-    dateNowDay = f"DIA_{dateNow.strftime('%d')}"
-    dateNowHou = f"{dateNow.strftime('%H')}"
-    dateNowMin = f"{dateNow.strftime('%M')}"
-    dateNowSec = f"{dateNow.strftime('%S')}"
-    dateNowMil = f"{dateNow.microsecond // 1000:03d}"
-    fileName = f"logs/Python/{dateNowMon}/{dateNowDay}/{dateNowHou}.{dateNowMin}.{dateNowSec}.{dateNowMil}_err.txt"
+    retDateHour = dateHour()
+    day, hou = f"DIA_{retDateHour['day']}", f"{retDateHour['hou']}"
+    min_, sec = f"{retDateHour['min']}", f"{retDateHour['sec']}"
+    mil = f"{retDateHour['mil']}"
+    fileName = f"logs/Python/MES_{retDateHour['mon']}_{retDateHour['monNam']}/{day}/{hou}.{min_}.{sec}.{mil}_err.txt"
     os.makedirs(os.path.dirname(fileName), exist_ok=True)
-    err = f"{str(exceptErr)}\n\n"
     with open(fileName, "a", encoding="utf-8") as file:
-        file.write(err)
+        file.write(f"{str(exceptErr)}\n\n")
 
 
 # NOTIFICAÇÃO WINDOWS
@@ -116,68 +117,62 @@ def notifyAndConsole(message):
     os._exit(1)  # ENCERRAR SCRIPT
 
 
-def socketSendReceive(port, obj):
-    global bufferSocket
-    try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect(("127.0.0.1", port))
-        sendB64 = base64.b64encode(json.dumps(obj).encode("utf-8"))
-        for i in range(0, len(sendB64), bufferSocket):
-            sock.send(sendB64[i : i + bufferSocket])
-        sock.send("#fim#".encode("utf-8"))
-        received = ""
-        while True:
-            chunk = sock.recv(bufferSocket)
-            if not chunk:
-                break
-            received += chunk.decode()
-            if "#fim#" in received:
-                received = received.split("#fim#")[0].rstrip()
-                break
-        sock.close()
-        data = json.loads(base64.b64decode(received).decode("utf-8"))
-        return data
-    except Exception as e:
-        errAll(e)
-        notifyAndConsole(f"Socket send/receive error on port {port}")
-        raise
+################################################################################################
+def chunksSendNode(inf):
+    global portSocket, bufferSocket
+    chunks, body = [], inf["body"]
+    for i in range(0, len(body), bufferSocket):
+        chunks.append(body[i : i + bufferSocket])
+    # CONECTAR AO SERVIDOR | ENVIAR HEADERS | ENVIAR CHUNKS | RESPOSTA
+    conn = http_client.HTTPConnection("localhost", portSocket)
+    headers = {
+        "Content-Type": "application/octet-stream",
+        "Transfer-Encoding": "chunked",
+        "x-getSend": inf["getSend"],
+        "x-method": inf["method"],
+        "x-url": inf["url"],
+        "x-headers": inf["headers"],
+    }
+    conn.putrequest("POST", "/")
+    for k, v in headers.items():
+        conn.putheader(k, v)
+    conn.endheaders()
+    for chunk in chunks:
+        conn.send((hex(len(chunk))[2:] + "\r\n").encode() + chunk + b"\r\n")
+    conn.send(b"0\r\n\r\n")
+    res, headers = conn.getresponse(), {}
+    dheaders, body = dict(res.getheaders()), res.read() or None
+    for k in ["x-action", "x-method", "x-url", "x-headers"]:
+        val = dheaders.get(k)
+        if k == "x-headers" and val:
+            headers["headers"] = json.loads(val)
+        else:
+            headers[k[2:]] = val or None
+    conn.close()
+    return {"headers": headers, "body": body}
 
+
+################################################################################################
 
 try:
     # REGEX DE URL
     def rgxMat(a, b):
         return re.match(f"^{re.escape(b).replace(r"\*", ".*")}$", a) is not None
 
-    def tryConnectSocket(sock, port):  # CONEXÃO DO SOCKET
-        attempts, maxAttempts = 0, 12
-        while attempts < maxAttempts:
-            try:
-                sock.connect(("127.0.0.1", port))
-                return sock
-            except Exception:
-                attempts += 1
-                console(f"SOCKET: TENTATIVA [{attempts}/{maxAttempts}]")
-                if attempts >= maxAttempts:
-                    notifyAndConsole("SOCKET: ERRO | MÁXIMO DE TENTATIVAS")
-                time.sleep(0.2)
-
     # SERVER
     async def serverRun():
-        global bufferSocket, arrUrl, portSocket
+        global arrUrl, portSocket, bufferSocket
         # LER O CONFIG E DEFINIR AS VARIÁVEL
         fullPathJson = os.path.abspath(f"{fileChrome_Extension}/src/config.json")
         config = ""
         with open(fullPathJson, "r", encoding="utf-8") as file:
             config = json.load(file)
-        objWebSocket = config["webSocket"]
-        objSniffer = config["sniffer"]
+        objWebSocket, objSniffer = config["webSocket"], config["sniffer"]
         securityPass = objWebSocket["securityPass"]
         portWebSocket = objWebSocket["server"]["1"]["port"]
-        portMitm = objSniffer["portMitm"]
-        portSocket = objSniffer["portSocket"]
-        bufferSocket = objSniffer["bufferSocket"] * 1000
+        portMitm, portSocket = objSniffer["portMitm"], objSniffer["portSocket"]
+        bufferSocket, arrUrl = objSniffer["bufferSocket"] * 1024, objSniffer["arrUrl"]
         # MANTER APENAS URLS QUE CONTENHAM MAIS DE 7 CARACTERES
-        arrUrl = objSniffer["arrUrl"]
         arrUrl = [v for val in arrUrl.values() if val for v in val if len(v) > 7]
         # MITMPROXY: INICIAR
         options = Options(
@@ -224,123 +219,90 @@ try:
 
         # MITMPROXY: REQ [SEND]
         def request(self, flow: http.HTTPFlow) -> None:
-            global arrUrl, portSocket
-            regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
+            global arrUrl
+            url = flow.request.url
+            regex = next((m for m in arrUrl if rgxMat(url, m)), None)
             if regex is not None:
-                objReq = {
-                    "getSend": "send",
-                    "method": flow.request.method,
-                    "host": urlparse(flow.request.url).hostname,
-                    "url": flow.request.url,
-                    "headers": dict(flow.request.headers),
-                    "body": base64.b64encode(flow.request.content).decode("ascii"),
-                }
                 try:
-                    dataReq = socketSendReceive(portSocket, objReq)
-                    if dataReq:
-                        retReq = None
-                        try:
-                            retReq = dataReq
-                            if retReq.get("complete", True):
-                                if len(retReq["res"]) > 1:
-                                    newReq = {
-                                        "getSend": retReq.get("res", {}).get("getSend"),
-                                        "method": retReq.get("res", {}).get("method"),
-                                        "host": retReq.get("res", {}).get("host"),
-                                        "url": retReq.get("res", {}).get("url"),
-                                        "headers": retReq.get("res", {}).get("headers"),
-                                        "body": retReq.get("res", {}).get("body"),
-                                    }
-                                    if newReq["headers"]:
-                                        for key in newReq["headers"]:
-                                            flow.request.headers[key] = newReq[
-                                                "headers"
-                                            ][key]
-                                    if newReq["body"]:
-                                        flow.request.content = base64.b64decode(
-                                            newReq["body"]
-                                        )
-                                    console("REQ ALTERADA")
-                            else:
-                                console("REQ CANCELADA")
-                                flow.kill()
-                        except Exception as exceptErr:
-                            errAll(exceptErr)
-                            notifyAndConsole("Alterar/cancelar requisição")
-                            flow.kill()
-                            raise
+                    # ENVIAR INFORMAÇÕES PARA O NODE
+                    resNode = chunksSendNode(
+                        {
+                            "getSend": "send",
+                            "method": flow.request.method.upper(),
+                            "url": url,
+                            "headers": json.dumps(dict(flow.request.headers)),
+                            "body": flow.request.content,
+                        }
+                    )
+                    resNodeHeaders = resNode["headers"]
+                    action = resNodeHeaders.get("action")
+                    if action == "0":
+                        # CANCELAR
+                        console("REQ [SEND] CANCELADA")
+                        flow.kill()
+                    elif action == "1":
+                        # ALTERAR
+                        console("REQ [SEND] ALTERADA")
+                        method = (resNodeHeaders.get("method") or "").upper() or None
+                        url = resNodeHeaders.get("url")
+                        headers = resNodeHeaders.get("headers")
+                        body = resNode.get("body")
+                        if method:
+                            flow.request.method = method
+                        if url:
+                            flow.request.url = url
+                        if headers:
+                            flow.request.headers.clear()
+                            flow.request.headers.update(headers)
+                        if body and method != "GET":
+                            flow.request.content = body
                 except Exception as exceptErr:
                     errAll(exceptErr)
-                    notifyAndConsole("Socket REQ [GET]")
+                    notifyAndConsole("REQ [SEND]")
                     flow.kill()
                     raise
-            else:
-                # console('OUTRO URL REQ |', urlparse(flow.request.url).hostname)
-                pass
 
         #################################################################################################################################################################
 
         # MITMPROXY: RES [GET]
         def response(self, flow: http.HTTPFlow) -> None:
-            global arrUrl, portSocket
-            regex = next((m for m in arrUrl if rgxMat(flow.request.url, m)), None)
+            global arrUrl
+            url = flow.request.url
+            regex = next((m for m in arrUrl if rgxMat(url, m)), None)
             if regex is not None:
                 flow.response.headers["Cache-Control"] = "no-store, max-age=0"
-                objRes = {
-                    "getSend": "get",
-                    "method": flow.request.method,
-                    "host": urlparse(flow.request.url).hostname,
-                    "url": flow.request.url,
-                    "headers": dict(flow.response.headers),
-                    "body": base64.b64encode(flow.response.content).decode("ascii"),
-                    "status": flow.response.status_code,
-                }
-                # SOCKET RES [SEND] e [GET]
                 try:
-                    dataRes = socketSendReceive(portSocket + 1, objRes)
-                    if dataRes:
-                        retRes = None
-                        try:
-                            retRes = dataRes
-                            if retRes.get("complete", True):
-                                if len(retRes["res"]) > 1:
-                                    newRes = {
-                                        "getSend": retRes.get("res", {}).get("getSend"),
-                                        "method": retRes.get("res", {}).get("method"),
-                                        "host": retRes.get("res", {}).get("host"),
-                                        "url": retRes.get("res", {}).get("url"),
-                                        "headers": retRes.get("res", {}).get("headers"),
-                                        "body": retRes.get("res", {}).get("body"),
-                                        "status": retRes.get("res", {}).get("status"),
-                                    }
-                                    if newRes["headers"]:
-                                        for key in newRes["headers"]:
-                                            flow.response.headers[key] = newRes[
-                                                "headers"
-                                            ][key]
-                                    if newRes["body"]:
-                                        flow.response.content = base64.b64decode(
-                                            newRes["body"]
-                                        )
-                                    if newRes["status"]:
-                                        flow.response.status_code = newRes["status"]
-                                    console("RES ALTERADO")
-                            else:
-                                console("RES CANCELADO")
-                                flow.kill()
-                        except Exception as exceptErr:
-                            errAll(exceptErr)
-                            notifyAndConsole("ALTERAR/CANCELAR RES: ERRO")
-                            flow.kill()
-                            raise
+                    # ENVIAR INFORMAÇÕES PARA O NODE
+                    resNode = chunksSendNode(
+                        {
+                            "getSend": "get",
+                            "method": flow.request.method.upper(),
+                            "url": url,
+                            "headers": json.dumps(dict(flow.response.headers)),
+                            "body": flow.response.content,
+                        },
+                    )
+                    resNodeHeaders = resNode["headers"]
+                    action = resNodeHeaders.get("action")
+                    if action == "0":
+                        # CANCELAR
+                        console("RES [GET] CANCELADA")
+                        flow.kill()
+                    elif action == "1":
+                        # ALTERAR
+                        console("RES [GET] ALTERADA")
+                        headers = resNodeHeaders.get("headers")
+                        body = resNode.get("body")
+                        if headers:
+                            flow.response.headers.clear()
+                            flow.response.headers.update(headers)
+                        if body:
+                            flow.response.content = body
                 except Exception as exceptErr:
                     errAll(exceptErr)
-                    notifyAndConsole("Socket RES [GET]")
+                    notifyAndConsole("RES [GET]")
                     flow.kill()
                     raise
-            else:
-                # console('OUTRO URL RES |', urlparse(flow.request.url).hostname)
-                pass
 
     #################################################################################################################################################################
 

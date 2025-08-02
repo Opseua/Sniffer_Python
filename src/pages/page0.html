@@ -126,7 +126,7 @@
                         ret['msg'] = `GET ADDRESS: OK`; ret['ret'] = true;
                     } catch (catchErr) { ret['msg'] = 'GET ADDRESS: ERRO | TRYCATCH'; alertConsole(`${ret.msg}`, catchErr,); };
 
-                    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+                    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
                 } globalThis['getAddress'] = getAddress;
 
                 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-

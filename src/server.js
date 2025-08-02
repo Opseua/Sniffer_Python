@@ -1,14 +1,14 @@
 globalThis['currentFile'] = function () { return new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)?.[0].replace(/[()]/g, ''); }; globalThis['sP'] = currentFile(); let startup = new Date();
-await import('./resources/@export.js'); let e = sP, ee = e; let libs = { 'net': {}, };
+await import('./resources/@export.js'); let e = sP, ee = e; let libs = { 'http': {}, };
 
 async function serverRun(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
-        /* IMPORTAR BIBLIOTECA [NODE] */ libs['net']['net'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]');
+        /* IMPORTAR BIBLIOTECA [NODE] */ libs['http']['http'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]');
 
         await logConsole({ e, ee, 'txt': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
 
-        let rCS = await configStorage({ e, action: 'get', key: 'sniffer', }); if (!rCS.ret) { logConsole({ e, ee, txt: rCS.msg, }); return rCS; } else { rCS = rCS.res; }
+        let rCS = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); if (!rCS.ret) { logConsole({ e, ee, txt: rCS.msg, }); return rCS; } else { rCS = rCS.res; }
         globalThis['platforms'] = rCS.platforms; globalThis['des'] = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['portStopwatch'] = rCS.portStopwatch;
 
         async function pacFileCreate(arrUrl) { // REQ/RES → 'https://www.example.com/some/path' | url → 'https://www.example.com/' | host → 'www.example.com' *** (OBS: o url completo NÃO aparece!!!)
@@ -21,19 +21,22 @@ async function serverRun(inf = {}) {
         async function wait() { // [1 SEGUNDO APÓS INICIAR] BADGE (USUARIO_3): RESETAR | PAC FILE
             await new Promise(r => { setTimeout(r, 250); }); client({ e, }); /* CLIENT (NÃO POR COMO 'await'!!!) [MANTER NO FINAL] */ await new Promise(r => { setTimeout(r, 500); });
             messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); await new Promise(r => { setTimeout(r, 150); });
-        } function rReqRes(text, getSend, getSendOk, pattern) { return (regex({ 'simple': true, pattern, text, }) && getSend === getSendOk); } await wait();
+        } function rReqRes(text, getSend, getSendOk, pattern) { return (regex({ 'simple': true, pattern, text, }) && getSend === getSendOk); } await wait(); function checkIsString(h) {
+            h = h['content-type'] || ''; return (h.startsWith('text/') || h.includes('json') || h.includes('xml') || h.includes('javascript') || h.includes('x-www-form-urlencoded') || h.includes('graphql')) || h;
+        } globalThis['targetAlert'] = function (pla, tar, typ) { logConsole({ e, ee, 'txt': `### ${pla} |${typ === true ? '' : ' (BUFFER 🛑)'} ${tar}`, }); };
 
         async function funGetSend(inf = {}) {
-            let ret = { 'complete': true, res: {}, };
-            try {
-                let { getSend, url, body, teste = '', /* method, host,*/ } = inf; ret['res']['getSend'] = getSend; let platform = '';
-                /* ###################################################################### */
+            let ret = { 'ret': false, }, res = { 'action': 2, }; // [action] → 0 CANCELAR | 1 CONTINUAR (ALTERAR: SIM) | 2 CONTINUAR (ALTERAR: NÃO)
+            try { // let host = new URL(url).hostname; 
+                let { getSend, /* method = '', */ url, headers, body, teste = '', } = inf; let platform = '', type = checkIsString(JSON.parse(headers.toLowerCase())); if (type === true) { body = body.toString('utf8'); }
 
                 // #### NTFY | /home
-                if (url.includes('ntfy.sh') && rReqRes(url, getSend, 'send', arrUrl['NFTY'][0])) { ret['res']['body'] = body.replace(/CASA/g, 'AAAAAAAA'); }
+                if (url.includes('ntfy.sh') && rReqRes(url, getSend, 'send', arrUrl['NFTY'][0])) {
+                    res['body'] = body.replaceAll('CASA', 'AAAAAAAA');
+                }
 
                 // #### EWOQ
-                if (url.includes('ewoqAAA')) {
+                if (url.includes('ewoq')) {
                     platform = ['EWOQ', 'ewoq',]; if (rReqRes(url, getSend, 'get', arrUrl[platform[0]][0])) { /* [1] → INÍCIO */ platform = [...platform, `/home`,]; }
                     else if (rReqRes(url, getSend, 'get', arrUrl[platform[0]][1])) { /* [2] → RECEBE A TASK */ platform = [...platform, `/GetNewTasks`,]; }
                     else if (rReqRes(url, getSend, 'send', arrUrl[platform[0]][2])) { /* [3] → SOLICITA O TEMPLATE */ platform = [...platform, `/GetTemplate___[1-SEND]___`,]; }
@@ -58,20 +61,17 @@ async function serverRun(inf = {}) {
                     else if (rReqRes(url, getSend, 'send', arrUrl[platform[0]][4])) { /* [5] → ENVIA O LOG */ platform = [...platform, `/___log___`,]; }
                 }
 
-                if (platform) { platform = [`${platform[0]}${teste}`, platform[1], platform[2],]; globalThis[platform[1]]({ 'platform': `${platform[0]}`, body, 'target': `${platform[2]}`, url, }); }
-                // ######################################################################
-                if (!ret.complete) { logConsole({ e, ee, 'txt': `REQ/RES CANCELADA`, }); } else if (ret.res && (ret.res.body || ret.res.headers)) { logConsole({ e, ee, 'txt': `REQ/RES ALTERADA`, }); }
+                /* ###### */ if (platform.length > 2) { platform = [`${platform[0]}${teste}`, platform[1], platform[2],]; globalThis[platform[1]]({ 'platform': platform[0], 'target': platform[2], body, type, }); }
+                if (res.action !== 0 && (res.method || res.url || res.headers || res.body)) { res.action = 1; } ret['ret'] = true; ret['res'] = res;
             } catch (catchErr) { let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; }
-            return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
-        }
-        // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+            return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
+        } // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
         let hitApps = [ // [hitAppType] → blindNao respNao respSim respSim_CLOSED_DNE 
             // { 'platform': 'EWOQ', 'hitAppType': 'blindNao', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', }, // YouTube_Video_Inappropriateness_Evaluation / AlpacaBrandSafetyBrandDelicate
             // { 'platform': 'TryRating', 'hitAppType': 'respSim', 'hitApp': 'POIEvaluation', }, // Search20 SearchAdsRelevance POIEvaluation
             // { 'platform': 'Scilliance', 'hitAppType': 'blindNao', 'hitApp': 'RefertoSpeakerTurnTranscriptionGL', }, // RefertoSpeakerTurnTranscriptionGL
-        ];
-        let platformOption = {
+        ]; let plaOpt = {
             'EWOQ': [
                 { 'url': 0, 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt', }, // [1] → INÍCIO
                 { 'url': 1, 'getSend': 'get', 'file': '2-GET_TASK_1-${hitAppType}.txt', }, // [2] → RECEBE A TASK
@@ -92,42 +92,25 @@ async function serverRun(inf = {}) {
             'Scilliance': [
                 { 'url': 0, 'getSend': 'get', 'file': '1-GET_TEMPLATE-${hitAppType}.txt', }, // [1] → INÍCIO (RECEBE O TEMPLATE)
                 { 'url': 1, 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt', }, // [2] → RECEBE A TASK
-                { 'url': 2, 'getSend': 'get', 'file': '3-GET_AUDIO-${hitAppType}.wav', }, // [3] → RECEBE A ÁUDIO
+                { 'url': 2, 'getSend': 'get', 'file': '3-GET_AUDIO-${hitAppType}.wav', 'midia': true, }, // [3] → RECEBE A ÁUDIO
                 { 'url': 3, 'getSend': 'send', 'file': '4-SEND_TASK-${hitAppType}.txt', }, // [4] → ENVIA A RESPOSTA DA TASK
                 { 'url': 4, 'getSend': 'send', 'file': '5-SEND_LOG-${hitAppType}.txt', }, // [5] → ENVIA O LOG
             ],
-        };
-        if (hitApps.length === 0) { correiosServer(); /* SERVIDOR CORREIOS */ } for (let [index, v,] of hitApps.entries()) {
-            let p, l = v.platform, t = '_teste'; l = [l, `${l}${t}`,]; p = `${fileProjetos}/${gW.project}/logs/Plataformas/z${t}/${l[0]}/${v.hitApp}`; for (let [index, v1,] of platformOption[l[0]].entries()) {
-                let r, f = { e, 'action': 'read', 'path': `${p}/${v1.file.replace('${hitAppType}', v.hitAppType)}`, }; r = await file(f); if (!r.ret) { console.log('ARQUIVO NÃO ENCONTRADO', f.path); break; }
-                await funGetSend({ 'getSend': v1.getSend, 'url': arrUrl[l[0]][v1.url], 'body': r.res, 'teste': t, }); await new Promise(r => { setTimeout(r, 2000); });
-            }
-        }
-
-        // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ERROS SERVIDOR (ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-        async function serverErr(r) { let e = r.toString(); if (e.includes('EADDRINUSE') || !e.includes('ECONNRESET')) { await regexE({ inf, e: r, }); process.exit(1); } } let bS = rCS.bufferSocket, pS = rCS.portSocket;
-        let serverSocketReq = _net.createServer((socket) => { // ########### REQ [SEND]
-            let g = ''; socket.on('data', async (chunk) => {
-                g += chunk.toString(); if (g.endsWith('#fim#')) {
-                    g = Buffer.from(g.split('#fim#')[0], 'base64').toString('utf-8'); let d = JSON.parse(g); /* NOVO */ if (d.body) { d.body = Buffer.from(d.body, 'base64'); }  /* --- */
-                    let r = await funGetSend(d); if ((d.getSend === 'send') && (r.res.getSend === 'send')) {
-                    /* NOVO */ if (r.res.body && Buffer.isBuffer(r.res.body)) { r.res.body = r.res.body.toString('base64'); }  /* ---- */
-                        let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bS) { let p = b.slice(i, i + bS); socket.write(p); } socket.write('#fim#'); // CARACTERE DE FIM 
-                    } g = ''; // LIMPAR BUFFER
-                }
+        }; let hX = [`{"content-type":"json"}`, `{"content-type":"OUTRO_TIPO"}`,]; if (hitApps.length === 0) { correiosServer(); /* SERVIDOR CORREIOS */ } for (let [index, v,] of hitApps.entries()) {
+            let p, l = v.platform, t = '_teste'; l = [l, `${l}${t}`,]; p = `${fileProjetos}/${gW.project}/logs/Plataformas/z${t}/${l[0]}/${v.hitApp}`; for (let [index, v1,] of plaOpt[l[0]].entries()) {
+                let f = { e, 'action': 'read', 'path': `${p}/${v1.file.replace('${hitAppType}', v.hitAppType)}`, 'encoding': false, }, r = await file(f); if (!r.ret) { console.log(r.msg); break; }
+                await funGetSend({ 'getSend': v1.getSend, 'url': arrUrl[l[0]][v1.url], 'body': r.res, 'headers': !v1.midia ? hX[0] : hX[1], 'teste': t, }); await new Promise(r => { setTimeout(r, 2000); });
+            } // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ERROS SERVIDOR (ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+        } async function serverErr(r) { let e = r.toString(); if (e.includes('EADDRINUSE') || !e.includes('ECONNRESET')) { await regexE({ inf, e: r, }); process.exit(1); } } let serSoc = _http.createServer((req, res) => {
+            let buffers = []; req.on('data', chunk => { buffers.push(chunk); }); let { 'x-getsend': getSend, 'x-method': method, 'x-url': url, 'x-headers': headers, } = req.headers; req.on('end', async () => {
+                let body = Buffer.concat(buffers), ret = await funGetSend({ getSend, method, url, headers, body, }), action = ret?.res?.action || 2; buffers = '';
+                body = false; res.setHeader('Content-Type', 'application/octet-stream'); if (action === 0) { buffers = `CANCELADA`; } else if (action === 1) {
+                    ret = ret.res; buffers = `ALTERADA`; if (ret.method) { /* [method] */ res.setHeader('x-method', ret.method); } if (ret.url) { /* [url] */ res.setHeader('x-url', ret.url); }
+                    if (ret.headers) { /* [headers] */ res.setHeader('x-headers', JSON.stringify(ret.headers)); } if (ret.body) { /* [body] */ body = ret.body; }
+                } res.setHeader('Transfer-Encoding', 'chunked'); res.setHeader('x-action', `${action}`); if (buffers) { logConsole({ e, ee, txt: `${getSend} ${buffers}`, }); }
+                if (body) { body = Buffer.from(body, 'utf8'); let max = rCS.bufferSocket * 1024; for (let i = 0; i < body.length; i += max) { res.write(body.slice(i, i + max)); } } res.end();
             });
-        }); let serverSocketRes = _net.createServer((socket) => { // ########### RES [GET]
-            let g = ''; socket.on('data', async (chunk) => {
-                g += chunk.toString(); if (g.endsWith('#fim#')) {
-                    g = Buffer.from(g.split('#fim#')[0], 'base64').toString('utf-8'); let d = JSON.parse(g); /* NOVO */ if (d.body) { d.body = Buffer.from(d.body, 'base64'); } /* --- */
-                    let r = await funGetSend(d); if ((d.getSend === 'get') && (r.res.getSend === 'get')) {
-                        /* NOVO */ if (r.res.body && Buffer.isBuffer(r.res.body)) { r.res.body = r.res.body.toString('base64'); } /* ---- */
-                        let b = Buffer.from(JSON.stringify(r)).toString('base64'); for (let i = 0; i < b.length; i += bS) { let part = b.slice(i, i + bS); socket.write(part); } socket.write('#fim#'); // CARACTERE DE FIM 
-                    } g = ''; // LIMPAR BUFFER
-                }
-            }); // INICIAR SERVIDORES SOCKET (REQ [SEND] | RES [GET])
-        }); serverSocketReq.listen((pS), () => { serverSocketRes.listen((pS + 1), () => { }).on('error', (err) => { serverErr(err); }); }).on('error', async (err) => { serverErr(err); });
-        // -------------------------------------------------------------------------------------------------
+        }); serSoc.listen((rCS.portSocket), () => { }).on('error', async (err) => { serverErr(err); });
     } catch (catchErr) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }

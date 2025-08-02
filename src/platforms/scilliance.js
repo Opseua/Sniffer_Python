@@ -2,9 +2,9 @@ let e = currentFile(), ee = e; let nd = 'NaoIdentificado', hitApp = nd;
 async function scilliance(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
-        let { platform = 'x', body, target, url, } = inf;
+        let { platform = 'x', target, type, } = inf;
 
-        try { body = JSON.parse(body); } catch (catchErr) { body = false; } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
+        let body; try { if (type === true) { body = JSON.parse(inf.body); } } catch (e) { } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, pathLogPlataform = `Plataformas/${platform}`, teste = '_teste', other = platforms[platform.replace(`${teste}`, '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
@@ -12,7 +12,7 @@ async function scilliance(inf = {}) {
 
         /* [1] → INÍCIO (RECEBE O TEMPLATE) */
         if (target === `/ds/config`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (hitApp !== nd) { gO.inf[platform]['log'] = []; } if (body && body.instructions) {
+            targetAlert(platform, target, type); if (hitApp !== nd) { gO.inf[platform]['log'] = []; } if (body && body.instructions) {
                 hitApp = body.instructions.title.replace(/[^a-zA-Z0-9]/g, ''); retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': body, });
                 gO.inf[platform]['lastTemplate'] = retLog.res;
             }
@@ -20,7 +20,7 @@ async function scilliance(inf = {}) {
 
         /* [2] → RECEBE A TASK */
         if (target === `/ds/items`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body.assets) {
+            targetAlert(platform, target, type); if (body && body.assets) {
 
                 runStopwatch([`reset_1`, `toggle_1`,]); let judgeId = body.assets.requests[0].payload.interactionId; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, });
                 let tasksBlind = 0, tasksQtd = 1; let audioSourceUrl = body.assets.requests[0].payload.audioSourceUrl; let addGet = {
@@ -32,33 +32,19 @@ async function scilliance(inf = {}) {
 
         /* [3] → RECEBE O ÁUDIO */
         if (target === `/soundwave`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (url) {
-
-                let arquivo = `${time.hou}.${time.min}.${time.sec}.${time.mil}_GET_audio_${hitApp}.wav`; // https://download.samplelib.com/wav/sample-3s.wav
-                let path = `!fileProjetos!/Sniffer_Python/logs/${pathLogPlataform}/MES_${time.mon}_${time.monNam}/DIA_${time.day}/${arquivo}`; gO.inf[platform]['lastAudio'] = path;
-
-                if (platform.includes(teste)) {
-                    // COPIAR AUDIO (APENAS NO TESTE)
-                    await file({ e, action: 'copy', 'path': `!fileProjetos!/Sniffer_Python/logs/Plataformas/z_teste/${platform.replace(`${teste}`, '')}/${hitApp}/audio.wav`, 'pathNew': path, });
-                } else {
-                    // BAIXAR E SALVAR
-                    let retApi = await api({ e, 'method': 'GET', url, 'bodyResRaw': true, 'headers': {}, }); if (!retApi.ret || retApi.res.code !== 200) { logConsole({ e, ee, 'txt': `ERRO AO BAIXAR ÁUDIO`, }); } else {
-                        await file({ e, action: 'write', 'path': `${path}`, 'content': Buffer.from(retApi.res.body), encoding: false, });
-                    }
-                }
-
-                // TRANSCREVER | NOTIFICAÇÃO | ÁREA DE TRANSFERÊNCIA
-                let retAudioTranscribe = await audioTranscribe({ e, 'path': `${path}`, });
+            targetAlert(platform, target, type); if (inf.body) {
+                let d = time.day, h = time.hou, m = time.min, s = time.sec, ml = time.mil, mn = time.mon, mm = time.monNam;
+                let path = `!fileProjetos!/Sniffer_Python/logs/${pathLogPlataform}/MES_${mn}_${mm}/DIA_${d}/${`${h}.${m}.${s}.${ml}_GET_audio_${hitApp}.wav`}`; gO.inf[platform]['lastAudio'] = path;
+                // SALVAR | TRANSCREVER | NOTIFICAÇÃO | ÁREA DE TRANSFERÊNCIA
+                await file({ e, 'action': 'write', 'path': `${path}`, 'content': inf.body, 'encoding': false, }); let retAudioTranscribe = await audioTranscribe({ e, 'path': `${path}`, });
                 notification({ e, 'title': `ÁREA DE TRANSFERÊNCIA`, 'text': `${retAudioTranscribe.msg}`, 'keepOld': true, 'ntfy': false, 'duration': 2, });
                 clipboard({ e, 'value': `${retAudioTranscribe.ret ? retAudioTranscribe.res : retAudioTranscribe.msg}`, });
-
             }
-
         }
 
         /* [4] → ENVIA A RESPOSTA DA TASK */
         if (target === `/results`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); runStopwatch([`reset_1`,]); if (body && body.assets) {
+            targetAlert(platform, target, type); runStopwatch([`reset_1`,]); if (body && body.assets) {
 
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let judgeId = body.assets.requests[0].payload.interactionId;
@@ -122,7 +108,7 @@ async function scilliance(inf = {}) {
 
         /* [5] → ENVIA O LOG */
         if (target === `/___log___`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body.uniqueBrokeringUuid) {
+            targetAlert(platform, target, type); if (body && body.uniqueBrokeringUuid) {
 
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_LOG.txt`, 'text': body, }); pathNew = retLog.res;
                 pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, pathNew, });
@@ -137,7 +123,7 @@ async function scilliance(inf = {}) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }
 
-    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
 }
 
 // CHROME | NODE

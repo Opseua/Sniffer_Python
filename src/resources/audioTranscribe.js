@@ -25,7 +25,7 @@ async function audioTranscribe(inf = {}) {
         };
 
         let res = await new Promise((ok) => {
-            console.log(`ENVIADO ÁUDIO...`);
+            console.log(`ENVIADO ÁUDIO...`, '\n');
             let req = _https.request(opt, (res) => {
                 let chunks = []; res.on('data', (c) => chunks.push(c)); res.on('end', () => {
                     let buf = Buffer.concat(chunks); let parse = (src) => { try { let json = JSON.parse(src.toString()); ok({ 'ret': true, 'res': json, }); } catch (e) { ok({ 'ret': false, 'msg': e.message, }); } };
@@ -34,7 +34,7 @@ async function audioTranscribe(inf = {}) {
             }); req.on('error', (e) => ok({ 'ret': false, 'msg': e.message, })); req.write(postData); req.end();
         });
 
-        if (!res.ret && res?.res?.transcription) {
+        if (!res.ret || !res?.res?.transcription) {
             ret['msg'] = `AUDIO TRANSCRIBE: ERRO | ${res.msg}`;
         } else {
             ret['ret'] = true;
@@ -46,7 +46,7 @@ async function audioTranscribe(inf = {}) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }
 
-    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
 }
 
 // CHROME | NODE

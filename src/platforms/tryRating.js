@@ -2,9 +2,9 @@ let e = currentFile(), ee = e;
 async function tryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
-        let { platform = 'x', body, target, } = inf;
+        let { platform = 'x', target, type, } = inf;
 
-        try { body = JSON.parse(body); } catch (catchErr) { body = false; } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
+        let body; try { if (type === true) { body = JSON.parse(inf.body); } } catch (e) { } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, pathLogPlataform = `Plataformas/${platform}`, teste = '_teste', other = platforms[platform.replace(`${teste}`, '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
@@ -15,12 +15,12 @@ async function tryRating(inf = {}) {
 
         /* [1] → INÍCIO */
         if (target === `/home`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); runStopwatch([`reset_2`,]); gO.inf[platform]['log'] = [];
+            targetAlert(platform, target, type); runStopwatch([`reset_2`,]); gO.inf[platform]['log'] = [];
         }
 
         /* [2] → RECEBE A TASK */
         if (target === `/survey`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body.templateTaskType) {
+            targetAlert(platform, target, type); if (body && body.templateTaskType) {
                 runStopwatch([`reset_2`, `toggle_2`,]); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.requestId;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, });
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
@@ -41,7 +41,7 @@ async function tryRating(inf = {}) {
                 } else { text = `Pasta do hitApp não existe!`; } if (text) { notification({ duration: 4, icon: 'notification_3.png', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
-                let not; let retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
+                let not, retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
                 if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'txt': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; } retTaskInfTryRating = retTaskInfTryRating.res;
                 let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum === 3) {
                     not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'RESP', 'bC': '#19ff47', };
@@ -105,7 +105,7 @@ async function tryRating(inf = {}) {
 
         /* [3] → ENVIA A RESPOSTA DA TASK */
         if (target === `/client_log`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); runStopwatch([`reset_2`,]); if (body && body.data) {
+            targetAlert(platform, target, type); runStopwatch([`reset_2`,]); if (body && body.data) {
                 let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''); let judgeId = body.data.tasks[0].requestId;
                 let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
@@ -158,7 +158,7 @@ async function tryRating(inf = {}) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }
 
-    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
 }
 
 // CHROME | NODE

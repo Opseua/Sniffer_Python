@@ -130,7 +130,7 @@ async function googleMaps(inf = {}) {
         alertConsole(`ADDRESS PARSE GOOGLE MAPS: ERRO\n${catchErr}`); ret['msg'] = catchErr; ret['ret'] = false; delete ret['res'];
     }
 
-    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
 }
 
 globalThis['googleMaps'] = googleMaps;

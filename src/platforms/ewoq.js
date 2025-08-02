@@ -2,9 +2,9 @@ let e = currentFile(), ee = e;
 async function ewoq(inf = {}) {
     let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
     try {
-        let { platform = 'x', body, target, } = inf;
+        let { platform = 'x', target, type, } = inf;
 
-        try { body = JSON.parse(body); } catch (catchErr) { body = false; } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false, retFile, retRegex;
+        let body; try { if (type === true) { body = JSON.parse(inf.body); } } catch (e) { } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false, retFile, retRegex;
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, pathLogPlataform = `Plataformas/${platform}`, teste = '_teste', other = platforms[platform.replace(`${teste}`, '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
@@ -12,12 +12,12 @@ async function ewoq(inf = {}) {
 
         /* [1] → INÍCIO */
         if (target === `/home`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); runStopwatch([`reset_1`,]); gO.inf[platform]['log'] = [];
+            targetAlert(platform, target, type); runStopwatch([`reset_1`,]); gO.inf[platform]['log'] = [];
         }
 
         /* [2] → RECEBE A TASK */
         if (target === `/GetNewTasks`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body['1']) {
+            targetAlert(platform, target, type); if (body && body['1']) {
                 let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body, }); let addGet = {
                     'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false, '1': !!body['1'][0]['1'], '2': !!body['1'][0]['2'],
                     '3': !!body['1'][0]['3'], '4': !!body['1'][0]['4'], '5': !!body['1'][0]['5'], '6': !!body['1'][0]['6'], '7': !!body['1'][0]['7'], '8': !!body['1'][0]['8'],
@@ -35,7 +35,7 @@ async function ewoq(inf = {}) {
 
         /* [3] → SOLICITA O TEMPLATE */
         if (target === `/GetTemplate___[1-SEND]___`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body['1']) {
+            targetAlert(platform, target, type); if (body && body['1']) {
                 let tk = body['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_template_AINDA_NAO_IDENTIFICADO.txt`, 'text': body, }); gO.inf[platform]['lastTemplate'] = retLog.res;
             }
@@ -43,7 +43,7 @@ async function ewoq(inf = {}) {
 
         /* [4] → RECEBE O TEMPLATE */
         if (target === `/GetTemplate___[2-GET]___`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body) {
+            targetAlert(platform, target, type); if (body) {
                 retRegex; retRegex = regex({ 'pattern': `raterVisibleName(*)inputTemplate`, 'text': inf.body, }); retRegex = regex({ 'pattern': `"(*)"`, 'text': retRegex.res['3'], });
                 let hitApp = retRegex.res['3'].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': body, }); gO.inf[platform].token['path'] = retLog.res; if (gO.inf[platform].lastTemplate) {
@@ -60,7 +60,7 @@ async function ewoq(inf = {}) {
 
         /* [5] → TASK 100% CARREGADA */
         if (target === `/RecordTaskRenderingLatency___[TASK_100%_LOADED]___`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body['2']) {
+            targetAlert(platform, target, type); if (body && body['2']) {
                 runStopwatch([`reset_1`, `toggle_1`,]); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         let hitApp = value.hitApp; body = value.body; let text = ''; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
@@ -88,7 +88,7 @@ async function ewoq(inf = {}) {
 
         /* [6] → ENVIA A RESPOSTA DA TASK */
         if (target === `/SubmitFeedback`) {
-            logConsole({ e, ee, 'txt': `#### ${platform} | ${target}`, }); if (body && body['6']) {
+            targetAlert(platform, target, type); if (body && body['6']) {
                 let json; let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour; let tasksQtdMon = 0, tasksSecMon = 0;
@@ -134,7 +134,7 @@ async function ewoq(inf = {}) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }
 
-    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.res && { 'res': ret.res, }), };
+    return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
 }
 
 // CHROME | NODE

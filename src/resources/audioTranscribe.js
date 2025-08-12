@@ -28,7 +28,7 @@ async function audioTranscribe(inf = {}) {
             console.log(`ENVIADO ÁUDIO...`, '\n');
             let req = _https.request(opt, (res) => {
                 let chunks = []; res.on('data', (c) => chunks.push(c)); res.on('end', () => {
-                    let buf = Buffer.concat(chunks); let parse = (src) => { try { let json = JSON.parse(src.toString()); ok({ 'ret': true, 'res': json, }); } catch (e) { ok({ 'ret': false, 'msg': e.message, }); } };
+                    let buf = Buffer.concat(chunks); let parse = (src) => { try { let json = JSON.parse(src.toString()); ok({ 'ret': true, 'res': json, }); } catch { ok({ 'ret': false, 'msg': e.message, }); } };
                     if (res.headers['content-encoding'] === 'gzip') { _zlib.gunzip(buf, (e, out) => { if (e) { ok({ 'ret': false, 'msg': e.message, }); } else { parse(out); } }); } else { parse(buf); }
                 });
             }); req.on('error', (e) => ok({ 'ret': false, 'msg': e.message, })); req.write(postData); req.end();

@@ -4,7 +4,7 @@ async function tryRating(inf = {}) {
     try {
         let { platform = 'x', target, type, } = inf;
 
-        let body; try { if (type === true) { body = JSON.parse(inf.body); } } catch (e) { } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
+        let body; try { if (type === true) { body = JSON.parse(inf.body); } } catch { } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
         let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, pathLogPlataform = `Plataformas/${platform}`, teste = '_teste', other = platforms[platform.replace(`${teste}`, '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')

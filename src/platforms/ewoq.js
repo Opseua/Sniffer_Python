@@ -1,6 +1,6 @@
-let e = currentFile(), ee = e;
+let e = currentFile(new Error()), ee = e;
 async function ewoq(inf = {}) {
-    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
+    let ret = { 'ret': false, }; e = inf.e || e;
     try {
         let { platform = 'x', target, type, } = inf;
 
@@ -63,23 +63,23 @@ async function ewoq(inf = {}) {
             targetAlert(platform, target, type); if (body && body['2']) {
                 runStopwatch([`reset_1`, `toggle_1`,]); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
-                        let hitApp = value.hitApp; body = value.body; let text = ''; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
+                        body = value.body; let hitApp = value.hitApp, text = ''; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
                         if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
-                            text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }; let retGoogleTranslate = await googleTranslate(infGoogleTranslate);
+                            text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }, retGoogleTranslate = await googleTranslate(infGoogleTranslate);
                             if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; }
-                            notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'value': text, });
+                            notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'action': 'set', 'value': text, });
                         } else if (hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
                             // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
                             retRegex = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
                             if (!retRegex) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'ntfy': false, }); } else {
-                                let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${retRegex}`, 'headers': { 'accept-language': 'application/json', }, }; let retApi = await api(infApi);
+                                let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${retRegex}`, 'headers': { 'accept-language': 'application/json', }, }, retApi = await api(infApi);
                                 retRegex = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada', }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
                                 if (!retRegex) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'ntfy': false, }); } else {
                                     let uploadDate = new Date(retRegex); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000; // 15 DIAS ATRÁS
                                     if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'notification_3.png', 'title': `${platform} | YouTube`, 'text': retRegex, 'ntfy': false, }); }
                                 }
                             }
-                        } text = `${body['1'][0]['10']['1'][0]['2']}\n\n${text}`; clipboard({ 'value': text, });
+                        } text = `${body['1'][0]['10']['1'][0]['2']}\n\n${text}`; clipboard({ 'action': 'set', 'value': text, });
                     }
                 }
 
@@ -89,9 +89,9 @@ async function ewoq(inf = {}) {
         /* [6] → ENVIA A RESPOSTA DA TASK */
         if (target === `/SubmitFeedback`) {
             targetAlert(platform, target, type); if (body && body['6']) {
-                let json; let id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
+                let json, id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
-                        let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour; let tasksQtdMon = 0, tasksSecMon = 0;
+                        let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0;
                         let hitApp = gO.inf[platform].token[value.token]; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, });
                         pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = value.path.replace(pathNew, `OK/${pathNew}`);
                         await file({ e, 'action': 'change', 'path': value.path, pathNew, }); let pathJson = `./logs/${pathLogPlataform}`;
@@ -103,7 +103,7 @@ async function ewoq(inf = {}) {
                             await file({ e, 'action': 'change', 'path': gO.inf[platform].token.pathLastTemplate, pathNew, }); gO.inf[platform].token.pathLastTemplate = false;
                         } retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'get', 'key': `*`, functionLocal, });
                         if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksSec': 0, }, 'taskName': {}, }, 'tasks': [], }; }
-                        else { json = retConfigStorage.res; } let dif = Number(time.tim) - value.tim; let blind = false; json.tasks.push({
+                        else { json = retConfigStorage.res; } let dif = Number(time.tim) - value.tim, blind = false; json.tasks.push({
                             'taskName': hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`,
                             'qtd': value.qtd, 'sec': dif, 'tasksHour': dateHour(dif).res, blind, 'id': value.id, 'addGet': value.addGet,
                         }); if (!other[hitApp]) { lastHour = other.default.lastHour; } else { lastHour = other[hitApp].lastHour; } for (let [index, value,] of json.tasks.entries()) {

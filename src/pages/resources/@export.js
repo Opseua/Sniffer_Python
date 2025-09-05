@@ -2,8 +2,7 @@
 
 (async () => {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    globalThis['regexE'] = function () { }; globalThis['eng'] = true; globalThis['currentFile'] = function () { return new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)?.[0].replace(/[()]/g, ''); };
-    // let currentFileOk = currentFile().split('mes=')[1]; let project = window.location.href.split('PROJETOS/')[1].split('/')[0];
+    globalThis['regexE'] = function () { }; globalThis['eng'] = true; globalThis['currentFile'] = function (err) { return err.stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)?.[0].replace(/[()]/g, ''); };
 
     // REMOVER ACENTOS | ENDEREÇO: TOKENIZAR ENDEREÇO | // ENDEREÇO: TIPO DE LOGRADOURO
     function normalizeString(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
@@ -11,7 +10,8 @@
 
     function addressTokenize(add) {
         let ceps = []; add = add.replace(/\d{5}-\d{3}|\d{8}|\d{4}-\d{3}|\d{7}/g, m => { let c = m.replace('-', ''); c = c.padStart(8, '0'); c = c.substring(0, 5) + '-' + c.substring(5); ceps.push(c); return '#CEP#'; });
-        add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/\s*-\s*/g, '#SPLIT#'); let parts = add.split('#SPLIT#'); parts = parts.map(part => part.trim());
+        // add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/\s*-\s*/g, '#SPLIT#');
+        add = add.replace(/\s*,\s*/g, '#SPLIT#').replace(/(\s+-|-+\s+)/g, '#SPLIT#'); let parts = add.split('#SPLIT#'); parts = parts.map(part => part.trim());
         for (let i = 0; i < parts.length; i++) { if (parts[i] === '#CEP#') { parts[i] = ceps.shift(); } } parts = parts.filter(part => /\w/.test(part)); let partsOk = [];
         for (let [index, v,] of parts.entries()) { if (/^\d.*\d$/.test(v) && !/\d{5}-\d{3}/.test(v)) { partsOk.push(v.replace(/\D+/g, '')); } else { partsOk.push(v); } } parts = partsOk; return parts;
     }
@@ -19,12 +19,12 @@
 
     // ENDEREÇO: CRIAR OBJETO
     function addressParse(inf = {}) {
-        let { address, } = inf; let retAddressTokenize = addressTokenize(address); let addressObj = {}; let found = '#LOG#'; let retAddressType = addressType({ 'address': retAddressTokenize.join('#JOIN#'), });
+        let { address, } = inf; let retAddressTokenize = addressTokenize(address), addressObj = {}, found = '#LOG#', retAddressType = addressType({ 'address': retAddressTokenize.join('#JOIN#'), });
         retAddressType.address = retAddressType.address.split('#JOIN#'); retAddressTokenize = retAddressType.address; let processedAddresses = retAddressTokenize.reverse().filter(value => {
             if (!addressObj.logradouro && value.includes(found)) { addressObj['tipo'] = retAddressType.found; addressObj['logradouro'] = value.replace(found, ''); return false; }
             else if (value.toLowerCase().includes('loja') && !addressObj.loja) { addressObj['loja'] = value; return false; }
             else if (value.toLowerCase().includes('andar') && !addressObj.andar) { addressObj['andar'] = value; return false; }
-            else if (/^\d+$/.test(value) && !addressObj.numero) { addressObj['numero'] = value; return false; }
+            else if (/^\d+$/.test(value) && !addressObj.numero) { addressObj['numero'] = Number(value); return false; }
             else if (addressObj.cep && addressObj.estado && addressObj.municipio && addressObj.logradouro && !(/^\d+$/.test(value)) && !addressObj.bairro) { addressObj['bairro'] = value; return false; }
             else if (addressObj.estado && !addressObj.municipio) { // MUNÍCIPIO
                 let estadosMunicipiosNew = estadosMunicipios[addressObj.estado.toUpperCase()].map(normalizeString).map(nome => nome.toUpperCase());
@@ -44,8 +44,8 @@
 
     // PONTUAÇÃO: DO RESULTADO
     function resultScore(inf = {}) {
-        let { objeto1, objeto2, } = inf; let chavesOk = { ...objeto1, }; delete chavesOk.pontucao; let chaves = Object.keys(chavesOk); let pontucaoIndice = []; for (let [index, value,] of objeto2.entries()) {
-            let pontucao = { 'indice': 999, 'pontuacao': 0, }; let obj = {}; let pontuacaoOk = { tipo: 10, logradouro: 51, numero: 91 /*9*/, bairro: 10, municipio: 40, cep: 100, };
+        let { objeto1, objeto2, } = inf; let chavesOk = { ...objeto1, }; delete chavesOk.pontucao; let chaves = Object.keys(chavesOk), pontucaoIndice = []; for (let [index, value,] of objeto2.entries()) {
+            let pontucao = { 'indice': 999, 'pontuacao': 0, }; let obj = {}, pontuacaoOk = { tipo: 10, logradouro: 51, numero: 91 /*9*/, bairro: 10, municipio: 40, cep: 100, };
             obj['tipo'] = value.logradouroTipo; obj['logradouro'] = value.logradouro; obj['numInicial'] = value.numInicial;
             obj['numFinal'] = value.numFinal; obj['bairro'] = value.bairro; obj['municipio'] = value.municipio; obj['estado'] = value.estado; obj['cep'] = value.cep; for (let [index1, value1,] of chaves.entries()) {
                 let retPontucaoDaChave; pontucao['indice'] = index; if (value1 !== 'arr') {
@@ -63,7 +63,7 @@
 
     // PONTUAÇÃO: MELHORES RESULTADOS
     function scoreBest(inf = {}) {
-        let { pontucaoIndice, objeto2, } = inf; pontucaoIndice.sort((a, b) => b.pontuacao - a.pontuacao); let firstMax = pontucaoIndice[0].pontuacao; let secondMax = null;
+        let { pontucaoIndice, objeto2, } = inf; pontucaoIndice.sort((a, b) => b.pontuacao - a.pontuacao); let firstMax = pontucaoIndice[0].pontuacao, secondMax = null;
         for (let i = 1; i < pontucaoIndice.length; i++) { if (pontucaoIndice[i].pontuacao < firstMax) { secondMax = pontucaoIndice[i].pontuacao; break; } } if (secondMax === null) { secondMax = firstMax; }
         let resScore = pontucaoIndice.filter(item => item.pontuacao >= secondMax && item.pontuacao > 50).map(item => objeto2[item.indice]); return resScore.length === 0 ? objeto2 : resScore;
     }
@@ -71,8 +71,8 @@
 
     // ENDEREÇO: LADO PAR OU IMPAR
     function sideStreet({ numero, obj, }) {
-        if (!numero) { return []; } let num = parseInt(numero, 10); let isPar = n => n % 2 === 0; return obj.filter(item => {
-            let numInicial = parseInt(item.numInicial, 10); let numFinal = parseInt(item.numFinal, 10); if (num < numInicial || num > numFinal) { return false; }
+        if (!numero) { return []; } let num = parseInt(numero, 10), isPar = n => n % 2 === 0; return obj.filter(item => {
+            let numInicial = parseInt(item.numInicial, 10), numFinal = parseInt(item.numFinal, 10); if (num < numInicial || num > numFinal) { return false; }
             if (!item.lado || item.lado === 'A') { return true; } else if (item.lado === 'P' && isPar(num)) { return true; } else if (item.lado === 'I' && !isPar(num)) { return true; } return false;
         });
     }
@@ -91,23 +91,24 @@
     function clipboardSet(inf) { navigator.clipboard.writeText(inf).then(() => { }, (catchErr) => { alertConsole(`CLIPBOARD SET: ERRO`, catchErr); }); }
     globalThis['clipboardSet'] = clipboardSet; globalThis['focus'] = focus;
 
-    function addressType(inf = {}) {
-        let { address, } = inf; address = address.trim(); let found = false; let search = [
-            { 'found': 'Aeroporto', 'arr': ['aeroporto ',], }, { 'found': 'Alameda', 'arr': ['alameda ', 'al. ',], }, { 'found': 'Área', 'arr': ['área ',], },
-            { 'found': 'Chácara', 'arr': ['chácara ', 'chác. ', 'chác ',], }, { 'found': 'Colônia', 'arr': ['colônia ', 'col. ',], }, { 'found': 'Condomínio', 'arr': ['condomínio ', 'cond. ',], },
-            { 'found': 'Conjunto', 'arr': ['conjunto ', 'cj. ',], }, { 'found': 'Distrito', 'arr': ['distrito ', 'distr. ', 'dist. ',], }, { 'found': 'Esplanada', 'arr': ['esplanada ',], },
-            { 'found': 'Estação', 'arr': ['estação ',], }, { 'found': 'Estrada', 'arr': ['estrada ', 'estr. ', 'estr ',], }, { 'found': 'Fazenda', 'arr': ['fazenda ',], },
-            { 'found': 'Jardim', 'arr': ['jardim ', 'jd. ', 'jd ',], }, { 'found': 'Ladeira', 'arr': ['ladeira ',], }, { 'found': 'Largo', 'arr': ['largo ',], },
-            { 'found': 'Loteamento', 'arr': ['loteamento ', 'lot. ',], }, { 'found': 'Núcleo', 'arr': ['núcleo ', 'núc. ',], }, { 'found': 'Parque', 'arr': ['parque ', 'pq. ', 'pq ',], },
-            { 'found': 'Praça', 'arr': ['praça ', 'pç. ', 'pça ', 'pça. ',], }, { 'found': 'Quadra', 'arr': ['quadra ', 'qd. ',], }, { 'found': 'Residencial', 'arr': ['residencial ', 'res. ',], },
-            { 'found': 'Rodovia', 'arr': ['rodovia ', 'rod. ', 'rod ',], }, { 'found': 'Rua', 'arr': ['rua ', 'r. ',], }, { 'found': 'Setor', 'arr': ['setor ', 'st. ',], },
-            { 'found': 'Sítio', 'arr': ['sítio ', 'sit. ',], }, { 'found': 'Travessa', 'arr': ['travessa ', 'tv. ', 'tv ',], }, { 'found': 'Via', 'arr': ['via ',], },
-            { 'found': 'Viaduto', 'arr': ['viaduto ',], }, { 'found': 'Viela', 'arr': ['viela ',], }, { 'found': 'Vila', 'arr': ['vila ',], }, { 'found': 'Pátio', 'arr': ['pátio ',], },
-            { 'found': 'Avenida', 'arr': ['avenida ', 'av. ', 'av ',], },
-        ]; for (let obj of search) { for (let key of obj.arr) { if (address.toLowerCase().startsWith(key)) { address = address.substring(key.length).trim(); found = obj.found; break; } } if (found) { break; } }
+    let logradourosTipo = [
+        { 'found': 'Aeroporto', 'arr': ['aeroporto ',], }, { 'found': 'Alameda', 'arr': ['alameda ', 'al. ',], }, { 'found': 'Área', 'arr': ['área ',], },
+        { 'found': 'Chácara', 'arr': ['chácara ', 'chác. ', 'chác ',], }, { 'found': 'Colônia', 'arr': ['colônia ', 'col. ',], }, { 'found': 'Condomínio', 'arr': ['condomínio ', 'cond. ',], },
+        { 'found': 'Conjunto', 'arr': ['conjunto ', 'cj. ',], }, { 'found': 'Distrito', 'arr': ['distrito ', 'distr. ', 'dist. ',], }, { 'found': 'Esplanada', 'arr': ['esplanada ',], },
+        { 'found': 'Estação', 'arr': ['estação ',], }, { 'found': 'Estrada', 'arr': ['estrada ', 'estr. ', 'estr ',], }, { 'found': 'Fazenda', 'arr': ['fazenda ',], },
+        { 'found': 'Jardim', 'arr': ['jardim ', 'jd. ', 'jd ',], }, { 'found': 'Ladeira', 'arr': ['ladeira ',], }, { 'found': 'Largo', 'arr': ['largo ',], },
+        { 'found': 'Loteamento', 'arr': ['loteamento ', 'lot. ',], }, { 'found': 'Núcleo', 'arr': ['núcleo ', 'núc. ',], }, { 'found': 'Parque', 'arr': ['parque ', 'pq. ', 'pq ',], },
+        { 'found': 'Praça', 'arr': ['praça ', 'pç. ', 'pça ', 'pça. ',], }, { 'found': 'Quadra', 'arr': ['quadra ', 'qd. ',], }, { 'found': 'Residencial', 'arr': ['residencial ', 'res. ',], },
+        { 'found': 'Rodovia', 'arr': ['rodovia ', 'rod. ', 'rod ',], }, { 'found': 'Rua', 'arr': ['rua ', 'r. ',], }, { 'found': 'Setor', 'arr': ['setor ', 'st. ',], },
+        { 'found': 'Sítio', 'arr': ['sítio ', 'sit. ',], }, { 'found': 'Travessa', 'arr': ['travessa ', 'tv. ', 'tv ',], }, { 'found': 'Via', 'arr': ['via ',], },
+        { 'found': 'Viaduto', 'arr': ['viaduto ',], }, { 'found': 'Viela', 'arr': ['viela ',], }, { 'found': 'Vila', 'arr': ['vila ',], }, { 'found': 'Pátio', 'arr': ['pátio ',], },
+        { 'found': 'Avenida', 'arr': ['avenida ', 'av. ', 'av ',], },
+    ]; function addressType(inf = {}) {
+        let { address, } = inf; address = address.trim(); let found = false;
+        for (let obj of logradourosTipo) { for (let key of obj.arr) { if (address.toLowerCase().startsWith(key)) { address = address.substring(key.length).trim(); found = obj.found; break; } } if (found) { break; } }
         return { 'found': found || false, 'address': found ? `#LOG#${address}` : address, };
     }
-    globalThis['addressType'] = addressType;
+    globalThis['logradourosTipo'] = logradourosTipo; globalThis['addressType'] = addressType;
 
     function inputPro(v) {
         v = `${inputGet() || ''}`; v = v.replace(/🔴|🔵/g, '🟢'); if (v.includes('🟢')) { v = v.split('🟢')[2].trim(); }

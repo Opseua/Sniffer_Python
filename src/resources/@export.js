@@ -10,17 +10,12 @@ await import(`../../../${process.env.fileChrome_Extension.split('PROJETOS\\')[1]
 // DEFINIR → LETTER | ROOT | FUNCTION | PROJECT | FILE | LINE
 await getPath({ 'e': new Error(), devChildren, });
 
-// console.log(`${eng} | ${engName} | ${letter}\n${fileProjetos} | ${fileWindows}`); console.log('\n'); console.log('securityPass:', gW.securityPass);
-// console.log('portWeb:', gW.portWeb, '|', 'serverWeb:', gW.serverWeb); console.log('portLoc:', gW.portLoc, '|', 'serverLoc:', gW.serverLoc);
-// console.log(`devMaster: ${gW.devMaster}\ndevSlave: ${gW.devSlave}\ndevChildren: ${gW.devChildren}`); console.log(`devSend:\n${gW.devSend}`);
-// console.log(`devGet:\n${gW.devGet[0]}\n${gW.devGet[1]}`); console.log('conf:', gW.conf); console.log('root:', gW.root); console.log('functions:', gW.functions); console.log('project:', gW.project);
-
-/* FUNÇÕES DESSE PROJETO */ let project = gW.project;
+/* FUNÇÕES */ let project = gW.project;
 globalThis['ewoq'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/ewoq.js`, inf, project, }); };
 globalThis['scilliance'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/scilliance.js`, inf, project, }); };
 globalThis['tryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/tryRating.js`, inf, project, }); };
 
-// FUNÇÕES DESSE PROJETO
+// FUNÇÕES
 globalThis['audioTranscribe'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/audioTranscribe.js`, inf, project, }); };
 globalThis['getResponseTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/getResponseTryRating.js`, inf, project, }); };
 globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/taskInfTryRating.js`, inf, project, }); };

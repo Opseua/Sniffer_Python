@@ -21,11 +21,12 @@
     <table id="result-table">
         <thead>
             <tr>
+                <th style="width: 3%; max-width: 3%">Nº</th>
                 <th style="width: 20%; max-width: 20%;">Endereços (0) | Total [0] | Estados {0}</th>
                 <th style="width: 20%; max-width: 20%;">Complemento</th>
                 <th style="width: 15%; max-width: 15%;">Bairro</th>
                 <th style="width: 10%; max-width: 10%">Município</th>
-                <th style="width: 1%; max-width: 1%">Estado</th>
+                <th style="width: 5%; max-width: 5%">Estado</th>
                 <th style="width: 1%; max-width: 1%">CEP</th>
             </tr>
         </thead>
@@ -34,15 +35,14 @@
 
     <script>
         function getParams(u) { let p = {}; (u.split('?')[1] || '').split('&').forEach(e => { let [k, v] = e.split('='); if (k) p[decodeURIComponent(k)] = decodeURIComponent(decodeURIComponent(v || '')); }); return p; }
-        globalThis['alertConsole'] = function (e, c = false) { console.log(`${e}${c ? '\n' + c : ''}`); alert(e); }; async function serverRun(inf = {}) {
+        globalThis['alertConsole'] = function (e, c = false) { console.log(`${e}${c ? '\n' + c : ''}`); alert(e); }; let sortEventsBound = false, lastSortState = {}; async function serverRun(inf = {}) {
             let ret = { 'ret': false, }; try {
                 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
                 globalThis['hostPortLoc'] = `${window.location.origin.split('//')[1]}`; let temp = getParams(window.location.href); globalThis['securityPass'] = `${temp['act'].split('-')[0]}`;
                 globalThis['roo'] = `${temp['roo']}`; globalThis['urlServer'] = `http://${hostPortLoc}/?roo=${roo}`; globalThis['dc'] = document; globalThis['inputEle'] = dc.getElementById('address-input'); let files = [
                     `D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/@export.js`, 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/z_Arruamento/bancoDeDados/estadosMunicipios.js',
                     'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/googleMaps.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/regex.js',
-                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/dateHour.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/logConsole.js',
-                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/dateHour.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/logConsole.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js',
                 ]; for (let mes of files) { let url = `${urlServer}&act=${securityPass}-webfile&mes=${mes}&mode=htm`; try { await import(url); } catch (err) { console.error(`IMPORT: ERRO | '${mes}' → ${err}`); } }
 
                 // FAVICON
@@ -65,19 +65,26 @@
                             gOk['category'] = gM.categoria || 'CATEGORIA'; let r = []; for (let k of ['logradouro', 'numero', 'bairro', 'municipio', 'estado', 'cep']) { if (gM[k]) { r.push(gM[k]) } };
                             gOk['address'] = `${gM.logradouroTipo ? `${gM.logradouroTipo} ` : ''}${r.join(', ')}`; gOk['urlGoogleMaps'] = input; isGoogleMaps = gOk; input = gOk.address;
                         }; let arrRep = ['nº ', 'Nº ', 'nº', 'Nº', 'n° ', 'N° ', 'n°', 'N°', '/[A-Z0-9]{2,4}\\+[A-Z0-9]{2,4}, /', '/[A-Z0-9]{2,4}\\+[A-Z0-9]{2,4} - /',]
-                        for (let v of arrRep) { if (v.startsWith('/')) { input = input.replace(new RegExp(v.slice(1, -1), 'g'), '') } else { input = input.replace(v, '') } }; inputEle.value = input; let inputKeep = input
+                        for (let v of arrRep) { if (v.startsWith('/')) { input = input.replace(new RegExp(v.slice(1, -1), 'g'), '') } else { input = input.replace(v, '') } }; inputEle.value = input; let inputKeep = input;
 
                         // PESQUISAR APENAS PELO CEP SE A CONSULTA FOR 'Endereço + CEP' | SUBSTITUIR: HÍFEN DO CEP (SE O IMPUT FOR CEP) | PEGAR O TOKEN
                         let matchCep = input.match(/(\d{5}-?\d{3})/g); input = matchCep ? matchCep[0] : input; if (/^\d{5}-\d{3}$/.test(input)) { input = input.replace(/\D/g, ''); }
                         // DEFINIR CABEÇALHO DOS RESULTADOS | PARSE DO IMPUT
                         let tbody = dc.querySelector('#result-table tbody'); tbody.innerHTML = ''; let addressParseOk = addressParse({ 'address': inputKeep }); // console.log(addressParseOk);
 
+                        // CORRIGIR TODO O ENDEREÇO E REINSERIR NO INPUT
+                        let ordem = [
+                            { 'key': 'tipo', 'join': ' ' }, { 'key': 'logradouro', 'join': ', ' }, { 'key': 'numero', 'join': ', ' }, { 'key': 'bairro', 'join': ', ' },
+                            { 'key': 'municipio', 'join': ', ' }, { 'key': 'estado', 'join': ', ' }, { 'key': 'cep', 'join': false },
+                        ]; let r = ''; ordem.forEach(i => { let v = addressParseOk[i.key]; if (v !== undefined && v !== null && v !== '') { r += v; if (i.join) { r += i.join }; } });
+                        input = r.replace(/[,\\-] $/, ''); inputKeep = input; inputEle.value = input
+
                         // FAZER BUSCAS
                         let retFetchs = { 'estados': 0, 'res': [], 'inp': [], }; function getResultsCorreios(inf = {}) {
                             function verificaCampos(s, o) {
-                                let v = []; for (let k of ['tipo', 'logradouro', 'numero', 'bairro', 'municipio', 'estado', 'cep',]) { if (s[k]) { if (!o[k]) { return false }; v.push(o[k]); } }
+                                let v = []; for (let k of ['tipo', 'logradouro', /* 'numero', */ 'bairro', 'municipio', 'estado', 'cep',]) { if (s[k]) { if (!o[k]) { return false }; v.push(o[k]); } }
                                 v = v.join(', '); if (s['tipo'] && o['tipo']) { v = v.replace(`${o['tipo']},`, o['tipo']) }; return v
-                            } if (inf.legacy) { input = inputKeep; } else { input = verificaCampos(inf, addressParseOk) }; if (!input) { return }; retFetchs.inp.push({ 's': inf.inf, 'i': input })
+                            }; if (inf.legacy) { input = inputKeep; } else { input = verificaCampos(inf, addressParseOk); }; if (!input) { return }; retFetchs.inp.push({ 's': inf.inf, 'i': input, })
                         }; async function searchCorreios(inf = {}) {
                             for (let [index, value,] of Object.values(Object.fromEntries(retFetchs.inp.map(o => [o.i, o]))).entries()) {
                                 logConsole({ 'txt': `${value.s}\n${value.i}`, }); let r = await api({
@@ -86,28 +93,40 @@
                                 }); if (!r.ret) { ret['msg'] = `PAGE 0: ERRO | ${r.ret}`; alertConsole(`${ret.msg}`); return ret; } r = JSON.parse(r.res.body);
                                 if (!r.ret || r.res.code !== 200) { return r; } retFetchs.res.push(...r.res.body.res.res || []); retFetchs.estados = r.res.body.res.estados || 0;
                             };
-                        }
+                        } // BUSCAR POR REGRAS
+                        getResultsCorreios({ tipo: true, logradouro: true, numero: true, bairro: true, municipio: true, estado: true, cep: false, inf: 'TIPO, LOGRADOURO, NUMERO, BAIRRO, MUNÍCIPIO, ESTADO', });
+                        getResultsCorreios({ tipo: false, logradouro: true, numero: true, bairro: true, municipio: true, estado: true, cep: false, inf: 'LOGRADOURO, NUMERO, BAIRRO, MUNÍCIPIO, ESTADO', });
+                        getResultsCorreios({ tipo: true, logradouro: true, numero: true, bairro: false, municipio: true, estado: true, cep: false, inf: 'TIPO, LOGRADOURO, NUMERO, MUNÍCIPIO, ESTADO', });
+                        getResultsCorreios({ tipo: false, logradouro: true, numero: true, bairro: false, municipio: true, estado: true, cep: false, inf: 'LOGRADOURO, NUMERO, MUNÍCIPIO, ESTADO', });
+                        getResultsCorreios({ legacy: true, inf: 'LEGACY', }); getResultsCorreios({ cep: true, inf: 'CEP', }); /* --- */ await searchCorreios(); console.log('\n');
 
-                        // BUSCAR: TIPO + RUA + BAIRRO + MUNÍCIPIO + ESTADO | BAIRRO + MUNÍCIPIO + ESTADO |TIPO + RUA + MUNÍCIPIO + ESTADO | LEGACY (DA MANEIRA QUE ESTÁ) | CEP
-                        let tipo = true; getResultsCorreios({ tipo, logradouro: true, numero: true, bairro: true, municipio: true, estado: true, cep: false, inf: 'TIPO RUA, NUMERO, BAIRRO, MUNÍCIPIO, ESTADO', });
-                        let bairro = false; getResultsCorreios({ tipo, logradouro: true, numero: true, bairro, municipio: true, estado: true, cep: false, inf: 'TIPO RUA, NUMERO, MUNÍCIPIO, ESTADO', });
-                        getResultsCorreios({ legacy: true, inf: 'LEGACY', }); getResultsCorreios({ cep: true, inf: 'CEP', }); /* --- */ await searchCorreios()
-
-                        let enderecos = retFetchs.res, seen = new Set(); enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; }); let endQtd = enderecos.length; if (endQtd == 0) {
-                            ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>'; tbody.appendChild(row);
-                            dc.querySelector('#result-table th:first-child').textContent = `Endereços (0) | Total [0] | Estados {${retFetchs.estados}}`; // alert(ret.msg);
+                        let enderecos = retFetchs.res, seen = new Set(); enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; }); let endQtd = enderecos.length; function short() {
+                            if (sortEventsBound) { return; }; let headers = document.querySelectorAll('#result-table th'); headers.forEach((th, index) => { // ORDENAR COLUNAS
+                                th.style.cursor = "pointer"; th.addEventListener('click', () => {
+                                    let dir = th.dataset.sort === 'asc' ? 'desc' : 'asc'; headers.forEach(h => h.dataset.sort = ''); th.dataset.sort = dir; let tbody = document.querySelector('#result-table tbody');
+                                    let rows = Array.from(tbody.querySelectorAll('tr')); rows.sort((a, b) => {
+                                        let cellA = a.children[index].innerText.trim(), cellB = b.children[index].innerText.trim(), numA = parseInt(cellA.replace(/\D/g, ''), 10);
+                                        let numB = parseInt(cellB.replace(/\D/g, ''), 10); if (!isNaN(numA) && !isNaN(numB) && (index === 0 || index === 6)) { return dir === 'asc' ? numA - numB : numB - numA; }
+                                        if (cellA < cellB) { return dir === 'asc' ? -1 : 1; }; if (cellA > cellB) { return dir === 'asc' ? 1 : -1; }; return 0;
+                                    }); let frag = document.createDocumentFragment(); rows.forEach(r => frag.appendChild(r)); tbody.appendChild(frag);
+                                });
+                            }); sortEventsBound = true;
+                        }; let nd = `<td colspan="7">Nenhum endereço encontrado</td>`, col2 = dc.querySelector('#result-table th:nth-child(2)'); if (endQtd == 0) {
+                            ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = nd; tbody.appendChild(row);
+                            col2.textContent = `Endereços (0) | Total [0] | Estados {${retFetchs.estados}}`; // alert(ret.msg);
                         } else {
                             let retResultScore = resultScore({ objeto1: addressParseOk, objeto2: enderecos, }), enderecosOk = [], retScoreBest = scoreBest({ pontucaoIndice: retResultScore, objeto2: enderecos, });
                             enderecosOk = retScoreBest; if (addressParseOk.numero) { enderecosOk = sideStreet({ numero: addressParseOk.numero, 'obj': enderecosOk, }) };
                             if (addressParseOk.cep) { for (let [index, value] of enderecos.entries()) { if (addressParseOk.cep && addressParseOk.cep.replace('-', '') == value.cep) { enderecosOk.push(value); break } }; }
                             if (!addressParseOk.numero && !addressParseOk.cep) { enderecosOk = retScoreBest }; enderecos = enderecosOk; seen = new Set();
-                            enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; });
-                            dc.querySelector('#result-table th:first-child').textContent = `Endereços (${enderecos.length}) | Total [${endQtd}] | Estados {${retFetchs.estados}}`; if (enderecos.length == 0) {
-                                ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = '<td colspan="5">Nenhum endereço encontrado</td>';
-                                tbody.appendChild(row); dc.querySelector('#result-table th:first-child').textContent = `Endereços (0) | Total [0] | Estados {${retFetchs.estados}}`;
+                            enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; }); // REMOVER ORDENAÇÃO APÓS NOVOS RESULTADOS
+                            col2.textContent = `Endereços (${enderecos.length}) | Total [${endQtd}] | Estados {${retFetchs.estados}}`;
+                            let headers = document.querySelectorAll('#result-table th'); headers.forEach(h => h.dataset.sort = ''); lastSortState = {}; if (enderecos.length == 0) {
+                                ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = nd;
+                                tbody.appendChild(row); col2.textContent = `Endereços (0) | Total [0] | Estados {${retFetchs.estados}}`;
                             } else {
-                                enderecos.forEach(end => {
-                                    let row = dc.createElement('tr'); let html = ''; let clipboard = {
+                                let i = 0; enderecos.forEach(end => {
+                                    i++; let row = dc.createElement('tr'), html = '', clipboard = {
                                         'tipo': end.logradouroTipo || addressParseOk.tipo || '', 'logradouro': end.logradouro || addressParseOk.logradouro || '', 'numero': addressParseOk.numero || '',
                                         'andar': addressParseOk.andar || '', 'loja': addressParseOk.loja || '', 'bairro': end.bairro || addressParseOk.bairro || '',
                                         'municipio': end.municipio || addressParseOk.municipio || '', 'estado': end.estado || addressParseOk.estado || '', 'cep': end.cep || addressParseOk.cep || '',
@@ -116,11 +135,11 @@
                                     clipboardOk = clipboardOk.replace(', ', clipboard.tipo ? clipboard.tipo + ' ' : ''); if (isGoogleMaps) {
                                         isGoogleMaps['address'] = clipboardOk; clipboardOk = JSON.stringify(isGoogleMaps);
                                         clipboardOk = `${isGoogleMaps.name} 🟢 ${isGoogleMaps.category} 🔴 ${isGoogleMaps.address} 🔵 ${isGoogleMaps.urlGoogleMaps}`
-                                    }; clipboardOk = clipboardOk.replace(/'/g, "\\'").replace(/"/g, '&quot;'); let html1 = `<td><span class="copy-icon" onclick="clipboardSet('${clipboardOk}')">`;
-                                    let html2 = `</span></td>`; html += `${html1}${end.logradouroTipo ? `${end.logradouroTipo} ` : ''}${end.logradouro || ''}${clipboard.numero ? `, ${clipboard.numero}` : ''}${html2}`;
+                                    }; clipboardOk = clipboardOk.replace(/'/g, "\\'").replace(/"/g, '&quot;'); let html1 = `<td><span class="copy-icon" onclick="clipboardSet('${clipboardOk}')">`, html2 = `</span></td>`;
+                                    html += `${html1}${i}${html2}`; html += `${html1}${end.logradouroTipo ? `${end.logradouroTipo} ` : ''}${end.logradouro || ''}${clipboard.numero ? `, ${clipboard.numero}` : ''}${html2}`;
                                     html += `${html1}${end.complemento || ''}${html2}`; html += `${html1}${end.bairro || ''}${html2}`; html += `${html1}${end.municipio || ''}${html2}`;
                                     html += `${html1}${end.estado || ''}${html2}`; html += `${html1}${end.cep.replace(/(\d{5})(\d{3})/, "$1-$2")}${html2}`; row.innerHTML = html; tbody.appendChild(row);
-                                });
+                                }); short();
                             }
                         }
                         ret['msg'] = `GET ADDRESS: OK`; ret['ret'] = true;

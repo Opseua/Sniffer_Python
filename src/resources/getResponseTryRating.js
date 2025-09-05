@@ -2,9 +2,9 @@
 // infGetResponseTryRating = { e, 'body': inf.body, };
 // retGetResponseTryRating = await getResponseTryRating(infGetResponseTryRating); console.log(retGetResponseTryRating);
 
-let e = currentFile(), ee = e;
+let e = currentFile(new Error()), ee = e;
 async function getResponseTryRating(inf = {}) {
-    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
+    let ret = { 'ret': false, }; e = inf.e || e;
     try {
         let { body, hitApp, } = inf;
 
@@ -13,7 +13,7 @@ async function getResponseTryRating(inf = {}) {
 
         // TAREFAS: PEGAR CONTEÚDO
         function getTasks(inf = {}) {
-            let { obj, } = inf; let retGetTaskType = getTaskType({ obj, }); let resOk = []; if (retGetTaskType === 'resultList') { obj.tasks[0].taskData.resultSet.resultList.forEach(item => { resOk.push(item); }); }
+            let { obj, } = inf; let retGetTaskType = getTaskType({ obj, }), resOk = []; if (retGetTaskType === 'resultList') { obj.tasks[0].taskData.resultSet.resultList.forEach(item => { resOk.push(item); }); }
             else if (retGetTaskType === 'tasks') { obj.tasks.forEach(task => { resOk.push(task.taskData); }); } return { 'type': retGetTaskType, 'tasks': resOk, };
         }
 
@@ -43,8 +43,8 @@ async function getResponseTryRating(inf = {}) {
 
         // PEGAR AS TAREFAS
         let responses = {}; if (body.includes(`{"serializedAnswer":{"`)) {
-            let obj = JSON.parse(body); let retGetTasks = getTasks({ obj, }); for (let [index, value,] of retGetTasks.tasks.entries()) {
-                let res = retGetTasks.type === 'tasks' ? value : value.value; let taskId = 'SEM_IDENTIFICACAO'; if (retGetTasks.type === 'resultList') {
+            let obj = JSON.parse(body), retGetTasks = getTasks({ obj, }); for (let [index, value,] of retGetTasks.tasks.entries()) {
+                let res = retGetTasks.type === 'tasks' ? value : value.value, taskId = 'SEM_IDENTIFICACAO'; if (retGetTasks.type === 'resultList') {
                     if (value.surveyKeys) {
                         let serializedAnswer = JSON.stringify(obj.tasks[0].taskData.testQuestionInformation.answer.serializedAnswer);
                         for (let [index1, value1,] of Object.keys(value.surveyKeys).entries()) { if (serializedAnswer.includes(value.surveyKeys[value1])) { taskId = value.surveyKeys[value1]; break; } }
@@ -60,7 +60,7 @@ async function getResponseTryRating(inf = {}) {
 
         // INSERIR SEPARADOR DE TAREFAS
         function insertSeparator(inf = {}) {
-            let { obj, } = inf; let objNew = {}; let qtd = 1; let add = '###################################';
+            let { obj, } = inf; let objNew = {}, qtd = 1, add = '###################################';
             function adSe() { objNew[`${add}_${qtd}_${add}`] = 'x'; objNew[`_${qtd}`] = '.'; qtd++; } let keys = Object.keys(obj);
             if (keys.length > 0) { adSe(); keys.forEach((k, i) => { objNew[k] = obj[k]; if (typeof obj[k] === 'object' && !Array.isArray(obj[k]) && i !== (keys.length - 1)) { adSe(); } }); } return objNew;
         } responses = insertSeparator({ 'obj': responses, });
@@ -70,7 +70,7 @@ async function getResponseTryRating(inf = {}) {
             let { obj, } = inf; let objNew = {}; for (let keyMain in obj) {
                 let rootVal = obj[keyMain]; if (typeof rootVal === 'object') {
                     objNew[keyMain] = {}; for (let subKey in rootVal) {
-                        let valor = rootVal[subKey]; let regex; regex = /^(.*)\.\d{1,2}\.value$/; regex = regex.test(subKey) ? regex : /^(.*)\.value$/; let match = subKey.match(regex); if (match) {
+                        let valor = rootVal[subKey], regex; regex = /^(.*)\.\d{1,2}\.value$/; regex = regex.test(subKey) ? regex : /^(.*)\.value$/; let match = subKey.match(regex); if (match) {
                             let [, prefixo, /* indice */] = match; let subKeyNew = prefixo;  // 'valor[0]' IGNORAR VALORES 'false' →→→ EXEMPLO: 'Closed-DNE.unexpected_language' → false
                             if (valor[0]) { if (!objNew[keyMain][subKeyNew]) { objNew[keyMain][subKeyNew] = []; } if (!objNew[keyMain][subKeyNew].includes(valor[0])) { objNew[keyMain][subKeyNew].push(valor[0]); } }
                         }
@@ -83,7 +83,7 @@ async function getResponseTryRating(inf = {}) {
             ret['msg'] = `TRYRATING GET RESPONSE: ERRO | NENHUMA RESPOSTA ENCONTRADA`;
         } else {
             // REMOVER CAMINHO DESNECESSÁRIO DO PATH JSON
-            let text = JSON.stringify(responses); let replace = ['tasks.0.taskData.', 'tasks.1.taskData.', 'tasks.3.taskData.', 'tasks.3.taskData.', '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\./g',];
+            let text = JSON.stringify(responses), replace = ['tasks.0.taskData.', 'tasks.1.taskData.', 'tasks.3.taskData.', 'tasks.3.taskData.', '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\./g',];
             replace.forEach(s => { if (s.includes('/g')) { s = s.replace('/g', ''); } else { s = s.replace(/[*.+?^${}()|[\]\\]/g, '\\$&'); } text = text.replace(new RegExp(s, 'g'), ''); });
             text = text.replace(/, /g, ',').replace(/,/g, ', '); // [Search20] CORRIGIR ENDEREÇO 'Rua, 1351,Bairro,Município - SP,01441-000,Brasil' → 'Maria Silva, 1351, Jardim América, São Paulo - SP, 01441-000, Brasil'
 

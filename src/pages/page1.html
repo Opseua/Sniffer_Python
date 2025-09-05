@@ -26,20 +26,20 @@
 
     <script>
         // PEGAR O SECURITY PASS
-        let ipServer = 'http://127.0.0.1:8889/'; let securityPass = 'aaa'; async function getSecPas(inf = {}) {
+        let ipServer = 'http://127.0.0.1:8889/', securityPass = 'aaa'; async function getSecPas(inf = {}) {
             try {
-                let url = `${ipServer}?act=getSecurityPass&roo=&mes=`; let retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'mode': 'raw', }, });
+                let url = `${ipServer}?act=getSecurityPass&roo=&mes=`, retFetch = await fetch(url, { 'method': 'GET', 'headers': { 'Content-Type': 'application/json', 'mode': 'raw', }, });
                 if (!retFetch.ok) { alert('FETCH [GET SECURITY PASS]: ERRO | AO FAZER REQUISIÇÃO'); } else { let data = await retFetch.text(); securityPass = JSON.parse(data).res; }
             } catch (catchErr) { alert('GET SECURITY PASS: ERRO | TRYCATCH', catchErr); };
         }; window.onload = function () { getSecPas(); };
 
         // FAZER REQUISIÇÃO
         async function getInput() {
-            let valueInput1 = document.getElementById('input1').value || false; let valueInput2 = document.getElementById('input2').value || false; let valueInput3 = document.getElementById('input3').value || false
+            let valueInput1 = document.getElementById('input1').value || false, valueInput2 = document.getElementById('input2').value || false, valueInput3 = document.getElementById('input3').value || false
             if (!valueInput1 && !valueInput2 && !valueInput3) {
                 document.getElementById('input1').placeholder = 'Nada foi inserido'; setTimeout(() => { document.getElementById('input1').placeholder = 'Digite algo...'; }, 1000);
             } else {
-                let url = `${ipServer}?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_3`; let retFetch = await fetch(url, {
+                let url = `${ipServer}?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_3`, retFetch = await fetch(url, {
                     'method': 'POST', 'headers': { 'Content-Type': 'application/json', 'mode': 'raw', }, 'body': JSON.stringify({
                         'fun': [{
                             'securityPass': securityPass, 'retInf': true, 'name': 'command1', 'par': {

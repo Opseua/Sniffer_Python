@@ -1,6 +1,6 @@
-let e = currentFile(), ee = e; let nd = 'NaoIdentificado', hitApp = nd;
+let e = currentFile(new Error()), ee = e; let nd = 'NaoIdentificado', hitApp = nd;
 async function scilliance(inf = {}) {
-    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
+    let ret = { 'ret': false, }; e = inf.e || e;
     try {
         let { platform = 'x', target, type, } = inf;
 
@@ -23,7 +23,7 @@ async function scilliance(inf = {}) {
             targetAlert(platform, target, type); if (body && body.assets) {
 
                 runStopwatch([`reset_1`, `toggle_1`,]); let judgeId = body.assets.requests[0].payload.interactionId; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, });
-                let tasksBlind = 0, tasksQtd = 1; let audioSourceUrl = body.assets.requests[0].payload.audioSourceUrl; let addGet = {
+                let tasksBlind = 0, tasksQtd = 1, audioSourceUrl = body.assets.requests[0].payload.audioSourceUrl, addGet = {
                     'usageLogDate': body.assets.requests[0].usageLogDate, 'localeId': body.assets.requests[0].localeId, 'gradable': body.assets.requests[0].gradable,
                     'duration_ms': body.assets.requests[0].payload.duration_ms, 'isASRTrainFlag': body.assets.requests[0].payload.isASRTrainFlag, audioSourceUrl,
                 }; gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, addGet, body, 'path': retLog.res, });
@@ -38,7 +38,7 @@ async function scilliance(inf = {}) {
                 // SALVAR | TRANSCREVER | NOTIFICAÇÃO | ÁREA DE TRANSFERÊNCIA
                 await file({ e, 'action': 'write', 'path': `${path}`, 'content': inf.body, 'encoding': false, }); let retAudioTranscribe = await audioTranscribe({ e, 'path': `${path}`, });
                 notification({ e, 'title': `ÁREA DE TRANSFERÊNCIA`, 'text': `${retAudioTranscribe.msg}`, 'keepOld': true, 'ntfy': false, 'duration': 2, });
-                clipboard({ e, 'value': `${retAudioTranscribe.ret ? retAudioTranscribe.res : retAudioTranscribe.msg}`, });
+                clipboard({ e, 'action': 'set', 'value': `${retAudioTranscribe.ret ? retAudioTranscribe.res : retAudioTranscribe.msg}`, });
             }
         }
 
@@ -46,8 +46,8 @@ async function scilliance(inf = {}) {
         if (target === `/results`) {
             targetAlert(platform, target, type); runStopwatch([`reset_1`,]); if (body && body.assets) {
 
-                let json; let tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0; let tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0; let judgesQtdHitAppLast = 0;
-                let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0; let judgeId = body.assets.requests[0].payload.interactionId;
+                let json, tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBlinds = 0, tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBlindsHitApp = 0, judgesQtdHitAppLast = 0;
+                let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0, judgeId = body.assets.requests[0].payload.interactionId;
                 let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
                 pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, pathNew, });
 
@@ -86,12 +86,12 @@ async function scilliance(inf = {}) {
 
                         // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
                         function firstDayWeek(inf = {}) {
-                            let { date, } = inf; let d = new Date(date); let dW = d.getDay(); let dif = dW; let f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
+                            let { date, } = inf; let d = new Date(date), dW = d.getDay(), dif = dW, f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
                             let mon = String(f.getMonth() + 1).padStart(2, '0'); let yea = String(f.getFullYear()); return { day, mon, yea, };
-                        } let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }); let staDay = retFirstDayWeek.day; let staMon = retFirstDayWeek.mon;
+                        } let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }), staDay = retFirstDayWeek.day, staMon = retFirstDayWeek.mon;
 
                         let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key,]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt, };
-                        let judgesQtdWee = 0; let judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; }
+                        let judgesQtdWee = 0, judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; }
 
                         let notText = [
                             `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,

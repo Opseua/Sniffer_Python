@@ -1,8 +1,7 @@
-globalThis['currentFile'] = function () { return new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)?.[0].replace(/[()]/g, ''); }; globalThis['sP'] = currentFile(); let startup = new Date();
-await import('./resources/@export.js'); let e = sP, ee = e; let libs = { 'http': {}, };
+let startup = new Date(); globalThis['firstFileCall'] = new Error(); await import('./resources/@export.js'); let e = firstFileCall, ee = e; let libs = { 'http': {}, };
 
 async function serverRun(inf = {}) {
-    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
+    let ret = { 'ret': false, }; e = inf.e || e;
     try {
         /* IMPORTAR BIBLIOTECA [NODE] */ libs['http']['http'] = 1; libs = await importLibs(libs, 'serverRun [Sniffer_Python]');
 
@@ -67,7 +66,7 @@ async function serverRun(inf = {}) {
             return { ...({ 'ret': ret.ret, }), ...(ret.msg && { 'msg': ret.msg, }), ...(ret.hasOwnProperty('res') && { 'res': ret.res, }), };
         } // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-        let hitApps = [ // [hitAppType] → blindNao respNao respSim respSim_CLOSED_DNE 
+        let hitApps = [ // [hitAppType] → blindNao blindNao[3] respNao respSim respSim_CLOSED_DNE 
             // { 'platform': 'EWOQ', 'hitAppType': 'blindNao', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', }, // YouTube_Video_Inappropriateness_Evaluation / AlpacaBrandSafetyBrandDelicate
             // { 'platform': 'TryRating', 'hitAppType': 'respSim', 'hitApp': 'POIEvaluation', }, // Search20 SearchAdsRelevance POIEvaluation
             // { 'platform': 'Scilliance', 'hitAppType': 'blindNao', 'hitApp': 'RefertoSpeakerTurnTranscriptionGL', }, // RefertoSpeakerTurnTranscriptionGL

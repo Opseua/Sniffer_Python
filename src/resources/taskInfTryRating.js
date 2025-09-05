@@ -10,17 +10,17 @@
 // body = await file({ 'action': 'read', 'path': pathTxt }); body = JSON.parse(body.res);
 // // ******************************************
 // let infTaskInfTryRating, retTaskInfTryRating;
-// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res',], 'includes': ['MES_', 'DIA_', '.',], }; // 'reg' TRUE salva no 'logs/Plataformas/z_teste/reg.txt'
+// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res',], 'includes': ['MES_', 'DIA_', '.',], }; // 'reg' TRUE salva no 'logs/Plataformas/z_teste/regTryRating.txt'
 // infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], };
 // retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
 
-let e = currentFile(), ee = e;
+let e = currentFile(new Error()), ee = e;
 async function taskInfTryRating(inf = {}) {
-    let ret = { 'ret': false, }; e = inf && inf.e ? inf.e : e;
+    let ret = { 'ret': false, }; e = inf.e || e;
     try {
         let { body, plataform, includes = [], reg, excludes = [], } = inf;
 
-        let arrBody = []; let arrPaths = []; let arrRequestId = []; let arrRes = {
+        let arrBody = [], arrPaths = [], arrRequestId = [], arrRes = {
             ...(excludes.includes('qtdTask') ? {} : { 'qtdTask': 0, }), ...(excludes.includes('blindNum') ? {} : { 'blindNum': { '0': {}, '1': {}, '2': {}, '3': {}, }, }),
             ...(excludes.includes('clip') ? {} : { 'clip': {}, }), ...(excludes.includes('res') ? {} : { 'res': {}, }),
         };
@@ -31,9 +31,9 @@ async function taskInfTryRating(inf = {}) {
 
         // PEGAR: PERGUNTAS E OPÇÕES (RADIO/SELET/ETC)
         async function questionsOptions(inf = {}) {
-            let { obj, } = inf; let res = {}; let infObjFilter = { e, obj, 'noCaseSensitive': true, 'split': '=', 'keys': ['ratingFieldKey',], 'filters': [{ 'includes': [`*Checkbox*`, `*Dropdown*`, `*Radio*`,], },], };
+            let { obj, } = inf; let res = {}, infObjFilter = { e, obj, 'noCaseSensitive': true, 'split': '=', 'keys': ['ratingFieldKey',], 'filters': [{ 'includes': [`*Checkbox*`, `*Dropdown*`, `*Radio*`,], },], };
             let retObjFilter = await objFilter(infObjFilter); for (let [index, valueOk,] of retObjFilter.res.entries()) {
-                let { key, value, } = valueOk; key = key.replace('=ratingFieldKey', ''); let retGetValueByPath = getValueByPath({ obj, 'path': key, 'split': '=', });
+                let { key, } = valueOk; key = key.replace('=ratingFieldKey', ''); let retGetValueByPath = getValueByPath({ obj, 'path': key, 'split': '=', });
                 let { fieldType, ratingFieldKey, label, options, } = retGetValueByPath; fieldType = fieldType ? fieldType.toLowerCase() : 'ignorarIsso';
                 fieldType = fieldType.includes('checkbox') ? 'checkbox' : fieldType.includes('select') ? 'select' : fieldType.includes('radio') ? 'radio' : fieldType;
                 res[ratingFieldKey] = { fieldType, 'question': label || `QUESTION_${ratingFieldKey}`, 'options': options ? options.map(({ label, value, }) => ({ label, value, })) : [], };
@@ -65,7 +65,7 @@ async function taskInfTryRating(inf = {}) {
                 let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); for (let [index1, value1,] of childrens.entries()) {
                     let children = value1; for (let [index2, value2,] of Object.keys(questionsOptionsObj).entries()) {
                         let ratingFieldKey = value2; value2 = questionsOptionsObj[value2]; let { fieldType, question, options, } = value2; let keys = [ratingFieldKey,];
-                        let valuesLabel = options.some(i => i.label) ? options.map(i => i.label) : []; let valuesValue = options.some(i => i.value) ? options.map(i => i.value) : [];
+                        let valuesLabel = options.some(i => i.label) ? options.map(i => i.label) : [], valuesValue = options.some(i => i.value) ? options.map(i => i.value) : [];
 
                         // ------------------------------------------------------------------- (ANTIGO) -------------------------------------------------------------------------------------------------------
                         // [PELA KEY] | EXEMPLO → 'Relevance'
@@ -132,14 +132,14 @@ async function taskInfTryRating(inf = {}) {
 
         // JUNTAR: TASKS | PERGUNTAS E OPÇÕES (RADIO/SELET/ETC) | RESPOSTAS | 0 → [BLIND: ???] | 1 → [BLIND: NÃO] | 2 → [BLIND: SIM <> RESP: NÃO] | 3 → [BLIND: SIM <> RESP: SIM]
         async function returnObj(inf = {}) {
-            let clip = {}; let add = { 'blindNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, }; let { tasksResponses: tasksResponsesObj, responsesFilter: responsesFilterObj, compact, } = inf;
+            let clip = {}, add = { 'blindNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, }, { tasksResponses: tasksResponsesObj, responsesFilter: responsesFilterObj, compact, } = inf;
             let { tasks, } = tasksResponsesObj; let { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, taskType, } = tasks['0'];
             let res = { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, 'tasks': { '0': { ...add, taskType, }, }, };
             for (let [index, value,] of Object.keys(tasks).filter(k => k !== '0').entries()) {
-                let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; }
+                let father = value, childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; }
                 for (let [index1, value1,] of childrens.entries()) {
                     let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { blindNum: 0, }, judge: 'x', task: tasks[father][children], }; }
-                    let judge = res.tasks[father][children]['task']; let blindNum = 0; let notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created; // SE TEM A CHAVE 'created' NÃO É BLIND
+                    let judge = res.tasks[father][children]['task'], blindNum = 0, notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created; // SE TEM A CHAVE 'created' NÃO É BLIND
                     // IDENTIFICAÇÃO DO JULGAMENTO
                     if (['Search20', 'AddressVerification',].includes(hitApp)) {
                         judge = `${judge?.value?.name || 'null'} = ${judge?.value?.address?.[0] || 'null'}`; judge = judge.replace(/, /g, ',').replace(/,/g, ', ');
@@ -199,7 +199,7 @@ async function taskInfTryRating(inf = {}) {
                 let retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile; } retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
                 if (!arrRequestId.includes(requestId)) { arrRequestId.push(requestId); arrBody.push({ 'path': value, 'body': retFile, }); }
             }
-        } let pathReg = `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/reg.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'content': 'x\n', }); }
+        } let pathReg = `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/regTryRating.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'content': 'x\n', }); }
 
         // ******************************************************************************************************************************************************************************************************************
 
@@ -215,10 +215,10 @@ async function taskInfTryRating(inf = {}) {
             // → RETORNO
             let retReturnObj = await returnObj({ 'tasksResponses': retTasksResponses, 'responsesFilter': retResponsesFilter, 'compact': true, }); // console.log(JSON.stringify(retReturnObj), '\n');
 
-            let r = retReturnObj; let hitApp = r.res.hitApp; let blindNum = r.res.tasks['0'].blindNum; let path = value.path; if (path) { path = path.split(`/`); path = path[path.length - 1].replace('.txt', ''); }
+            let r = retReturnObj, hitApp = r.res.hitApp, blindNum = r.res.tasks['0'].blindNum, path = value.path; if (path) { path = path.split(`/`); path = path[path.length - 1].replace('.txt', ''); }
             let d = dateHour(new Date(r.res.timeCreated * 1000)).res; let timeCreated = `${d.day}/${d.mon}/${d.yea}`; if (reg) {
                 // REGISTRAR NO TXT
-                let targetLocalIds = r.res.targetLocalIds; let taskType = r.res.tasks['0'].taskType; let type = r.res.type; let conceptId = r.res.conceptId; let projectId = r.res.projectId; let requestId = r.res.requestId;
+                let targetLocalIds = r.res.targetLocalIds, taskType = r.res.tasks['0'].taskType, type = r.res.type, conceptId = r.res.conceptId, projectId = r.res.projectId, requestId = r.res.requestId;
                 let metadata = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).map(s => s.task?.metadata && Object.keys(s.task.metadata).length > 0)).filter(v => v !== undefined).join(' | ');
                 let metadataName = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.name ? [m.name,] : [false,]) : []; })).join(' | ');
                 let metadataAssetType = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.assetType ? [m.assetType,] : [false,]) : []; })).join(' | ');
@@ -226,7 +226,7 @@ async function taskInfTryRating(inf = {}) {
                 let metadataCreatedBy = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.createdBy ? [m.createdBy,] : [false,]) : []; })).join(' | ');
                 let metadataCreated = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.created ? [m.created,] : [false,]) : []; })).join(' | ');
                 let metadataStorageType = Object.values(r.res.tasks).flatMap(task => Object.values(task || {}).flatMap(s => { let m = s.task?.metadata; return m ? (m.storageType ? [m.storageType,] : [false,]) : []; })).join(' | ');
-                let qtdJudge = r.res.tasks['0'].qtdJudge; let qtdBlind = r.res.tasks['0'].qtdBlind; let qtdResp = r.res.tasks['0'].qtdResp; let t = [
+                let qtdJudge = r.res.tasks['0'].qtdJudge, qtdBlind = r.res.tasks['0'].qtdBlind, qtdResp = r.res.tasks['0'].qtdResp, t = [
                     type, conceptId, projectId, requestId, hitApp, targetLocalIds.length, path, blindNum, timeCreated, taskType, metadata, metadataName, metadataAssetType, metadataState,
                     metadataCreatedBy, metadataCreated, metadataStorageType, qtdJudge, qtdBlind, qtdResp,
                 ].join('*'); t = await file({ e, 'action': 'write', 'path': pathReg, 'add': true, 'content': `${t}\n`, }); if (!t.ret) { return t; }
@@ -235,7 +235,7 @@ async function taskInfTryRating(inf = {}) {
             if (arrRes.qtdTask || arrRes.qtdTask === 0) { arrRes.qtdTask++; } if (arrRes.res) { if (!arrRes.res[hitApp]) { arrRes.res[hitApp] = []; } arrRes.res[hitApp].push(retReturnObj.res); }
             if (arrRes.blindNum) { if (!arrRes.blindNum[blindNum][hitApp]) { arrRes.blindNum[blindNum][hitApp] = []; } arrRes.blindNum[blindNum][hitApp].push({ 'date': timeCreated, path, }); } if (arrRes.clip) {
                 if (!arrRes.clip[hitApp] && blindNum === 3) { arrRes.clip[hitApp] = []; } if (blindNum === 3) {
-                    let clip = retReturnObj.clip; let order = []; if (hitApp === 'Search20') { order = ['closed_dne', 'Relevance', 'Name', 'Address', 'Pin',]; }
+                    let clip = retReturnObj.clip, order = []; if (hitApp === 'Search20') { order = ['closed_dne', 'Relevance', 'Name', 'Address', 'Pin',]; }
                     clip = Object.fromEntries(Object.entries(clip).map(([k, v,]) => [k, keysOrder(v, order),])); arrRes.clip[hitApp].push(clip);
                 }
             }

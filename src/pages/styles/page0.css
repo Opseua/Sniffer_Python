@@ -74,3 +74,17 @@
  .copy-icon {
      cursor: pointer;
  }
+
+
+ th {
+     cursor: pointer;
+     user-select: none;
+ }
+
+ th[data-sort="asc"]::after {
+     content: " ▲";
+ }
+
+ th[data-sort="desc"]::after {
+     content: " ▼";
+ }

@@ -52,7 +52,7 @@ if not "!action!" == "!action:OFF=!" (
 	
 	rem NOTIFICATION → SNIFFER OFF [CHROME_0]
 	set "headers=--header=Content-Type:application/json --header=chave1:valor1 --header=chave2:valor2"
-	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"notification_2.png","title":"SNIFFER","text":"Desativado","ntfy":false}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":""}}  ]}"
+	set "body={"fun":[  {"securityPass":"!confSecurityPass!","name":"notification","par":{"duration": 2,"icon":"iconBlue","title":"SNIFFER","text":"Desativado","ntfy":false}},  {"securityPass":"!confSecurityPass!","name":"chromeActions","par":{"action":"badge","text":""}}  ]}"
 	set "pathRes=!local!\z_BODY_RES_!outrosAdd!.txt" & set "pathReq=!local!\z_BODY_REQ_!outrosAdd!.txt" & echo !body! > "!pathReq!" & "!wget!" "--post-file=!pathReq!" "!headers!" --quiet -O "!pathRes!" "http://127.0.0.1:!confPort!/?roo=OPSEUA-CHROME-CHROME_EXTENSION-USUARIO_0"
 	del /F /Q "!pathRes!" & del /F /Q "!pathReq!"
 

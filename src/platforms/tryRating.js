@@ -37,18 +37,18 @@ async function tryRating(inf = {}) {
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
                     ]; text = checkFiles(text.map(f => f.path), f);
-                } else { text = `Pasta do hitApp não existe!`; } if (text) { notification({ duration: 3, icon: 'notification_3.png', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
+                } else { text = `Pasta do hitApp não existe!`; } if (text) { notification({ duration: 3, icon: 'iconRed', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not, retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
                 if (!retTaskInfTryRating.ret) { logConsole({ e, ee, 'txt': `${JSON.stringify(retTaskInfTryRating)}`, }); return ret; } retTaskInfTryRating = retTaskInfTryRating.res;
                 let blindNum = retTaskInfTryRating.res[hitApp]['0'].tasks['0'].blindNum; if (blindNum === 3) {
-                    not = { 'duration': 3, 'icon': 1, 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'RESP', 'bC': '#19ff47', };
+                    not = { 'duration': 3, 'icon': 'iconGreen', 'title': `BLIND`, 'text': 'Tem a resposta!', 'bT': 'RESP', 'bC': '#19ff47', };
                     clipboard({ e, 'action': 'set', 'value': JSON.stringify(retTaskInfTryRating.clip[hitApp]['0'], null, 2), });
-                } else if (blindNum === 2) { not = { 'duration': 3, 'icon': 3, 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'BLIN', 'bC': '#EC1C24', }; }
-                else if (blindNum === 1) { not = { 'duration': 1, 'icon': 2, 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'OK', 'bC': '#3F48CC', }; }
-                else if (blindNum === 0) { not = { 'duration': 2, 'icon': 4, 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
-                notification({ 'duration': not.duration, 'icon': `notification_${not.icon}.png`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
+                } else if (blindNum === 2) { not = { 'duration': 3, 'icon': 'iconRed', 'title': `BLIND`, 'text': 'Não tem a resposta!', 'bT': 'BLIN', 'bC': '#EC1C24', }; }
+                else if (blindNum === 1) { not = { 'duration': 1, 'icon': 'iconBlue', 'title': `NÃO É BLIND`, 'text': 'Avaliar manualmente', 'bT': 'OK', 'bC': '#3F48CC', }; }
+                else if (blindNum === 0) { not = { 'duration': 2, 'icon': 'iconPurple', 'title': `BLIND ???`, 'text': 'Avaliar manualmente', 'bT': '???', 'bC': '#B83DBA', }; }
+                notification({ 'duration': not.duration, 'icon': `${not.icon}`, 'keepOld': true, 'title': `${platform} | ${not.title}`, 'text': `${not.text}`, 'ntfy': false, });
                 let msgLis = { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': not.bT, 'color': not.bC, }, },], };
                 messageSend({ 'destination': des, 'message': msgLis, }); let actions = [], retVU, tabTitle = '', target = '*tryrating*';
 
@@ -56,49 +56,101 @@ async function tryRating(inf = {}) {
                     messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { hitApp, 'path': retLog.res, }, },], }, });
                 }
 
-                // SALVAR VIEWPORT E USER NO STORAGE | ALTERAR MODO DO MAPA
-                if (['Search20', 'POIClosures',].includes(hitApp)) {
-                    function viewportUser(data) {
-                        let d0 = data.tasks[0].taskData, viewportTime, inputItemMessage = d0?.inputItem?.data?.message || {}, tartMetadata = d0?.inputItem?.data?.tartMetadata || {};
-                        viewportTime = inputItemMessage.timeSinceMapViewportChanged !== void 0 ? inputItemMessage.timeSinceMapViewportChanged : tartMetadata.timeSinceMapViewportChanged;
-                        if (!viewportTime && inputItemMessage.place_request_parameters?.category_search_parameters?.viewport_info?.time_since_map_viewport_changed) {
-                            viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
-                        } if (!d0?.inputItem?.data?.tartMetadata?.deviceLocation || !d0?.inputItem?.data?.tartMetadata?.mapRegion) { return { 'viewport': '#####', 'user': '#####', }; }
-                        let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
-                        return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
-                    } retVU = viewportUser(body); tabTitle = ['USER <S>Acc', 'VIEW <N>',]; tabTitle = retVU.viewport === 'STALE' ? tabTitle[0] : retVU.user === 'INSIDE' ? tabTitle[0] : tabTitle[1];
-                    actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, });
-                    actions.push({ 'name': 'tabAction', 'par': { e, 'search': target, 'title': `TryRating: ${tabTitle}`, }, }); function funChangeMapAndCorrectAddressCopy() {
-                        let d = document; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
-                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
-                        } function addressFixButtonCopy() { // ADICIONAR VÍRGULA NO ENDEREÇO E BOTÃO PARA COPIAR [POI + ENDEEÇO]
-                            let c = document.querySelectorAll('.sd-card-container'); function aOk(b, bc) { b.parentNode.insertBefore(bc, b); } d.querySelectorAll('.sd-richtext-inner p')
-                                .forEach(function (el) { el.innerHTML = el.innerHTML.replace(/<br>/g, ', <br>').replace(/(<br>)*<\/p>/, ', </p>'); }); for (let a of c) {
-                                    let n = a.querySelector('.sd-card-header .sd-richtext span')?.textContent.trim(); let e = [...a.querySelectorAll('.sd-card-body table tr'),].
-                                        find(tr => tr.querySelector('td')?.textContent.trim().toLowerCase() === 'address')?.querySelectorAll('td')[1]?.textContent.trim().replace(/\s+/g, ' '); if (n && e) {
-                                            let t = `${n}, ${e}`, b = a.querySelector('.sd-card-header .tr-cp');
-                                            if (b) { let bc = b.cloneNode(true); bc.style.backgroundColor = '#b22222'; bc.onclick = ev => { ev.preventDefault(); void navigator.clipboard.writeText(t); }; aOk(b, bc); }
-                                        }
+                // DESTACAR ELEMENTOS
+                function highlightElements() {
+                    let d = document; let configs = [
+                        { 'color': '#FFC107', 'target': 'border', 'type': 'select', 'pathElement': 'div.react-select__control', },
+                        { 'color': '#4CAF50', 'target': 'border', 'type': 'input', 'pathElement': 'div.ff-field > input', },
+                    ]; let highlightedSet = new Set(); let highlightCheckerStarted = false; function elementHasValue(el, cfg) {
+                        if (cfg.type === 'input') { return el.value?.trim() !== ''; } if (cfg.type === 'select') {
+                            let container = el.closest('.ff-field') || el; let hidden = container.querySelector('input[type="hidden"]');
+                            if (hidden && hidden.value.trim() !== '') { return true; } let vc = el.querySelector('.react-select__value-container');
+                            if (vc && vc.classList.contains('react-select__value-container--has-value')) { return true; } if (el.querySelector("div[class*='-singleValue'], div[class*='-multiValue']")) { return true; }
+                        } return false;
+                    } let applyHighlight = () => {
+                        configs.forEach(cfg => {
+                            d.querySelectorAll(cfg.pathElement).forEach(el => {
+                                if (!highlightedSet.has(el) && !elementHasValue(el, cfg)) {
+                                    if (cfg.target === 'border') { el.style.setProperty('border', `3px solid ${cfg.color}`, 'important'); }
+                                    else { el.style.setProperty('background-color', cfg.color, 'important'); } el.dataset.highlighted = 'true'; highlightedSet.add(el);
                                 }
-                        } function selectOption() { // SELECIONAR A OPÇÃO 'Hybrid' DO MAPA
-                            let x = `.mktls-option`; w('.mk-tile-layer-selector', (e1) => {
-                                setTimeout(() => {
-                                    let e2 = e1.querySelector(`${x}.mktls-show.mktls-value`); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3.includes('Hybrid')) { return; }
-                                    let e4 = e1.querySelector(`${x}.mktls-show`); if (!e4) { return; } e4.click(); setTimeout(() => {
-                                        let e5 = Array.from(e1.querySelectorAll(x)).find(v => v.textContent.includes('Hybrid')); if (!e5) { return; } e5.dispatchEvent(new Event('click', { bubbles: true, }));
-                                    }, 700);
-                                }, 1000);
                             });
-                        } let i = setInterval(() => d.querySelector('.sd-richtext p') && (setTimeout(() => { addressFixButtonCopy(); }, 500), clearInterval(i)), 500); selectOption(); return true;
-                    } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funChangeMapAndCorrectAddressCopy.toString()})()`, }, });
-                }/* TEMPO DA TASK */ function funTaskTime() {
-                    let e = document.querySelectorAll('.labeled-attribute__label span'); globalThis['observadorAtivo'] = true; let l = [...e,].find(el => el.textContent.includes('Estimated Rating Time'));
+                        });
+                    }; applyHighlight(); new MutationObserver(applyHighlight).observe(d.body, { 'childList': true, 'subtree': true, }); if (!highlightCheckerStarted) {
+                        highlightCheckerStarted = true; setInterval(() => {
+                            highlightedSet.forEach(el => {
+                                let cfg = configs.find(c => el.matches(c.pathElement)); if (!cfg) { highlightedSet.delete(el); return; } if (!document.body.contains(el)) { highlightedSet.delete(el); return; }
+                                if (elementHasValue(el, cfg)) {
+                                    if (cfg.target === 'border') { el.style.removeProperty('border'); } else { el.style.removeProperty('background-color'); } delete el.dataset.highlighted; highlightedSet.delete(el);
+                                }
+                            });
+                        }, 500);
+                    } return true;
+                } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'injectOld', target, 'fun': `(${highlightElements.toString()})()`, }, });
+
+                // SALVAR VIEWPORT E USER NO STORAGE | ALTERAR MODO DO MAPA | ÍCONE DE CÓPIA DAS INFORMAÇÃO
+                if (['Search20', 'POIEvaluation', 'POIClosures',].some(a => hitApp.includes(a))) {
+
+                    function mapHybrid() { // SELECIONAR A OPÇÃO 'Hybrid' DO MAPA
+                        let d = document; let x = `.mktls-option`; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
+                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
+                        } w('.mk-tile-layer-selector', (e1) => {
+                            setTimeout(() => {
+                                let e2 = e1.querySelector(`${x}.mktls-show.mktls-value`); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3.includes('Hybrid')) { return; }
+                                let e4 = e1.querySelector(`${x}.mktls-show`); if (!e4) { return; } e4.click(); setTimeout(() => {
+                                    let e5 = Array.from(e1.querySelectorAll(x)).find(v => v.textContent.includes('Hybrid')); if (!e5) { return; } e5.dispatchEvent(new Event('click', { 'bubbles': true, }));
+                                }, 700);
+                            }, 1000);
+                        }); return true;
+                    } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'injectOld', target, 'fun': `(${mapHybrid.toString()})()`, }, });
+
+                    if (hitApp === 'Search20') {
+                        function viewportUser(data) { // DETERMINAR SE A VIEWPORT É NOVA E A INTENÇÃO DO USUÁRIO
+                            let d0 = data.tasks[0].taskData, viewportTime, inputItemMessage = d0?.inputItem?.data?.message || {}, tartMetadata = d0?.inputItem?.data?.tartMetadata || {};
+                            viewportTime = inputItemMessage.timeSinceMapViewportChanged !== void 0 ? inputItemMessage.timeSinceMapViewportChanged : tartMetadata.timeSinceMapViewportChanged;
+                            if (!viewportTime && inputItemMessage.place_request_parameters?.category_search_parameters?.viewport_info?.time_since_map_viewport_changed) {
+                                viewportTime = inputItemMessage.place_request_parameters.category_search_parameters.viewport_info.time_since_map_viewport_changed;
+                            } if (!d0?.inputItem?.data?.tartMetadata?.deviceLocation || !d0?.inputItem?.data?.tartMetadata?.mapRegion) { return { 'viewport': '#####', 'user': '#####', }; }
+                            let { lat: userLat, lng: userLng, } = d0.inputItem.data.tartMetadata.deviceLocation; let view = d0.inputItem.data.tartMetadata.mapRegion; let { eastLng, westLng, northLat, southLat, } = view;
+                            return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
+                        } retVU = viewportUser(body); tabTitle = ['USER <S>Acc', 'VIEW <N>',]; tabTitle = retVU.viewport === 'STALE' ? tabTitle[0] : retVU.user === 'INSIDE' ? tabTitle[0] : tabTitle[1];
+                        actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, });
+                        actions.push({ 'name': 'tabAction', 'par': { e, 'search': target, 'title': `TryRating: ${tabTitle}`, }, });
+
+                        function addressFixButtonCopyRun() {
+                            let d = document; function addressFixButtonCopy() { // ADICIONAR VÍRGULA NO ENDEREÇO E BOTÃO PARA COPIAR [POI + ENDEEÇO]
+                                let c = document.querySelectorAll('.sd-card-container'); function aOk(b, bc) { b.parentNode.insertBefore(bc, b); } d.querySelectorAll('.sd-richtext-inner p')
+                                    .forEach(function (el) { el.innerHTML = el.innerHTML.replace(/<br>/g, ', <br>').replace(/(<br>)*<\/p>/, ', </p>'); }); for (let a of c) {
+                                        let n = a.querySelector('.sd-card-header .sd-richtext span')?.textContent.trim(); let e = [...a.querySelectorAll('.sd-card-body table tr'),].
+                                            find(tr => tr.querySelector('td')?.textContent.trim().toLowerCase() === 'address')?.querySelectorAll('td')[1]?.textContent.trim().replace(/\s+/g, ' '); if (n && e) {
+                                                let t = `${n}, ${e}`, b = a.querySelector('.sd-card-header .tr-cp');
+                                                if (b) { let bc = b.cloneNode(true); bc.style.backgroundColor = '#b22222'; bc.onclick = ev => { ev.preventDefault(); void navigator.clipboard.writeText(t); }; aOk(b, bc); }
+                                            }
+                                    }
+                            } let i = setInterval(() => d.querySelector('.sd-richtext p') && (setTimeout(() => { addressFixButtonCopy(); }, 500), clearInterval(i)), 500); return true;
+                        } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'injectOld', target, 'fun': `(${addressFixButtonCopyRun.toString()})()`, }, });
+                    }
+
+                    if (hitApp.includes('POIEvaluation')) {
+                        function uploadEvidence() {
+                            let d = document; let observer = new MutationObserver(() => { // FAZER UPLOAD DA EVIDÊNCIA DO HORÁRIO
+                                let buttons = Array.from(d.querySelectorAll('button'));
+                                buttons.forEach(btn => { if (!btn.dataset.clicked && btn.textContent.trim() === 'Upload File') { btn.dataset.clicked = 'true'; setTimeout(() => { btn.click(); }, 700); } });
+                            }); observer.observe(d.body, { 'childList': true, 'subtree': true, }); return true;
+                        } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'injectOld', target, 'fun': `(${uploadEvidence.toString()})()`, }, });
+                    }
+
+                }
+
+                function funTaskTime() { // TEMPO DA TASK
+                    let d = document; let e = d.querySelectorAll('.labeled-attribute__label span'); globalThis['observadorAtivo'] = true; let l = [...e,].find(el => el.textContent.includes('Estimated Rating Time'));
                     if (!l) { setTimeout(funTaskTime, 500); return; } let t = l.closest('.labeled-attribute')?.querySelector('.label-value'); if (!t) { setTimeout(funTaskTime, 500); return; }
                     function eRT(t) { return `${String((t.match(/(\d+)\s?minute/) || [])[1] || 0).padStart(2, '0')}:${String((t.match(/(\d+)\s?second/) || [])[1] || 0).padStart(2, '0')}`; }
-                    function tabTit(s) { let t = document.title, r = /(^TryRating\s)(\d{2}:\d{2})/; r = r.test(t) ? t.replace(r, `$1${s}`) : t.replace('TryRating', `TryRating ${s}`); document.title = r; }
+                    function tabTit(s) { let t = d.title, r = /(^TryRating\s)(\d{2}:\d{2})/; r = r.test(t) ? t.replace(r, `$1${s}`) : t.replace('TryRating', `TryRating ${s}`); d.title = r; }
                     let p = t.textContent.trim(); tabTit(eRT(p)); new MutationObserver(() => { let n = t.textContent.trim(); if (n !== p) { p = n; tabTit(eRT(n)); } }).observe(t, { characterData: true, subtree: true, });
-                } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'inject', target, 'fun': `(${funTaskTime.toString()})()`, }, }); // INJETAR
+                } actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'injectOld', target, 'fun': `(${funTaskTime.toString()})()`, }, }); // INJETAR
                 for (let [index, value,] of actions.entries()) { await messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': value.name, 'par': value.par, },], }, }); }
+
             }
         }
 
@@ -142,7 +194,7 @@ async function tryRating(inf = {}) {
                             `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
                             `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`,
                         ]; infNotification = {
-                            'duration': 2, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp}`,
+                            'duration': 2, 'icon': 'iconClock', 'title': `${platform} | ${hitApp}`,
                             'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`, 'ntfy': false,
                         }; notification(infNotification); gO.inf[platform].log.splice(index, 1);
                     }

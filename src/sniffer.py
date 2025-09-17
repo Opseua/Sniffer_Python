@@ -192,7 +192,7 @@ try:
                     "name": "notification",
                     "par": {
                         "duration": 2,
-                        "icon": "notification_1.png",
+                        "icon": "iconGreen",
                         "title": "SNIFFER",
                         "text": "Ativado",
                         "ntfy": False,

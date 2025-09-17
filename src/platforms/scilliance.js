@@ -97,7 +97,7 @@ async function scilliance(inf = {}) {
                             `🔵 QTD: ${judgesQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecMon).res}`, `🟡 QTD: ${judgesQtdWee.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSecWee).res}`,
                             `🟢 QTD: ${judgesQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(judgesSec).res}`, `MÉDIO: ${dateHour((judgesSecHitAppLast / judgesQtdHitAppLast)).res.substring(3, 8)}`,
                         ]; infNotification = {
-                            'duration': 2, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp}`,
+                            'duration': 2, 'icon': 'iconClock', 'title': `${platform} | ${hitApp}`,
                             'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`, 'ntfy': false,
                         }; notification(infNotification); gO.inf[platform].log.splice(index, 1);
 

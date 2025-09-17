@@ -25,9 +25,17 @@ async function taskInfTryRating(inf = {}) {
             ...(excludes.includes('clip') ? {} : { 'clip': {}, }), ...(excludes.includes('res') ? {} : { 'res': {}, }),
         };
 
-        // PEGAR: VALOR DO PATH | ORDENAR CHAVES
+        // PEGAR: VALOR DO PATH | ORDENAR CHAVES | FILTRAR RETORNO (QUANDO TEM RESPOSTA [DA ÁREA DE TRANSFERÊNCIA])
         function getValueByPath({ obj, path, split, }) { let keys = path.split(split || '.'); return keys.reduce((a, key) => { if (a && key in a) { return a[key]; } return undefined; }, obj); }
         function keysOrder(o, r) { return Object.fromEntries((r || Object.keys(o).sort((a, b) => a.localeCompare(b))).filter(k => k in o).concat(Object.keys(o).filter(k => !r?.includes(k))).map(k => [k, o[k],])); }
+        function filterObj({ obj, rules, }) {
+            let newObj = {}; let keysExludeSet = new Set(rules.keysExlude || []); let keysKeepOrder = rules.keysKeepOrder || [];
+            keysKeepOrder.forEach(({ keyFather, keyNewName, valuesTypesExlude = [], valuesTypesKeepOrder = [], key, }) => {
+                let k = key || keyFather; if (!obj[k]) { return; } let vals = Array.isArray(obj[k]) ? obj[k] : [obj[k],];
+                let filtered = vals.filter(v => !valuesTypesExlude.includes(typeof v)); let ordered = valuesTypesKeepOrder.flatMap(t => filtered.filter(v => typeof v === t));
+                let remaining = filtered.filter(v => !valuesTypesKeepOrder.includes(typeof v)); newObj[keyNewName || k] = [...ordered, ...remaining,];
+            }); Object.keys(obj).forEach(k => { if (!keysExludeSet.has(k) && !keysKeepOrder.some(r => (r.key || r.keyFather) === k)) { newObj[k] = obj[k]; } }); return newObj;
+        }
 
         // PEGAR: PERGUNTAS E OPÇÕES (RADIO/SELET/ETC)
         async function questionsOptions(inf = {}) {
@@ -148,11 +156,27 @@ async function taskInfTryRating(inf = {}) {
                     } else if (['SearchAdsRelevance',].includes(hitApp)) {
                         judge = `${judge?.query || 'null'} = ${judge?.appname || 'null'}`;
                     } else { judge = 'Outro hitApp'; }
-                    // ATRIBUIR BLIND
+                    // ATRIBUIR BLIND E RESPOSTA
                     if (responsesFilterObj?.[father]?.[children]) {
                         // 3 → [BLIND: SIM | RESP: SIM]
                         blindNum = 3; let r = responsesFilterObj[father][children]; if (compact) { Object.values(r).forEach(o => delete o.optionsIgnore); } res.tasks[father][children]['response'] = r;
-                        clip[`${judge} [${Math.random().toString(36).substring(2, 5)}]`] = Object.fromEntries(Object.entries(r).map(([k, v,]) => [k, v.value,]));
+                        let judgeId = randomId({ 'characters': 3, 'notNumber': false, 'notLetter': false, }); let objOk = Object.fromEntries(Object.entries(r).map(([k, v,]) => [k, v.value,]));
+                        if (['POIEvaluation',].some(a => hitApp.includes(a))) {
+                            // FILTRAR RESPOSTA (PARA REMOVER CHAVES DESNCESSÁRIAS E ORDENAR IGUAL AS PERGUNTAS)
+                            let rules = {
+                                'keysExlude': ['validity', 'entry_point_general_dropdown', 'entry_point_primary_dropdown', 'address_primary_street',], 'keysKeepOrder': [
+                                    { 'key': 'validity', 'keyNewName': 'POI Validity', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'name_primary_dropdown', 'keyNewName': 'Name', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'address_primary_dropdown', 'keyNewName': 'Address', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'phone_primary_dropdown', 'keyNewName': 'Phone', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'url_primary_dropdown', 'keyNewName': 'URL', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'category_primary_dropdown', 'keyNewName': 'Category', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'pin_primary_dropdown', 'keyNewName': 'Pin', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                    { 'key': 'hours_primary_dropdown', 'keyNewName': 'Hours', 'valuesTypesExlude': ['boolean', 'object',], 'valuesTypesKeepOrder': ['string',], },
+                                ],
+                            }; objOk = filterObj({ 'obj': objOk, rules, });
+                        }
+                        clip[`${judge} [${judgeId}]`] = objOk;
                     } else if ((hitApp === 'Search20' && projectId === 1064208) || !notIsBlind) {
                         // 2 → [BLIND: SIM | RESP: NÃO]
                         blindNum = 2;

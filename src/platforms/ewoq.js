@@ -54,7 +54,7 @@ async function ewoq(inf = {}) {
                         hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp; pathNew = gO.inf[platform].log[index].path;
                         retFile = await file({ e, 'action': 'change', 'path': pathNew, 'pathNew': pathNew.replace('AINDA_NAO_IDENTIFICADO', hitApp), }); gO.inf[platform].log[index].path = retFile.res;
                     }
-                } notification({ 'duration': 2, 'icon': 'notification_2.png', 'title': `${platform} | NOVA TASK`, 'text': `${other[hitApp] ? `${other[hitApp].not} ` : ''}${hitApp}`, 'ntfy': false, });
+                } notification({ 'duration': 2, 'icon': 'iconBlue', 'title': `${platform} | NOVA TASK`, 'text': `${other[hitApp] ? `${other[hitApp].not} ` : ''}${hitApp}`, 'ntfy': false, });
             }
         }
 
@@ -67,16 +67,16 @@ async function ewoq(inf = {}) {
                         if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
                             text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }, retGoogleTranslate = await googleTranslate(infGoogleTranslate);
                             if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; }
-                            notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'action': 'set', 'value': text, });
+                            notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'action': 'set', 'value': text, });
                         } else if (hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
                             // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
                             retRegex = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
-                            if (!retRegex) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'ntfy': false, }); } else {
+                            if (!retRegex) { notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'ntfy': false, }); } else {
                                 let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${retRegex}`, 'headers': { 'accept-language': 'application/json', }, }, retApi = await api(infApi);
                                 retRegex = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada', }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
-                                if (!retRegex) { notification({ 'duration': 4, 'icon': 'notification_1.png', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'ntfy': false, }); } else {
+                                if (!retRegex) { notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'ntfy': false, }); } else {
                                     let uploadDate = new Date(retRegex); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000; // 15 DIAS ATRÁS
-                                    if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'notification_3.png', 'title': `${platform} | YouTube`, 'text': retRegex, 'ntfy': false, }); }
+                                    if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'iconRed', 'title': `${platform} | YouTube`, 'text': retRegex, 'ntfy': false, }); }
                                 }
                             }
                         } text = `${body['1'][0]['10']['1'][0]['2']}\n\n${text}`; clipboard({ 'action': 'set', 'value': text, });
@@ -119,7 +119,7 @@ async function ewoq(inf = {}) {
                             `🟢 QTD: ${tasksQtdMon.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSecMon).res}`, `🔵 QTD: ${tasksQtd.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSec).res}`,
                             `🔵 QTD: ${tasksQtdHitApp.toString().padStart(3, '0')}`, `TEMPO: ${dateHour(tasksSecHitApp).res}`, `MÉDIO: ${dateHour((tasksSecHitAppLast / tasksQtdHitAppLast)).res.substring(3, 8)}`,
                         ]; infNotification = {
-                            'duration': 3, 'icon': 'icon_4.png', 'title': `${platform} | ${hitApp} `,
+                            'duration': 3, 'icon': 'iconClock', 'title': `${platform} | ${hitApp} `,
                             'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`, 'ntfy': false,
                         }; notification(infNotification); gO.inf[platform].log.splice(index, 1);
                     }

@@ -10,8 +10,8 @@ async function tryRating(inf = {}) {
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = { 'log': [], }; } async function runStopwatch(c) { if (!platform.includes(teste)) { for (let a of c) { await fetch(`${u}${portStopwatch}/${a}`); } } }
 
-        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'chromeActions', par: { e, action: 'badge', text: '', }, },], }, }); // RESETAR: BADGE (USUARIO_3) | TÍTULO ABA
-        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'tabActions', par: { e, 'search': `*tryrating*`, 'actions': { 'title': `TryRating`, }, }, },], }, });
+        messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'name': 'chromeActions', 'par': { e, 'action': 'badge', 'text': '', }, },], }, }); // RESETAR: BADGE (USUARIO_3) | TÍTULO ABA
+        messageSend({ destination: des, message: { fun: [{ securityPass: gW.securityPass, name: 'tabActions', par: { e, 'filters': { 'url': '*tryrating*', }, 'actions': [{ 'title': `TryRating`, },], }, },], }, });
 
         /* [1] → INÍCIO */
         if (target === `/home`) {
@@ -37,7 +37,7 @@ async function tryRating(inf = {}) {
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
                     ]; text = checkFiles(text.map(f => f.path), f);
-                } else { text = `Pasta do hitApp não existe!`; } if (text) { notification({ duration: 3, icon: 'iconRed', keepOld: true, title: `${platform} | FALTAM ARQUIVOS`, text, ntfy: false, }); }
+                } else { text = `Pasta do hitApp não existe!`; } if (text) { notification({ 'duration': 3, 'icon': 'iconRed', 'keepOld': true, 'title': `${platform} | FALTAM ARQUIVOS`, text, 'ntfy': false, }); }
 
                 // CHECAR SE É BLIND *** 3 → [BLIND: SIM - RESP: SIM] # 2 → [BLIND: SIM - RESP: NÃO] # 1 → [BLIND: NÃO] # 0 → [BLIND: ???] | BADGE (USUARIO_3): DEFINIR
                 let not, retTaskInfTryRating = await taskInfTryRating({ e, body, 'reg': false, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], });
@@ -60,9 +60,9 @@ async function tryRating(inf = {}) {
                 function highlightElements() {
                     let d = document;
                     let configs = [
-                        { 'color': '#FFC107', 'target': 'border', 'type': 'select', 'pathElement': 'div.react-select__control', },
-                        { 'color': '#4CAF50', 'target': 'border', 'type': 'input', 'pathElement': 'div.ff-field > input', },
-                        { 'color': '#f86706ff', 'target': 'border', 'type': 'slider', 'pathElement': 'div.rc-slider', }, // barra deslizante
+                        { 'color': '#FFC107', 'target': 'border', 'type': 'select', 'pathElement': 'div.react-select__control', }, // [SELECT]
+                        { 'color': '#4CAF50', 'target': 'border', 'type': 'input', 'pathElement': 'div.ff-field > input', }, // [INPUT]
+                        { 'color': '#EB6207', 'target': 'border', 'type': 'slider', 'pathElement': 'div.rc-slider', }, // [BARRA DESLIZANTE]
                     ];
                     let highlightedSet = new Set();
                     let initialSliderValueMap = new WeakMap(); // guarda valor inicial do slider
@@ -142,7 +142,7 @@ async function tryRating(inf = {}) {
 
                     function mapHybrid() { // SELECIONAR A OPÇÃO 'Hybrid' DO MAPA
                         let d = document; let x = `.mktls-option`; function h(s, c) { let e = d.querySelector(s); if (e && e.offsetParent !== null) { c(e); return true; } return false; } function w(s, c) {
-                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { childList: true, subtree: true, });
+                            if (h(s, c)) { return; } let o = new MutationObserver((m, o) => { if (h(s, (e) => { o.disconnect(); c(e); })) { o.disconnect(); } }); o.observe(d.body, { 'childList': true, 'subtree': true, });
                         } w('.mk-tile-layer-selector', (e1) => {
                             setTimeout(() => {
                                 let e2 = e1.querySelector(`${x}.mktls-show.mktls-value`); if (!e2) { return; } let e3 = e2.textContent.trim(); if (!e3) { return; } if (e3.includes('Hybrid')) { return; }
@@ -164,7 +164,7 @@ async function tryRating(inf = {}) {
                             return { 'viewport': viewportTime >= 60 ? 'STALE' : 'FRESH', 'user': (userLat >= southLat && userLat <= northLat && userLng >= westLng && userLng <= eastLng) ? 'INSIDE' : 'OUTSIDE', };
                         } retVU = viewportUser(body); tabTitle = ['USER <S>Acc', 'VIEW <N>',]; tabTitle = retVU.viewport === 'STALE' ? tabTitle[0] : retVU.user === 'INSIDE' ? tabTitle[0] : tabTitle[1];
                         actions.push({ 'name': 'configStorage', 'par': { e, 'action': 'set', 'key': 'TryRating_viewportUser', 'value': retVU, }, });
-                        actions.push({ 'name': 'tabActions', 'par': { e, 'search': target, 'actions': { 'title': `TryRating: ${tabTitle}`, }, }, });
+                        actions.push({ 'name': 'tabActions', 'par': { e, 'filters': { 'url': target, }, 'actions': [{ 'title': `TryRating: ${tabTitle}`, },], }, });
 
                         function addressFixButtonCopyRun() {
                             let d = document; function addressFixButtonCopy() { // ADICIONAR VÍRGULA NO ENDEREÇO E BOTÃO PARA COPIAR [POI + ENDEEÇO]

@@ -9,7 +9,7 @@ async function correiosServer(inf = {}) {
         let path = `${fileProjetos}/Sniffer_Python/logs/z_Arruamento`; function normalizar(texto) { return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w\s]/g, '').trim(); }
         let pathBancoDeDados = `${path}/bancoDeDados`, pathCorreios = `${path}/correios/eDNE_Basico/Delimitado`; function analisarComplemento(complemento) {
             let texto = complemento.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            if (!(texto.startsWith(`- ate `) || texto.startsWith(`- de `) || texto.startsWith(`- lado `))) { return { lado: 'A', numInicial: '1', numFinal: '99999', }; }
+            if (!(texto.startsWith(`- ate `) || texto.startsWith(`- de `) || texto.startsWith(`- lado `))) { return { 'lado': 'A', 'numInicial': '1', 'numFinal': '99999', }; }
             let lado = 'A'; if (texto.includes('- lado impar')) { lado = 'I'; } else if (texto.includes('- lado par')) { lado = 'P'; }
             if (texto.includes('- de ')) { texto = '- de ' + texto.split('- de ')[1]; } else if (texto.includes('- ate ')) { texto = '- ate ' + texto.split('- ate ')[1]; }
             let temAte = texto.includes('- ate '), temFim = texto.includes(' ao fim'), numeros = [], faixa = texto.replace(/[^\d\-\/]/g, ' '), compostos = faixa.match(/\b\d+\/\d+\b/g);
@@ -76,16 +76,16 @@ async function correiosServer(inf = {}) {
                     let end = `#${codLogradouroTipo}|${codLogradouro}|${codComplemento}|${codBairro}|${codMunicio}# ${normalizar(`${logradouroTipo} ${logradouro} ${bairro} ${municipio} ${estado} ${cep}`)} \n`;
                     logradourosOk.txt = `${logradourosOk.txt}${end}`; if (!logradourosOk.estados[estado]) { logradourosOk.estados[estado] = cab; } logradourosOk.estados[estado] = `${logradourosOk.estados[estado]}${end}`;
                 }
-            } await logConsole({ e, ee, txt: `${qtd} → logradouros`, });
+            } await logConsole({ e, ee, 'txt': `${qtd} → logradouros`, });
 
             async function dataSave(f, d, o, n, k, c) {
-                if (o) { k = Object.keys(d).length; d = JSON.stringify(d); } await promises.writeFile(`${pathBancoDeDados}/${f}`, d, c || 'latin1'); if (n) { await logConsole({ e, ee, txt: `${k} → ${n}`, }); }
+                if (o) { k = Object.keys(d).length; d = JSON.stringify(d); } await promises.writeFile(`${pathBancoDeDados}/${f}`, d, c || 'latin1'); if (n) { await logConsole({ e, ee, 'txt': `${k} → ${n}`, }); }
             } await dataSave(`_logradouroTipos.json`, logradouroTiposOk.obj, true, `OK logradouroTipos`); await dataSave(`_logradouros.json`, logradourosOk.obj, true, `OK logradouros`);
             await dataSave(`_complementos.json`, complementosOk.obj, true, `OK complementos`); await dataSave(`_bairros.json`, bairrosOk.obj, true, `OK bairros`);
             await dataSave(`_municipios.json`, municipiosOk.obj, true, `OK municipios`); let obj = JSON.stringify(Object.fromEntries(Object.entries(estados).map(([u, s,]) => [u, Array.from(s),])));
             await dataSave(`estadosMunicipios.js`, `let estadosMunicipios = ${obj}; globalThis['estadosMunicipios'] = estadosMunicipios;`, false, `estados+municipios`, Object.keys(estados).length, 'utf8');
             for (let k in logradourosOk.estados) { await dataSave(`index_${k}.txt`, logradourosOk.estados[k], false); } logradouroTiposOk = {}; logradourosOk = {}; complementosOk = {}; bairrosOk = {};
-            bairros = {}; municipiosOk = {}; municipios = {}; estados = {}; await logConsole({ e, ee, txt: `BANCO DE DADOS CRIADO!`, });
+            bairros = {}; municipiosOk = {}; municipios = {}; estados = {}; await logConsole({ e, ee, 'txt': `BANCO DE DADOS CRIADO!`, });
         } // await dbMake();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -93,8 +93,8 @@ async function correiosServer(inf = {}) {
         async function carregarEnderecos(dir) {
             let arquivos = await promises.readdir(dir), dados = {}; for (let arquivo of arquivos) {
                 if (arquivo.startsWith('index_') && arquivo.endsWith('.txt') && arquivo.length === 12) {
-                    let estado = arquivo.slice(6, 8), caminhoArquivo = `${dir}/${arquivo}`, lins = [], linsLow = [], readStream = createReadStream(caminhoArquivo, { encoding: 'latin1', });
-                    let rl = _createInterface({ input: readStream, crlfDelay: Infinity, }); for await (let linha of rl) { lins.push(linha); linsLow.push(linha.toLowerCase()); } dados[estado] = { lins, linsLow, };
+                    let estado = arquivo.slice(6, 8), caminhoArquivo = `${dir}/${arquivo}`, lins = [], linsLow = [], readStream = createReadStream(caminhoArquivo, { 'encoding': 'latin1', });
+                    let rl = _createInterface({ 'input': readStream, 'crlfDelay': Infinity, }); for await (let linha of rl) { lins.push(linha); linsLow.push(linha.toLowerCase()); } dados[estado] = { lins, linsLow, };
                 }
             } return dados;
         } function buscarLinhas(d, t, estados) {

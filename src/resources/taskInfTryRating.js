@@ -68,7 +68,7 @@ async function taskInfTryRating(inf = {}) {
 
         // PEGAR: RESPOSTAS (BUSCANDO PELA CHAVE E VALOR)
         async function responsesGet(inf = {}) {
-            let { questionsOptions: questionsOptionsObj, tasksResponses: tasksResponsesObj, } = inf; let { tasks, responses, } = tasksResponsesObj; let res = { 'searchByKey': [], 'searchByValue': [], };
+            let { 'questionsOptions': questionsOptionsObj, 'tasksResponses': tasksResponsesObj, } = inf; let { tasks, responses, } = tasksResponsesObj; let res = { 'searchByKey': [], 'searchByValue': [], };
             let getValues = (data) => Array.isArray(data) ? data.map(i => i.value) : [data.value ?? data,]; let infObjFilter, retObjFilter; for (let [index, value,] of Object.keys(tasks).filter(k => k !== '0').entries()) {
                 let father = value; let childrens = Object.keys(tasks[father]).filter(k => k !== '0'); for (let [index1, value1,] of childrens.entries()) {
                     let children = value1; for (let [index2, value2,] of Object.keys(questionsOptionsObj).entries()) {
@@ -125,7 +125,7 @@ async function taskInfTryRating(inf = {}) {
 
         // FILTRAR: RESPOSTAS [DUPLICADOS EM 'value' E 'label' AO MESMO TEMPO] | 'false' DO 'Business/POI is closed or does not exist' | 'ratingFieldKey' NÃO CORRESPONDENTE
         async function responsesFilter(inf = {}) {
-            let { responsesGet: responsesGetObj, } = inf; let { searchByKey, searchByValue, } = responsesGetObj; let res = {}; for (let [index, valueOk,] of [...searchByKey, ...searchByValue,].entries()) {
+            let { 'responsesGet': responsesGetObj, } = inf; let { searchByKey, searchByValue, } = responsesGetObj; let res = {}; for (let [index, valueOk,] of [...searchByKey, ...searchByValue,].entries()) {
                 let { father, children, fieldType, ratingFieldKey, question, path, type, value, optionsIgnore, } = valueOk; let alternativeMode = ['byKey-labelAAA', 'byKey-value',].includes(type);
                 if (!(fieldType === 'checkbox' && value[0] !== true)) {
                     if ((path.toLowerCase() + '.').includes(`.${ratingFieldKey.toLowerCase()}.`) || alternativeMode) {
@@ -140,7 +140,7 @@ async function taskInfTryRating(inf = {}) {
 
         // JUNTAR: TASKS | PERGUNTAS E OPÇÕES (RADIO/SELET/ETC) | RESPOSTAS | 0 → [BLIND: ???] | 1 → [BLIND: NÃO] | 2 → [BLIND: SIM <> RESP: NÃO] | 3 → [BLIND: SIM <> RESP: SIM]
         async function returnObj(inf = {}) {
-            let clip = {}, add = { 'blindNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, }, { tasksResponses: tasksResponsesObj, responsesFilter: responsesFilterObj, compact, } = inf;
+            let clip = {}, add = { 'blindNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, }, { 'tasksResponses': tasksResponsesObj, 'responsesFilter': responsesFilterObj, compact, } = inf;
             let { tasks, } = tasksResponsesObj; let { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, taskType, } = tasks['0'];
             let res = { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, 'tasks': { '0': { ...add, taskType, }, }, };
             for (let [index, value,] of Object.keys(tasks).filter(k => k !== '0').entries()) {

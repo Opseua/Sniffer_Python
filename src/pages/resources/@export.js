@@ -2,7 +2,7 @@
 
 (async () => {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    globalThis['regexE'] = function () { }; globalThis['eng'] = true; globalThis['currentFile'] = function (err) { return err.stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)?.[0].replace(/[()]/g, ''); };
+    globalThis['regexE'] = function () { }; globalThis['eng'] = true; globalThis['firstFileCall'] = new Error();
 
     // REMOVER ACENTOS | ENDEREÇO: TOKENIZAR ENDEREÇO | // ENDEREÇO: TIPO DE LOGRADOURO
     function normalizeString(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
@@ -45,7 +45,7 @@
     // PONTUAÇÃO: DO RESULTADO
     function resultScore(inf = {}) {
         let { objeto1, objeto2, } = inf; let chavesOk = { ...objeto1, }; delete chavesOk.pontucao; let chaves = Object.keys(chavesOk), pontucaoIndice = []; for (let [index, value,] of objeto2.entries()) {
-            let pontucao = { 'indice': 999, 'pontuacao': 0, }; let obj = {}, pontuacaoOk = { tipo: 10, logradouro: 51, numero: 91 /*9*/, bairro: 10, municipio: 40, cep: 100, };
+            let pontucao = { 'indice': 999, 'pontuacao': 0, }; let obj = {}, pontuacaoOk = { 'tipo': 10, 'logradouro': 51, 'numero': 91 /*9*/, 'bairro': 10, 'municipio': 40, 'cep': 100, };
             obj['tipo'] = value.logradouroTipo; obj['logradouro'] = value.logradouro; obj['numInicial'] = value.numInicial;
             obj['numFinal'] = value.numFinal; obj['bairro'] = value.bairro; obj['municipio'] = value.municipio; obj['estado'] = value.estado; obj['cep'] = value.cep; for (let [index1, value1,] of chaves.entries()) {
                 let retPontucaoDaChave; pontucao['indice'] = index; if (value1 !== 'arr') {
@@ -86,7 +86,7 @@
     }
     globalThis['keyScore'] = keyScore;
 
-    // CHAMAR A FUNÇÃO AO PRESSIONAR O ENTER | INICIAR COM FOCUS NO IMPUT | DEFINIR ÁREA DE TRANSFERÊNCIA
+    // CHAMAR A FUNÇÃO AO PRESSIONAR O ENTER | INICIAR COM FOCUS NO INPUT | DEFINIR ÁREA DE TRANSFERÊNCIA
     function focus() { inputEle.focus(); } focus(); dc.addEventListener('visibilitychange', () => { if (!dc.hidden) { focus(); } });
     function clipboardSet(inf) { navigator.clipboard.writeText(inf).then(() => { }, (catchErr) => { alertConsole(`CLIPBOARD SET: ERRO`, catchErr); }); }
     globalThis['clipboardSet'] = clipboardSet; globalThis['focus'] = focus;
@@ -112,7 +112,10 @@
 
     function inputPro(v) {
         v = `${inputGet() || ''}`; v = v.replace(/🔴|🔵/g, '🟢'); if (v.includes('🟢')) { v = v.split('🟢')[2].trim(); }
-        v = v.replace(/(\r\n|\n|\r|\t| - )/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', '); inputText = v; inputSet(v);
+        v = v.replace(/(\r\n|\n|\r|\t| - )/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
+        v = v.replace(/\b\d{5}-?\d{3}\b/g, (v) => { return '', ',' + v + ','; }); v = v.replace(/\bcep:?(\b|)/gi, '');
+        v = v.replace(/\s+,/g, ', '); v = v.replace(/^,|,$/g, ''); v = v.replace(/,,/g, ','); v = v.replace(/  /g, ' ');
+        inputText = v; inputSet(v);
     }
     globalThis['inputPro'] = inputPro;
 

@@ -37,7 +37,7 @@ if not "!action!" == "!action:ON=!" (
 		!3_BACKGROUND! /NOCONSOLE "!fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py"
 	) else (
 		rem [VIEW] OBRIGATORIO O '/RUNAS'!!! | JANELA DO LOG POSICIONAR
-		!3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title python!project!_server_CMD& start "python!project!_server_WIND" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileNircmdSetSize! python!project!_server_WIND WINTP3_ EXATO"
+		!3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title python!project!_server_CMD& start "python!project!_server_WIND" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileSetSize! python!project!_server_WIND WINTP3_ EXATO"
 	)
 	
 	rem → PROXY [ON] - SCRIPT DE INSTALACAO

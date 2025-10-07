@@ -40,9 +40,10 @@
                 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
                 globalThis['hostPortLoc'] = `${window.location.origin.split('//')[1]}`; let temp = getParams(window.location.href); globalThis['securityPass'] = `${temp['act'].split('-')[0]}`;
                 globalThis['roo'] = `${temp['roo']}`; globalThis['urlServer'] = `http://${hostPortLoc}/?roo=${roo}`; globalThis['dc'] = document; globalThis['inputEle'] = dc.getElementById('address-input'); let files = [
-                    `D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/@export.js`, 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/z_Arruamento/bancoDeDados/estadosMunicipios.js',
-                    'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/googleMaps.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/regex.js',
-                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/dateHour.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/logConsole.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/getPath.js', `D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/@export.js`, 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/@functions.js',
+                    'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/z_Arruamento/bancoDeDados/estadosMunicipios.js', 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/src/pages/resources/googleMaps.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/regex.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/dateHour.js', 'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/logConsole.js',
+                    'D:/ARQUIVOS/PROJETOS/Chrome_Extension/src/resources/api.js',
                 ]; for (let mes of files) { let url = `${urlServer}&act=${securityPass}-webfile&mes=${mes}&mode=htm`; try { await import(url); } catch (err) { console.error(`IMPORT: ERRO | '${mes}' → ${err}`); } }
 
                 // FAVICON

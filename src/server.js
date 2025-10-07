@@ -7,7 +7,7 @@ async function serverRun(inf = {}) {
 
         await logConsole({ e, ee, 'txt': `**************** SERVER **************** [${startupTime(startup, new Date())}]`, });
 
-        let rCS = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); if (!rCS.ret) { logConsole({ e, ee, txt: rCS.msg, }); return rCS; } else { rCS = rCS.res; }
+        let rCS = await configStorage({ e, 'action': 'get', 'key': 'sniffer', }); if (!rCS.ret) { logConsole({ e, ee, 'txt': rCS.msg, }); return rCS; } else { rCS = rCS.res; }
         globalThis['platforms'] = rCS.platforms; globalThis['des'] = `${gW.devGet[1].split('roo=')[0]}roo=${gW.devMy}-CHROME-${gW.devices[0][2][3]}`; globalThis['portStopwatch'] = rCS.portStopwatch;
 
         async function pacFileCreate(arrUrl) { // REQ/RES → 'https://www.example.com/some/path' | url → 'https://www.example.com/' | host → 'www.example.com' *** (OBS: o url completo NÃO aparece!!!)
@@ -106,7 +106,7 @@ async function serverRun(inf = {}) {
                 body = false; res.setHeader('Content-Type', 'application/octet-stream'); if (action === 0) { buffers = `CANCELADA`; } else if (action === 1) {
                     ret = ret.res; buffers = `ALTERADA`; if (ret.method) { /* [method] */ res.setHeader('x-method', ret.method); } if (ret.url) { /* [url] */ res.setHeader('x-url', ret.url); }
                     if (ret.headers) { /* [headers] */ res.setHeader('x-headers', JSON.stringify(ret.headers)); } if (ret.body) { /* [body] */ body = ret.body; }
-                } res.setHeader('Transfer-Encoding', 'chunked'); res.setHeader('x-action', `${action}`); if (buffers) { logConsole({ e, ee, txt: `${getSend} ${buffers}`, }); }
+                } res.setHeader('Transfer-Encoding', 'chunked'); res.setHeader('x-action', `${action}`); if (buffers) { logConsole({ e, ee, 'txt': `${getSend} ${buffers}`, }); }
                 if (body) { body = Buffer.from(body, 'utf8'); let max = rCS.bufferSocket * 1024; for (let i = 0; i < body.length; i += max) { res.write(body.slice(i, i + max)); } } res.end();
             });
         }); serSoc.listen((rCS.portSocket), () => { }).on('error', async (err) => { serverErr(err); });

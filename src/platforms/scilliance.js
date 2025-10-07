@@ -60,7 +60,7 @@ async function scilliance(inf = {}) {
                 // AUDIO
                 if (gO.inf[platform].lastAudio) {
                     pathNew = gO.inf[platform].lastAudio; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = gO.inf[platform].lastAudio.replace(pathNew, `OK/${pathNew}`);
-                    await file({ e, action: 'change', 'path': gO.inf[platform].lastAudio, pathNew, });
+                    await file({ e, 'action': 'change', 'path': gO.inf[platform].lastAudio, pathNew, });
                 }
 
                 for (let [index, value,] of gO.inf[platform].log.entries()) {

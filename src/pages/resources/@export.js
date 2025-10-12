@@ -112,7 +112,7 @@
 
     function inputPro(v) {
         v = `${inputGet() || ''}`; v = v.replace(/🔴|🔵/g, '🟢'); if (v.includes('🟢')) { v = v.split('🟢')[2].trim(); }
-        v = v.replace(/(\r\n|\n|\r|\t| - )/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
+        v = v.replace(/(\r\n|\n|\r|\t|-|–|_|\/)/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
         v = v.replace(/\b\d{5}-?\d{3}\b/g, (v) => { return '', ',' + v + ','; }); v = v.replace(/\bcep:?(\b|)/gi, '');
         v = v.replace(/\s+,/g, ', '); v = v.replace(/^,|,$/g, ''); v = v.replace(/,,/g, ','); v = v.replace(/  /g, ' ');
         inputText = v; inputSet(v);

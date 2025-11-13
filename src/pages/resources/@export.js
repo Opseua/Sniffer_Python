@@ -111,11 +111,33 @@
     globalThis['logradourosTipo'] = logradourosTipo; globalThis['addressType'] = addressType;
 
     function inputPro(v) {
-        v = `${inputGet() || ''}`; v = v.replace(/🔴|🔵/g, '🟢'); if (v.includes('🟢')) { v = v.split('🟢')[2].trim(); }
-        v = v.replace(/(\r\n|\n|\r|\t|-|–|_|\/)/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
-        v = v.replace(/\b\d{5}-?\d{3}\b/g, (v) => { return '', ',' + v + ','; }); v = v.replace(/\bcep:?(\b|)/gi, '');
-        v = v.replace(/\s+,/g, ', '); v = v.replace(/^,|,$/g, ''); v = v.replace(/,,/g, ','); v = v.replace(/  /g, ' ');
-        inputText = v; inputSet(v);
+        v = `${inputGet() || ''}`; v = v.trim(); v = v.replace(/🔴|🔵/g, '🟢'); if (v.includes('🟢')) { v = v.split('🟢')[2].trim(); }
+        // v = v.replace(/(\r\n|\n|\r|\t|-|–|_|\/)/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
+        if (!v.toLowerCase().startsWith('http')) {
+            v = v.replace(/(\r\n|\n|\r|\t|_|\/)/g, ', ');
+
+            // CORRIGIR CEP
+            let ceps = ['xx.xxx-xxx', 'xxxxx-xxx', 'xx.xxx.xxx', 'xxxxx.xxx',];
+            for (let p of ceps) { let r = p.replace(/x/g, '\\d').replace(/\./g, '\\.?').replace(/-/g, '-?'); v = v.replace(new RegExp(r, 'g'), m => m.replace(/\D/g, '')); }
+
+            // CORRIGIR s,n/
+            v = v.replace(/s,\s*n,/i, '');
+
+            // CORRIGIR ESTADOS '(RJ)' / '[SP]' / '{BA}'
+            let estados = [
+                'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
+                'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+            ]; let r = new RegExp(`[\\(\\[\\{]\\s*(${estados.join('|')})\\s*[\\)\\]\\}]`, 'gi');
+            v = v.replace(r, ', $1,');
+
+            v = v.replace(/(?<!\d)[\-‐–—―⁃﹘﹣－](?!\d)/g, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
+            v = v.replace(/\b\d{5}-?\d{3}\b/g, (v) => { return '', ',' + v + ','; });
+            v = v.replace(/\bcep:?(\b|)/gi, '');
+            v = v.replace(/\s+,/g, ', ');
+            v = v.replace(/^,|,$/g, '');
+            v = v.replace(/,,/g, ',');
+            v = v.replace(/  /g, ' ');
+        } inputText = v; inputSet(v);
     }
     globalThis['inputPro'] = inputPro;
 

@@ -14,6 +14,9 @@
 // infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], };
 // retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
 
+// BLIND [NÃO] → POIEvaluationEN
+// BLIND [SIM] → POIEvaluation
+
 let e = currentFile(new Error()), ee = e;
 async function taskInfTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf.e || e;

@@ -107,7 +107,7 @@ async function correiosServer(inf = {}) {
             let s = Date.now(), dir = `${pathBancoDeDados}`; logConsole({ e, ee, 'txt': `CARREGANDO DADOS...`, }); async function dataGet(f) { return JSON.parse(await promises.readFile(`${dir}/${f}`, 'latin1')); }
             let logradouroTipos = (await dataGet(`_logradouroTipos.json`)), logradouros = (await dataGet(`_logradouros.json`)), complementos = (await dataGet(`_complementos.json`));
             let bairros = (await dataGet(`_bairros.json`)), municipios = (await dataGet(`_municipios.json`)), index = { logradouroTipos, logradouros, complementos, bairros, municipios, };
-            let retEstados = await carregarEnderecos(`${dir}`); logConsole({ e, ee, 'txt': `DADOS CARREGADO ${(Date.now() - s) / 1000} segundos`, }); let ceps = {
+            let retEstados = await carregarEnderecos(`${dir}`); logConsole({ e, ee, 'txt': `DADOS CARREGADOS ${(Date.now() - s) / 1000} segundos`, }); let ceps = {
                 'AC': { 'min': 69900000, 'max': 69999999, }, 'AL': { 'min': 57000000, 'max': 57999999, }, 'AM': { 'min': 69000000, 'max': 69899999, }, 'AP': { 'min': 68900000, 'max': 68999999, },
                 'BA': { 'min': 40000000, 'max': 48999999, }, 'CE': { 'min': 60000000, 'max': 63999999, }, 'DF': { 'min': 70000000, 'max': 73699999, }, 'ES': { 'min': 29000000, 'max': 29999999, },
                 'GO': { 'min': 72800000, 'max': 76799999, }, 'MA': { 'min': 65000000, 'max': 65999999, }, 'MG': { 'min': 30000000, 'max': 39999999, }, 'MS': { 'min': 79000000, 'max': 79999999, },

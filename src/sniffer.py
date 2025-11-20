@@ -30,7 +30,7 @@
 # pylint: disable=W0613
 
 # BIBLIOTECAS: NATIVAS
-import json, os, sys, re, locale, requests
+import json, os, sys, re, locale, requests, builtins
 from datetime import datetime
 import http.client as http_client
 
@@ -54,6 +54,15 @@ project = os.path.abspath(__file__).split("PROJETOS\\")[1].split("\\src")[0]
 locale.setlocale(locale.LC_TIME, "pt_BR")
 
 # FUNCOES ADICIONAIS
+# from stopwatch import stopwatchRun
+
+# PATH DO PROJETO
+project = "Sniffer_Python"
+projectPath = os.path.abspath(__file__).split(project)[0] + project
+builtins.projectPath = projectPath.replace("\\", "/")
+
+# PATHS DE ARQUIVOS '.py'
+sys.path.append(f"{projectPath}/src/scripts")
 from stopwatch import stopwatchRun
 
 

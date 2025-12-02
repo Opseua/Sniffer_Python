@@ -31,13 +31,18 @@ if not "!action!" == "!action:ON=!" (
 
 	rem MUDAR LOCAL DO TERMINAL
 	cd /d !fileProjetos!\!project!
-	
+
+	rem EXECUTAR O PYTON DO venv
+	set "venvAndRun=!fileProjetos!\!project!\.venv\Scripts\python!project!_server.exe !fileProjetos!\!project!\src\server.py"
+
 	if "!action!" == "ON_HIDE" (
 		rem [HIDE]
-		!3_BACKGROUND! /NOCONSOLE "!fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py"
+		rem !3_BACKGROUND! /NOCONSOLE "!fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\server.py"
+		!3_BACKGROUND! /NOCONSOLE "!venvAndRun!"
 	) else (
 		rem [VIEW] OBRIGATORIO O '/RUNAS'!!! | JANELA DO LOG POSICIONAR
-		!3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title python!project!_server_CMD& start "python!project!_server_WIND" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\sniffer.py" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileSetSize! python!project!_server_WIND WINTP3_ EXATO"
+		rem !3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title python!project!_server_CMD& start "python!project!_server_WIND" !fileWindows!\PORTABLE_Python\python!project!_server.exe !fileProjetos!\!project!\src\server.py" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileSetSize! python!project!_server_WIND WINTP3_ EXATO"
+		!3_BACKGROUND! /NOCONSOLE /RUNAS "cmd.exe /c title python!project!_server_CMD& start "python!project!_server_WIND" !venvAndRun!" "cmd.exe /c ping -n 4 -w 1000 127.0.0.1 > nul & !fileSetSize! python!project!_server_WIND WINTP3_ EXATO"
 	)
 	
 	rem → PROXY [ON] - SCRIPT DE INSTALACAO

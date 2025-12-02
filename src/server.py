@@ -30,7 +30,7 @@
 # pylint: disable=W0613
 
 # BIBLIOTECAS: NATIVAS
-import json, os, sys, re, locale, requests, builtins
+import json, os, sys, re, locale
 from datetime import datetime
 import http.client as http_client
 
@@ -38,32 +38,30 @@ import http.client as http_client
 os.system("cls")
 sys.stderr = open(os.devnull, "w")
 
-# BIBLIOTECAS: NECESSÁRIO INSTALAR → pip install asyncio brotli mitmproxy | DESINSTALAR pip uninstall -y asyncio brotli mitmproxy
+# ------------------------------------------------------------------------------------
+# [PADRÃO EM TODOS OS PROJETOS]
+fileChrome_Extension = os.getenv("fileChrome_Extension").replace("\\", "/")
+fileProjetos = os.getenv("fileProjetos").replace("\\", "/")
+projectName = os.path.abspath(__file__).split("PROJETOS\\")[1].split("\\src")[0]
+projectPath = f"{fileProjetos}/{projectName}".replace("\\", "/")
+# ------------------------------------------------------------------------------------
+
+# BIBLIOTECAS: NECESSÁRIO INSTALAR (MODO LEGACY) → pip install asyncio brotli mitmproxy | DESINSTALAR pip uninstall -y asyncio brotli mitmproxy
+# BIBLIOTECAS: NECESSÁRIO INSTALAR (MODO CERTO)  → ADICIONAR NO 'requirements.txt' LINHA A LINHA AS BIBLIOTECAS → pip install -r requirements.txt
+
+import requests
 import asyncio
 from mitmproxy import http
 from mitmproxy.options import Options
 from mitmproxy.tools.dump import DumpMaster
 from threading import Thread
 
-# VARIÁVEIS
-arrUrl = portSocket = bufferSocket = None
-fileChrome_Extension = os.getenv("fileChrome_Extension").replace(r"\\", "/")
-fileProjetos = os.getenv("fileProjetos").replace(r"\\", "/")
-project = os.path.abspath(__file__).split("PROJETOS\\")[1].split("\\src")[0]
 # FORMATAR DATA E HORA NO PADRÃO BRASILEIRO
 locale.setlocale(locale.LC_TIME, "pt_BR")
 
-# FUNCOES ADICIONAIS
-# from stopwatch import stopwatchRun
-
-# PATH DO PROJETO
-project = "Sniffer_Python"
-projectPath = os.path.abspath(__file__).split(project)[0] + project
-builtins.projectPath = projectPath.replace("\\", "/")
-
 # PATHS DE ARQUIVOS '.py'
 sys.path.append(f"{projectPath}/src/scripts")
-from stopwatch import stopwatchRun
+from stopwatch import stopwatch
 
 
 # DATEHOUR
@@ -122,7 +120,7 @@ def errAll(exceptErr):
 def notifyAndConsole(message):
     console(message)
     # PROXY: DESATIVAR | ENCERRAR PROCESSOS
-    os.startfile(f"{fileProjetos}/{project}/src/z_OUTROS_server/OFF.vbs")
+    os.startfile(f"{projectPath}/src/z_OUTROS_server/OFF.vbs")
     os._exit(1)  # ENCERRAR SCRIPT
 
 
@@ -319,7 +317,7 @@ try:
 
     # #### INICIAR CRONOMETRO E SERVIDOR (CRONOMETRO PRECISAR SER PRIMEIRO!!!)
     if __name__ == "__main__":
-        Thread(target=stopwatchRun).start()
+        Thread(target=stopwatch).start()
         asyncio.run(serverRun())
 
 # CHECAR ERROS

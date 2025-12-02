@@ -138,7 +138,7 @@ def run_flask_server():
     app.run(host="127.0.0.1", port=portStopwatch, debug=False, use_reloader=False)
 
 
-def stopwatchRun():
+def stopwatch():
     app = QApplication(sys.argv)
 
     cores = [
@@ -164,4 +164,4 @@ def stopwatchRun():
 
 # #### INICIAR CRONOMETRO (A PARTIR DESSE PRÓPRIO ARQUIVO)
 if __name__ == "__main__":
-    stopwatchRun()
+    stopwatch()

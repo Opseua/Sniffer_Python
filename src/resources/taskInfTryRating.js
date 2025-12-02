@@ -148,9 +148,9 @@ async function taskInfTryRating(inf = {}) {
             let res = { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, 'tasks': { '0': { ...add, taskType, }, }, };
             for (let [index, value,] of Object.keys(tasks).filter(k => k !== '0').entries()) {
                 let father = value, childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; }
-                for (let [index1, value1,] of childrens.entries()) {
+                for (let [index1, value1,] of childrens.entries()) { /// SE TEM A CHAVE 'created' NÃO É BLIND
                     let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { blindNum: 0, }, judge: 'x', task: tasks[father][children], }; }
-                    let judge = res.tasks[father][children]['task'], blindNum = 0, notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created; // SE TEM A CHAVE 'created' NÃO É BLIND
+                    let judge = res.tasks[father][children]['task'], blindNum = 0, notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created; let idxTask = taskType === 'tasks' ? index : index1;
                     // IDENTIFICAÇÃO DO JULGAMENTO
                     if (['Search20', 'AddressVerification',].includes(hitApp)) {
                         judge = `${judge?.value?.name || 'null'} = ${judge?.value?.address?.[0] || 'null'}`; judge = judge.replace(/, /g, ',').replace(/,/g, ', ');
@@ -158,13 +158,12 @@ async function taskInfTryRating(inf = {}) {
                         judge = `${judge?.sender || 'null'}`;
                     } else if (['SearchAdsRelevance',].includes(hitApp)) {
                         judge = `${judge?.query || 'null'} = ${judge?.appname || 'null'}`;
-                    } else { judge = 'Outro hitApp'; }
+                    } else { judge = `Outro hitApp`; }
                     // ATRIBUIR BLIND E RESPOSTA
                     if (responsesFilterObj?.[father]?.[children]) {
                         // 3 → [BLIND: SIM | RESP: SIM]
                         blindNum = 3; let r = responsesFilterObj[father][children]; if (compact) { Object.values(r).forEach(o => delete o.optionsIgnore); } res.tasks[father][children]['response'] = r;
-                        let judgeId = randomId({ 'characters': 3, 'notNumber': false, 'notLetter': false, }); let objOk = Object.fromEntries(Object.entries(r).map(([k, v,]) => [k, v.value,]));
-                        if (['POIEvaluation',].some(a => hitApp.includes(a))) {
+                        let objOk = Object.fromEntries(Object.entries(r).map(([k, v,]) => [k, v.value,])); if (['POIEvaluation',].some(a => hitApp.includes(a))) {
                             // FILTRAR RESPOSTA (PARA REMOVER CHAVES DESNCESSÁRIAS E ORDENAR IGUAL AS PERGUNTAS)
                             let rules = {
                                 'keysExlude': ['validity', 'entry_point_general_dropdown', 'entry_point_primary_dropdown', 'address_primary_street',], 'keysKeepOrder': [
@@ -179,7 +178,7 @@ async function taskInfTryRating(inf = {}) {
                                 ],
                             }; objOk = filterObj({ 'obj': objOk, rules, });
                         }
-                        clip[`${judge} [${judgeId}]`] = objOk;
+                        clip[`(Nº: ${idxTask + 1}) [${father}] {${children}} <${judge}>`] = objOk;
                     } else if ((hitApp === 'Search20' && projectId === 1064208) || !notIsBlind) {
                         // 2 → [BLIND: SIM | RESP: NÃO]
                         blindNum = 2;

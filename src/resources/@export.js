@@ -12,11 +12,9 @@ await getPath({ 'e': new Error(), devChildren, });
 
 /* FUNÇÕES */ let project = gW.project;
 globalThis['ewoq'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/ewoq.js`, inf, project, }); };
-globalThis['scilliance'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/scilliance.js`, inf, project, }); };
 globalThis['tryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/platforms/tryRating.js`, inf, project, }); };
 
 // FUNÇÕES
-globalThis['audioTranscribe'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/audioTranscribe.js`, inf, project, }); };
 globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/taskInfTryRating.js`, inf, project, }); };
 
 // FUNÇÕES/SCRIPTS [PAGES]

@@ -51,15 +51,6 @@ async function serverRun(inf = {}) {
                     else if (rReqRes(url, getSend, 'send', arrUrl[platform[0]][2])) { /* [3] → ENVIA A RESPOSTA DA TASK */ platform = [...platform, `/client_log`,]; }
                 }
 
-                // #### Scilliance
-                if (url.includes('amazonaws') || url.includes('scilliance')) {
-                    platform = ['Scilliance', 'scilliance',]; if (rReqRes(url, getSend, 'get', arrUrl[platform[0]][0])) { /* [1] → INÍCIO (RECEBE O TEMPLATE) */ platform = [...platform, `/ds/config`,]; }
-                    else if (rReqRes(url, getSend, 'get', arrUrl[platform[0]][1])) { /* [2] → RECEBE A TASK */ platform = [...platform, `/ds/items`,]; }
-                    else if (rReqRes(url, getSend, 'get', arrUrl[platform[0]][2])) {/* [3] → RECEBE O ÁUDIO */ platform = [...platform, `/soundwave`,]; }
-                    else if (rReqRes(url, getSend, 'send', arrUrl[platform[0]][3])) { /* [4] → ENVIA A RESPOSTA DA TASK */ platform = [...platform, `/results`,]; }
-                    else if (rReqRes(url, getSend, 'send', arrUrl[platform[0]][4])) { /* [5] → ENVIA O LOG */ platform = [...platform, `/___log___`,]; }
-                }
-
                 /* ###### */ if (platform.length > 2) { platform = [`${platform[0]}${teste}`, platform[1], platform[2],]; globalThis[platform[1]]({ 'platform': platform[0], 'target': platform[2], body, type, }); }
                 if (res.action !== 0 && (res.method || res.url || res.headers || res.body)) { res.action = 1; } ret['ret'] = true; ret['res'] = res;
             } catch (catchErr) { let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res']; }
@@ -69,7 +60,6 @@ async function serverRun(inf = {}) {
         let hitApps = [ // [hitAppType] → blindNao blindNao[3] respNao respSim respSim_CLOSED_DNE 
             // { 'platform': 'EWOQ', 'hitAppType': 'blindNao', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', }, // YouTube_Video_Inappropriateness_Evaluation / AlpacaBrandSafetyBrandDelicate
             // { 'platform': 'TryRating', 'hitAppType': 'respSim', 'hitApp': 'POIEvaluation', }, // Search20 SearchAdsRelevance POIEvaluation
-            // { 'platform': 'Scilliance', 'hitAppType': 'blindNao', 'hitApp': 'RefertoSpeakerTurnTranscriptionGL', }, // RefertoSpeakerTurnTranscriptionGL
         ]; let plaOpt = {
             'EWOQ': [
                 { 'url': 0, 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt', }, // [1] → INÍCIO
@@ -87,13 +77,6 @@ async function serverRun(inf = {}) {
                 { 'url': 0, 'getSend': 'get', 'file': '1-GET_##_VAZIO_##.txt', }, // [1] → INÍCIO
                 { 'url': 1, 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt', }, // [2] → RECEBE A TASK
                 { 'url': 2, 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt', }, // [4] → ENVIA A RESPOSTA DA TASK
-            ],
-            'Scilliance': [
-                { 'url': 0, 'getSend': 'get', 'file': '1-GET_TEMPLATE-${hitAppType}.txt', }, // [1] → INÍCIO (RECEBE O TEMPLATE)
-                { 'url': 1, 'getSend': 'get', 'file': '2-GET_TASK-${hitAppType}.txt', }, // [2] → RECEBE A TASK
-                { 'url': 2, 'getSend': 'get', 'file': '3-GET_AUDIO-${hitAppType}.wav', 'midia': true, }, // [3] → RECEBE A ÁUDIO
-                { 'url': 3, 'getSend': 'send', 'file': '4-SEND_TASK-${hitAppType}.txt', }, // [4] → ENVIA A RESPOSTA DA TASK
-                { 'url': 4, 'getSend': 'send', 'file': '5-SEND_LOG-${hitAppType}.txt', }, // [5] → ENVIA O LOG
             ],
         }; let hX = [`{"content-type":"json"}`, `{"content-type":"OUTRO_TIPO"}`,]; if (hitApps.length === 0) { correiosServer(); /* SERVIDOR CORREIOS */ } for (let [index, v,] of hitApps.entries()) {
             let p, l = v.platform, t = '_teste'; l = [l, `${l}${t}`,]; p = `${fileProjetos}/${gW.project}/logs/Plataformas/z${t}/${l[0]}/${v.hitApp}`; for (let [index, v1,] of plaOpt[l[0]].entries()) {

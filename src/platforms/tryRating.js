@@ -32,7 +32,7 @@ async function tryRating(inf = {}) {
                 gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                let text = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z${teste}/TryRating/${hitApp}`, 'max': 30, }); text = text.res || false; if (text) {
+                let text = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z${teste}/TryRating/${hitApp}`, 'max': 100, }); text = text.res || false; if (text) {
                     function checkFiles(f, v) { v = v.map(g => f.some(n => regex({ 'simple': true, 'pattern': `*${g.r}*`, 'text': n, })) ? null : g.id).filter(Boolean); return v.length ? v.join(' | ') : false; } let f = [
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
@@ -55,87 +55,6 @@ async function tryRating(inf = {}) {
                 if (blindNum === 0 && ['Ratingoftransformedtext', 'BroadMatchRatings',].includes(hitApp)) {
                     messageSend({ 'destination': des, 'message': { 'fun': [{ 'securityPass': gW.securityPass, 'retInf': true, 'name': 'tryRatingSet', 'par': { hitApp, 'path': retLog.res, }, },], }, });
                 }
-
-                // DESTACAR ELEMENTOS
-                function highlightElements() {
-                    let d = document;
-                    let configs = [
-                        { 'color': '#FFC107', 'target': 'border', 'type': 'select', 'pathElement': 'div.react-select__control', }, // [SELECT]
-                        { 'color': '#4CAF50', 'target': 'border', 'type': 'input', 'pathElement': 'div.ff-field > input', }, // [INPUT]
-                        { 'color': '#EB6207', 'target': 'border', 'type': 'slider', 'pathElement': 'div.rc-slider', }, // [BARRA DESLIZANTE]
-                    ];
-                    let highlightedSet = new Set();
-                    let initialSliderValueMap = new WeakMap(); // guarda valor inicial do slider
-                    let highlightCheckerStarted = false;
-
-                    function elementHasValue(el, cfg) {
-                        if (cfg.type === 'input') {
-                            return el.value?.trim() !== '';
-                        }
-                        if (cfg.type === 'select') {
-                            let container = el.closest('.ff-field') || el;
-                            let hidden = container.querySelector('input[type="hidden"]');
-                            if (hidden && hidden.value.trim() !== '') { return true; }
-                            let vc = el.querySelector('.react-select__value-container');
-                            if (vc && vc.classList.contains('react-select__value-container--has-value')) { return true; }
-                            if (el.querySelector("div[class*='-singleValue'], div[class*='-multiValue']")) { return true; }
-                        } else if (cfg.type === 'slider') {
-                            let handle = el.querySelector('.rc-slider-handle');
-                            if (!handle) { return false; }
-                            let currentValue = handle.getAttribute('aria-valuenow') || handle.dataset.cyHandleValue;
-                            let initialValue = initialSliderValueMap.get(el);
-                            if (initialValue === undefined) {
-                                initialSliderValueMap.set(el, currentValue);
-                                return false; // não tem valor inicial definido ainda, trata como sem valor
-                            }
-                            return String(currentValue) !== String(initialValue); // considera preenchido só se mudou
-                        }
-                        return false;
-                    }
-
-                    let applyHighlight = () => {
-                        configs.forEach(cfg => {
-                            d.querySelectorAll(cfg.pathElement).forEach(el => {
-                                if (!highlightedSet.has(el) && !elementHasValue(el, cfg)) {
-                                    if (cfg.target === 'border') {
-                                        el.style.setProperty('border', `3px solid ${cfg.color}`, 'important');
-                                    } else {
-                                        el.style.setProperty('background-color', cfg.color, 'important');
-                                    }
-                                    el.dataset.highlighted = 'true';
-                                    highlightedSet.add(el);
-                                }
-                            });
-                        });
-                    };
-
-                    applyHighlight();
-
-                    new MutationObserver(applyHighlight).observe(d.body, { 'childList': true, 'subtree': true, });
-
-                    if (!highlightCheckerStarted) {
-                        highlightCheckerStarted = true;
-                        setInterval(() => {
-                            highlightedSet.forEach(el => {
-                                let cfg = configs.find(c => el.matches(c.pathElement));
-                                if (!cfg) { highlightedSet.delete(el); return; }
-                                if (!document.body.contains(el)) { highlightedSet.delete(el); return; }
-                                if (elementHasValue(el, cfg)) {
-                                    if (cfg.target === 'border') {
-                                        el.style.removeProperty('border');
-                                    } else {
-                                        el.style.removeProperty('background-color');
-                                    }
-                                    delete el.dataset.highlighted;
-                                    highlightedSet.delete(el);
-                                }
-                            });
-                        }, 500);
-                    }
-
-                    return true;
-                }
-                actions.push({ 'name': 'chromeActions', 'par': { e, 'action': 'injectOld', target, 'fun': `(${highlightElements.toString()})()`, }, });
 
                 // SALVAR VIEWPORT E USER NO STORAGE | ALTERAR MODO DO MAPA | ÍCONE DE CÓPIA DAS INFORMAÇÃO
                 if (['Search20', 'POIEvaluation', 'POIClosures',].some(a => hitApp.includes(a))) {

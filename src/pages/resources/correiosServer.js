@@ -1,5 +1,7 @@
 // GET http://localhost:3000/buscaAqui?termos=BARREIROS;RAMOS;RIO
 
+// await correiosServer({ 'makeDb': true, }); // CRIAR BANCO DE DADOS
+
 let e = currentFile(new Error()), ee = e; let libs = { 'http': {}, 'url': {}, 'readline': {}, };
 async function correiosServer(inf = {}) {
     let ret = { 'ret': false, }; e = inf.e || e;
@@ -25,7 +27,7 @@ async function correiosServer(inf = {}) {
         // [LOG_CPC.TXT] → CAIXAS POSTAIS COMUNITÁRIAS
         // [LOG_UNID_OPER] → AGÊNCIAS DOS CORREIOS (Rua Artur Rios, 1831, {CDD Oeste}, Senador Vasconcelos, Rio de Janeiro, RJ 23013-970)
         // [LOG_GRANDE_USUARIO.TXT] → SHOPPINGS POR EXEMPLO (Avenida Professor Carlos Cunha, 3000, Shopping Jaracati, Jaracaty, São Luís, MA, 65076-909)
-        async function dbMake() {
+        let { makeDb, } = inf; async function dbMake() {
             // APAGAR ARQUIVOS ANTIGOS | → MUNICÍPIOS | → BAIRROS [https://www2.correios.com.br/sistemas/edne/download/eDNE_Basico.zip]
             let p = pathBancoDeDados; for (let f of await promises.readdir(p)) { (await promises.stat(f = p + '\\' + f)).isFile() && await promises.unlink(f); } let municipios = {}; async function dbMunicipios() {
                 let conteudo = await promises.readFile(`${pathCorreios}/LOG_LOCALIDADE.TXT`, 'latin1'), ls = conteudo.split(/\r?\n/);
@@ -86,7 +88,7 @@ async function correiosServer(inf = {}) {
             await dataSave(`estadosMunicipios.js`, `let estadosMunicipios = ${obj}; globalThis['estadosMunicipios'] = estadosMunicipios;`, false, `estados+municipios`, Object.keys(estados).length, 'utf8');
             for (let k in logradourosOk.estados) { await dataSave(`index_${k}.txt`, logradourosOk.estados[k], false); } logradouroTiposOk = {}; logradourosOk = {}; complementosOk = {}; bairrosOk = {};
             bairros = {}; municipiosOk = {}; municipios = {}; estados = {}; await logConsole({ e, ee, 'txt': `BANCO DE DADOS CRIADO!`, });
-        } // await dbMake();
+        }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -141,7 +143,7 @@ async function correiosServer(inf = {}) {
                     } resEnd({ 'ret': true, 'msg': `CORREIOS SERVER: OK`, 'res': resultados, }); return;
                 } resEnd({ 'ret': false, 'msg': `CORREIOS SERVER: ERRO | ROTA INVÁLIDA`, });
             }); let port = 7777; server.listen(port, () => { logConsole({ e, ee, 'txt': `SERVIDOR CORREIOS RODANDO http://localhost:${port}`, }); });
-        } await iniciarServidor();
+        } if (makeDb) { await dbMake(); } else { await iniciarServidor(); }
 
         ret['msg'] = `ADDRESS FIND: OK`; ret['ret'] = true;
 

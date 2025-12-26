@@ -1,16 +1,16 @@
 /* eslint-disable max-len */
 
 // let pathTxt, body;
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/00.09.01.953_GET_Categorization.txt'; // BLIND + RESP
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_10_OUT/DIA_25/OK/13.17.39.840_GET_TimeSensitiveEmailCategorizationPortugueseLanguage.txt'; // BLIND + RESP
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/08.12.18.436_GET_EmailCategorizationPortugueseLanguage.txt'; // NÃO
+// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/00.09.01.953-GET-Categorization.txt'; // BLIND + RESP
+// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_10_OUT/DIA_25/OK/13.17.39.840-GET-TimeSensitiveEmailCategorizationPortugueseLanguage.txt'; // BLIND + RESP
+// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/08.12.18.436-GET-EmailCategorizationPortugueseLanguage.txt'; // NÃO
 // // ***
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_21/OK/12.59.14.688_GET_SearchAdsRelevance.txt'; // NÃO
+// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_21/OK/12.59.14.688-GET-SearchAdsRelevance.txt'; // NÃO
 // // ###
 // body = await file({ 'action': 'read', 'path': pathTxt }); body = JSON.parse(body.res);
 // // ******************************************
 // let infTaskInfTryRating, retTaskInfTryRating;
-// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res',], 'includes': ['MES_', 'DIA_', '.',], }; // 'reg' TRUE salva no 'logs/Plataformas/z_teste/regTryRating.txt'
+// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res',], 'includes': ['MES_', 'DIA_', '.',], }; // 'reg' TRUE salva no 'logs/Plataformas/z_OUTROS/regTryRating.txt'
 // infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], };
 // retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
 
@@ -21,7 +21,7 @@ let e = currentFile(new Error()), ee = e;
 async function taskInfTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf.e || e;
     try {
-        let { body, plataform, includes = [], reg, excludes = [], } = inf;
+        let { body, plataform, includes = [], reg, excludes = [], test = false, } = inf;
 
         let arrBody = [], arrPaths = [], arrRequestId = [], arrRes = {
             ...(excludes.includes('qtdTask') ? {} : { 'qtdTask': 0, }), ...(excludes.includes('blindNum') ? {} : { 'blindNum': { '0': {}, '1': {}, '2': {}, '3': {}, }, }),
@@ -141,16 +141,24 @@ async function taskInfTryRating(inf = {}) {
             } return res;
         }
 
-        // JUNTAR: TASKS | PERGUNTAS E OPÇÕES (RADIO/SELET/ETC) | RESPOSTAS | 0 → [BLIND: ???] | 1 → [BLIND: NÃO] | 2 → [BLIND: SIM <> RESP: NÃO] | 3 → [BLIND: SIM <> RESP: SIM]
+        // JUNTAR: TASKS | PERGUNTAS E OPÇÕES (RADIO/SELET/ETC) | RESPOSTAS 
+        // blindNum:   0 → [BLIND: ???] | 1 → [BLIND: NÃO] | 2 → [BLIND: SIM] | 3 → [RESP: SIM]
+        // qualityNum: 0 → [REQUIRED FOR QUALIFICATION TEST: ???] | 1 → [REQUIRED FOR QUALIFICATION TEST: NÃO] | 2 → [REQUIRED FOR QUALIFICATION TEST: SIM]
         async function returnObj(inf = {}) {
-            let clip = {}, add = { 'blindNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, }, { 'tasksResponses': tasksResponsesObj, 'responsesFilter': responsesFilterObj, compact, } = inf;
+            let clip = {}, add = { 'blindNum': 0, 'qualityNum': 0, 'qtdJudge': 0, 'qtdBlind': 0, 'qtdResp': 0, 'qtdQuality': 0, }, { 'tasksResponses': tasksResponsesObj, 'responsesFilter': responsesFilterObj, compact, } = inf;
             let { tasks, } = tasksResponsesObj; let { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, taskType, } = tasks['0'];
             let res = { type, conceptId, projectId, requestId, hitApp, targetLocalIds, timeCreated, 'tasks': { '0': { ...add, taskType, }, }, };
             for (let [index, value,] of Object.keys(tasks).filter(k => k !== '0').entries()) {
                 let father = value, childrens = Object.keys(tasks[father]).filter(k => k !== '0'); if (!res.tasks[father]) { res.tasks[father] = { '0': { ...add, }, }; }
                 for (let [index1, value1,] of childrens.entries()) { /// SE TEM A CHAVE 'created' NÃO É BLIND
-                    let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { blindNum: 0, }, judge: 'x', task: tasks[father][children], }; }
-                    let judge = res.tasks[father][children]['task'], blindNum = 0, notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created; let idxTask = taskType === 'tasks' ? index : index1;
+                    let children = value1; if (!res.tasks[father][children]) { delete tasks[father][children].taskType; res.tasks[father][children] = { '0': { 'blindNum': 0, 'qualityNum': 0, }, judge: 'x', task: tasks[father][children], }; }
+                    let judge = res.tasks[father][children]['task'], judgeObj = judge, blindNum = 0, qualityNum = 0, notIsBlind = !!res.tasks[father][children]['task']?.metadata?.created;
+                    let idxTask = taskType === 'tasks' ? index : index1; let quality = judgeObj?.testQuestionInformation?.requiredForQualificationTest; quality = quality === undefined ? null : quality;
+
+                    // CHAVES QUE PODEM TER A RESPOSTA
+                    let ___text = judgeObj?.text, ___comment = judgeObj?.testQuestionInformation?.comment; ___text = ___text === undefined ? null : ___text; ___comment = ___comment === undefined ? null : ___comment;
+                    qualityNum = quality === false ? 1 : quality === true ? 2 : 0;
+
                     // IDENTIFICAÇÃO DO JULGAMENTO
                     if (['Search20', 'AddressVerification',].includes(hitApp)) {
                         judge = `${judge?.value?.name || 'null'} = ${judge?.value?.address?.[0] || 'null'}`; judge = judge.replace(/, /g, ',').replace(/,/g, ', ');
@@ -158,7 +166,8 @@ async function taskInfTryRating(inf = {}) {
                         judge = `${judge?.sender || 'null'}`;
                     } else if (['SearchAdsRelevance',].includes(hitApp)) {
                         judge = `${judge?.query || 'null'} = ${judge?.appname || 'null'}`;
-                    } else { judge = `Outro hitApp`; }
+                    } else { judge = `Sem identificação`; }
+
                     // ATRIBUIR BLIND E RESPOSTA
                     if (responsesFilterObj?.[father]?.[children]) {
                         // 3 → [BLIND: SIM | RESP: SIM]
@@ -178,7 +187,7 @@ async function taskInfTryRating(inf = {}) {
                                 ],
                             }; objOk = filterObj({ 'obj': objOk, rules, });
                         }
-                        clip[`(Nº: ${idxTask + 1}) [${father}] {${children}} <${judge}>`] = objOk;
+                        objOk = { '0': { quality, ___text, ___comment, }, ...objOk, }; clip[`(Nº: ${idxTask + 1}) [${father}] {${children}} <${judge}>`] = objOk;
                     } else if ((hitApp === 'Search20' && projectId === 1064208) || !notIsBlind) {
                         // 2 → [BLIND: SIM | RESP: NÃO]
                         blindNum = 2;
@@ -189,11 +198,19 @@ async function taskInfTryRating(inf = {}) {
 
                     // ATRIBUIR [geral|father|children]: blindNum
                     if (blindNum > res.tasks['0'].blindNum) { res.tasks['0'].blindNum = blindNum; }
-                    if (blindNum > res.tasks[father]['0'].blindNum) { res.tasks[father]['0'].blindNum = blindNum; } res.tasks[father][children]['0'].blindNum = blindNum;
+                    if (blindNum > res.tasks[father]['0'].blindNum) { res.tasks[father]['0'].blindNum = blindNum; }
+                    res.tasks[father][children]['0'].blindNum = blindNum;
+
+                    // ATRIBUIR [geral|father|children]: qualityNum
+                    if (qualityNum > res.tasks['0'].qualityNum) { res.tasks['0'].qualityNum = qualityNum; }
+                    if (qualityNum > res.tasks[father]['0'].qualityNum) { res.tasks[father]['0'].qualityNum = qualityNum; }
+                    res.tasks[father][children]['0'].qualityNum = qualityNum;
+
                     // ATRIBUIR [geral|father]: qtdJudge | qtdBlind
                     res.tasks['0'].qtdJudge++; res.tasks[father]['0'].qtdJudge++; if (blindNum > (res.tasks['0'].blindNum > 2 ? 2 : 1)) { res.tasks['0'].qtdBlind++; res.tasks[father]['0'].qtdBlind++; }
                     // ATRIBUIR [geral|father]: qtdResp | [children]: identificação do julgamento
-                    if (blindNum > 2) { res.tasks['0'].qtdResp++; res.tasks[father]['0'].qtdResp++; } res.tasks[father][children].judge = judge;
+                    if (blindNum > 2) { res.tasks['0'].qtdResp++; res.tasks[father]['0'].qtdResp++; } if (quality) { res.tasks['0'].qtdQuality++; res.tasks[father]['0'].qtdQuality++; }
+                    res.tasks[father][children].judge = judge;
                 }
             } return { clip, res, };
         }
@@ -214,9 +231,9 @@ async function taskInfTryRating(inf = {}) {
                                 if (value2.isFolder && value2.path.includes('OK')) {
                                     let retFile3 = await file({ 'action': 'list', 'path': value2.path, 'max': 500, }); if (!retFile3.ret) { return retFile3; }
                                     for (let [index3, value3,] of retFile3.res.entries()) {
-                                        if (!value3.isFolder && value3.path.includes('_GET_') && includes.every(i => value3.path.includes(i))) { arrPaths.push(value3.path); }
+                                        if (!value3.isFolder && value3.path.includes('-GET-') && includes.every(i => value3.path.includes(i))) { arrPaths.push(value3.path); }
                                     }
-                                } else if (!value2.isFolder && value2.path.includes('_GET_') && includes.every(i => value2.path.includes(i))) { arrPaths.push(value2.path); }
+                                } else if (!value2.isFolder && value2.path.includes('-GET-') && includes.every(i => value2.path.includes(i))) { arrPaths.push(value2.path); }
                             }
                         }
                     }
@@ -225,7 +242,7 @@ async function taskInfTryRating(inf = {}) {
                 let retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile; } retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
                 if (!arrRequestId.includes(requestId)) { arrRequestId.push(requestId); arrBody.push({ 'path': value, 'body': retFile, }); }
             }
-        } let pathReg = `${fileProjetos}/${gW.project}/logs/Plataformas/z_teste/regTryRating.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'content': 'x\n', }); }
+        } let pathReg = `${fileProjetos}/${gW.project}/logs/Plataformas/z_OUTROS/regTryRating.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'content': 'x\n', }); }
 
         // ******************************************************************************************************************************************************************************************************************
 
@@ -271,8 +288,18 @@ async function taskInfTryRating(inf = {}) {
             ...(arrRes.clip ? { 'clip': keysOrder(arrRes.clip), } : {}), ...(arrRes.res ? { 'res': keysOrder(arrRes.res), } : {}),
         };
 
+        // REDUZIR RESPOSTA PARA OTIMIZAR A LEITURA
+        let clipOk = {}, clip = res?.clip, order = [`eligibility`, `state`, `url`, `name`, `address`, `pin`, `phone`, `category`, `hours`,], keys = ['label', 'value',];
+        let ignoreDuplicateKeys = true, ignoreTranslate = !!test, ignoreBreakLine = false; let tasksArr = [`POIEvaluation`, `POIEvaluationEN`,]; if (clip) {
+            let x = { order, keys, ignoreDuplicateKeys, ignoreTranslate, ignoreBreakLine, }; for (let key in clip) {
+                if (tasksArr.includes(key) && Array.isArray(clip[key])) {
+                    clipOk[key] = []; for (let item of clip[key]) { let retOk = await taskInfReduceTryRating({ 'obj': item, ...x, }); clipOk[key].push(retOk?.res || item); }
+                } else { clipOk[key] = clip[key]; }
+            } res.clip = clipOk;
+        }
+
         ret['ret'] = true;
-        ret['msg'] = 'TASK INF: OK';
+        ret['msg'] = 'TASK INF TRYRATING: OK';
         ret['res'] = res;
 
     } catch (catchErr) {

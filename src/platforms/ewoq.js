@@ -17,13 +17,11 @@ async function ewoq(inf = {}) {
 
         /* [2] → RECEBE A TASK */
         if (target === `/GetNewTasks`) {
-            targetAlert(platform, target, type); if (body && body['1']) {
-                let id = body['1'][0]['1']['1'].replace(/[^a-zA-Z0-9]/g, ''); retRegex = regex({ 'pattern': '":"locale","(.*?)"', 'text': inf.body, }); let addGet = {
-                    'locale': retRegex.ret && retRegex.res['2'] ? retRegex.res['2'].split('":"')[1].split('"')[0] : false, '1': !!body['1'][0]['1'], '2': !!body['1'][0]['2'],
-                    '3': !!body['1'][0]['3'], '4': !!body['1'][0]['4'], '5': !!body['1'][0]['5'], '6': !!body['1'][0]['6'], '7': !!body['1'][0]['7'], '8': !!body['1'][0]['8'],
-                    '9': !!body['1'][0]['9'], '10': !!body['1'][0]['10'], '11': !!body['1'][0]['11'], '12': !!body['1'][0]['12'], '13': !!body['1'][0]['13'], '14': body['1'][0]['14'] ?? false,
-                }; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_AINDA_NAO_IDENTIFICADO.txt`, 'text': body, }); gO.inf[platform].log.push({
-                    'hitApp': body['1'][0]['2']['1'], 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'qtd': 1, id, body, 'token': body['1'][0]['2']['1'], 'path': retLog.res, addGet,
+            targetAlert(platform, target, type); if (body?.[0]) {
+                let id = body[0][0][0][0].replace(/[^a-zA-Z0-9]/g, ''); retRegex = regex({ 'pattern': `["locale","(.*?)"]`, 'text': inf.body, }); let token = body[0][0][1][0].replace(/[^a-zA-Z0-9]/g, '');
+                let addGet = { 'locale': retRegex?.res?.['1'], ...Object.fromEntries(Array.from({ 'length': (20 + 1), }, (_, i) => [i, !!body?.[0]?.[0]?.[i],])), };
+                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_AINDA_NAO_IDENTIFICADO.txt`, 'text': body, }); gO.inf[platform].log.push({
+                    'hitApp': token, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, 'qtd': 1, id, body, token, 'path': retLog.res, addGet,
                 }); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (gO.inf[platform].token.lastToken === value.hitApp) {
                         let hitApp = gO.inf[platform].token[gO.inf[platform].token.lastToken]; gO.inf[platform].log[index]['hitApp'] = hitApp; pathNew = gO.inf[platform].log[index].path;
@@ -35,15 +33,15 @@ async function ewoq(inf = {}) {
 
         /* [3] → SOLICITA O TEMPLATE */
         if (target === `/GetTemplate___[1-SEND]___`) {
-            targetAlert(platform, target, type); if (body && body['1']) {
-                let tk = body['1']; gO.inf[platform].token['lastToken'] = tk; gO.inf[platform].token[tk] = false;
+            targetAlert(platform, target, type); if (body?.[0]) {
+                let token = body?.[0].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token['lastToken'] = token; gO.inf[platform].token[token] = false;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_template_AINDA_NAO_IDENTIFICADO.txt`, 'text': body, }); gO.inf[platform]['lastTemplate'] = retLog.res;
             }
         }
 
         /* [4] → RECEBE O TEMPLATE */
         if (target === `/GetTemplate___[2-GET]___`) {
-            targetAlert(platform, target, type); if (body) {
+            targetAlert(platform, target, type); if (body?.[0]) {
                 retRegex; retRegex = regex({ 'pattern': `raterVisibleName(*)inputTemplate`, 'text': inf.body, }); retRegex = regex({ 'pattern': `"(*)"`, 'text': retRegex.res['3'], });
                 let hitApp = retRegex.res['3'].replace(/[^a-zA-Z0-9]/g, ''); gO.inf[platform].token[gO.inf[platform].token.lastToken] = hitApp;
                 retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_template_${hitApp}.txt`, 'text': body, }); gO.inf[platform].token['path'] = retLog.res; if (gO.inf[platform].lastTemplate) {
@@ -60,26 +58,29 @@ async function ewoq(inf = {}) {
 
         /* [5] → TASK 100% CARREGADA */
         if (target === `/RecordTaskRenderingLatency___[TASK_100%_LOADED]___`) {
-            targetAlert(platform, target, type); if (body && body['2']) {
-                runStopwatch([`reset_1`, `toggle_1`,]); let id = body['2']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
+            targetAlert(platform, target, type); if (body?.[0]) {
+                runStopwatch([`reset_1`, `toggle_1`,]); let id = body[1][0].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
-                        body = value.body; let hitApp = value.hitApp, text = ''; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`;
-                        if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
-                            text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }, retGoogleTranslate = await googleTranslate(infGoogleTranslate);
-                            if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; }
-                            notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'action': 'set', 'value': text, });
-                        } else if (hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
-                            // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
-                            retRegex = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
-                            if (!retRegex) { notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'ntfy': false, }); } else {
-                                let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${retRegex}`, 'headers': { 'accept-language': 'application/json', }, }, retApi = await api(infApi);
-                                retRegex = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada', }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
-                                if (!retRegex) { notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'ntfy': false, }); } else {
-                                    let uploadDate = new Date(retRegex); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000; // 15 DIAS ATRÁS
-                                    if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'iconRed', 'title': `${platform} | YouTube`, 'text': retRegex, 'ntfy': false, }); }
-                                }
-                            }
-                        } text = `${body['1'][0]['10']['1'][0]['2']}\n\n${text}`; clipboard({ 'action': 'set', 'value': text, });
+                        body = value.body; gO.inf[platform].log[index]['tim'] = Number(time.tim); gO.inf[platform].log[index]['hou'] = `${time.hou}:${time.min}:${time.sec}`; // let hitApp = value.hitApp, text = '';
+
+                        // // MANTER DESATIVADO ATÉ ENTENDER COMO PEGAR A RESPOSTA DA TASK!!!
+                        // if (body['1'][0]['11'] && body['1'][0]['11']['1'][0]['4']) {
+                        //     text = body['1'][0]['11']['1'][0]['4']; let infGoogleTranslate = { 'source': 'auto', 'target': 'pt', text, }, retGoogleTranslate = await googleTranslate(infGoogleTranslate);
+                        //     if (retGoogleTranslate.ret) { text = `# PORTUGUÊS #\n${retGoogleTranslate.res}\n\n# INGLÊS #\n${text}`; } else { text = `# PORTUGUÊS #\nERRO AO TRADUZIR\n\n# INGLÊS #\n${text}`; }
+                        //     notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | BLIND`, 'text': 'Tem a resposta!', 'ntfy': false, }); clipboard({ 'action': 'set', 'value': text, });
+                        // } else if (hitApp === 'YouTubeVideoInappropriatenessEvaluation') {
+                        //     // [YouTubeVideoInappropriatenessEvaluation]: PEGAR A DATA DE PUBLICAÇÃO DO VÍDEO
+                        //     retRegex = regex({ 'pattern': 'embed/(.*?)?autoplay', 'text': JSON.stringify(body), }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
+                        //     if (!retRegex) { notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | YouTube`, 'text': 'ID não encontrado', 'ntfy': false, }); } else {
+                        //         let infApi = { 'method': 'GET', 'url': `https://www.youtube.com/watch?v=${retRegex}`, 'headers': { 'accept-language': 'application/json', }, }, retApi = await api(infApi);
+                        //         retRegex = regex({ 'pattern': 'uploadDate" content="(.*?)">', 'text': retApi?.res?.body || 'nada', }); retRegex = retRegex?.res?.['1'] ? retRegex.res['1'] : false;
+                        //         if (!retRegex) { notification({ 'duration': 4, 'icon': 'iconGreen', 'title': `${platform} | YouTube`, 'text': 'Data não encontrada', 'ntfy': false, }); } else {
+                        //             let uploadDate = new Date(retRegex); uploadDate = Math.floor(uploadDate.getTime() / 1000); let retDateHour = Number(time.tim) - 1296000; // 15 DIAS ATRÁS
+                        //             if (retDateHour > uploadDate) { notification({ 'duration': 4, 'icon': 'iconRed', 'title': `${platform} | YouTube`, 'text': retRegex, 'ntfy': false, }); }
+                        //         }
+                        //     }
+                        // }
+
                     }
                 }
 
@@ -88,8 +89,8 @@ async function ewoq(inf = {}) {
 
         /* [6] → ENVIA A RESPOSTA DA TASK */
         if (target === `/SubmitFeedback`) {
-            targetAlert(platform, target, type); if (body && body['6']) {
-                let json, id = body['6']['1'].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
+            targetAlert(platform, target, type); if (body?.[5]?.[0]) {
+                let json, id = body[5][0].replace(/[^a-zA-Z0-9]/g, ''); for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (id === value.id) {
                         let tasksQtd = 0, tasksSec = 0, tasksQtdHitApp = 0, tasksSecHitApp = 0, tasksQtdHitAppLast = 0, tasksSecHitAppLast = 0, lastHour, tasksQtdMon = 0, tasksSecMon = 0;
                         let hitApp = gO.inf[platform].token[value.token]; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, });
@@ -123,6 +124,7 @@ async function ewoq(inf = {}) {
                             'text': `${notText[0]} | ${notText[1]} \n${notText[2]} | ${notText[3]} \n${notText[4]} | ${notText[5]} | ${notText[6]}`, 'ntfy': false,
                         }; notification(infNotification); gO.inf[platform].log.splice(index, 1);
                     }
+
                 }
             }
         }

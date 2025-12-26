@@ -22,8 +22,8 @@
         let { address, } = inf; let retAddressTokenize = addressTokenize(address), addressObj = {}, found = '#LOG#', retAddressType = addressType({ 'address': retAddressTokenize.join('#JOIN#'), });
         retAddressType.address = retAddressType.address.split('#JOIN#'); retAddressTokenize = retAddressType.address; let processedAddresses = retAddressTokenize.reverse().filter(value => {
             if (!addressObj.logradouro && value.includes(found)) { addressObj['tipo'] = retAddressType.found; addressObj['logradouro'] = value.replace(found, ''); return false; }
-            else if (value.toLowerCase().includes('loja') && !addressObj.loja) { addressObj['loja'] = value; return false; }
-            else if (value.toLowerCase().includes('andar') && !addressObj.andar) { addressObj['andar'] = value; return false; }
+            else if (value?.toLowerCase()?.includes('loja') && !addressObj.loja) { addressObj['loja'] = value; return false; }
+            else if (value?.toLowerCase()?.includes('andar') && !addressObj.andar) { addressObj['andar'] = value; return false; }
             else if (/^\d+$/.test(value) && !addressObj.numero) { addressObj['numero'] = Number(value); return false; }
             else if (addressObj.cep && addressObj.estado && addressObj.municipio && addressObj.logradouro && !(/^\d+$/.test(value)) && !addressObj.bairro) { addressObj['bairro'] = value; return false; }
             else if (addressObj.estado && !addressObj.municipio) { // MUNÍCIPIO
@@ -110,11 +110,17 @@
     }
     globalThis['logradourosTipo'] = logradourosTipo; globalThis['addressType'] = addressType;
 
+    function cleanAddress({ text, ignoreReplace, }) {
+        let escapedIgnore = ignoreReplace.map(char => { return char.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); }).join('');
+        let cleaned = text.replace(new RegExp(`[^A-Za-z0-9\\u00C0-\\u00FF${escapedIgnore}]`, 'g'), ','); return cleaned;
+    }
+
     function inputPro(v) {
         v = `${inputGet() || ''}`; v = v.trim(); v = v.replace(/🔴|🔵/g, '🟢'); if (v.includes('🟢')) { v = v.split('🟢')[2].trim(); }
         // v = v.replace(/(\r\n|\n|\r|\t|-|–|_|\/)/gm, ', ').split(',').map(v => v.trim()).filter(v => v !== '').join(', ');
         if (!v.toLowerCase().startsWith('http')) {
-            v = v.replace(/(\r\n|\n|\r|\t|_|\/)/g, ', ');
+            // v = v.replace(/(\r\n|\n|\r|\t|_|\/)/g, ', ');
+            v = cleanAddress({ 'text': `${v}`, 'ignoreReplace': [' ', ',', '.', 'º', 'ª', '-', ':',], });
 
             // CORRIGIR CEP
             let ceps = ['xx.xxx-xxx', 'xxxxx-xxx', 'xx.xxx.xxx', 'xxxxx.xxx',];

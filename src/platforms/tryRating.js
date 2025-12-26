@@ -22,7 +22,7 @@ async function tryRating(inf = {}) {
         if (target === `/survey`) {
             targetAlert(platform, target, type); if (body && body.templateTaskType) {
                 runStopwatch([`reset_2`, `toggle_2`,]); let hitApp = body.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''), judgeId = body.requestId;
-                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET_${hitApp}.txt`, 'text': body, });
+                retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `GET-${hitApp}.txt`, 'text': body, });
                 let tasksBlind = 0, tasksQtd = 0, tasksType = 'NAO_DEFINIDO', tasksInf = []; for (let [index, value,] of body.tasks.entries()) {
                     let blind = !(value?.metadata?.created); tasksQtd += 1; tasksType = value?.taskData?.resultSet?.resultList ? 'resultList' : 'tasks'; tasksBlind += blind ? 1 : 0; tasksInf.push({
                         blind, 'name': value.metadata?.name, 'assetType': value.metadata?.assetType, 'metadata': value.metadata?.metadata, 'state': value.metadata?.state,
@@ -32,7 +32,7 @@ async function tryRating(inf = {}) {
                 gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
-                let text = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z${teste}/TryRating/${hitApp}`, 'max': 100, }); text = text.res || false; if (text) {
+                let text = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z_OUTROS/TryRating/${hitApp}`, 'max': 100, }); text = text.res || false; if (text) {
                     function checkFiles(f, v) { v = v.map(g => f.some(n => regex({ 'simple': true, 'pattern': `*${g.r}*`, 'text': n, })) ? null : g.id).filter(Boolean); return v.length ? v.join(' | ') : false; } let f = [
                         { 'r': '2-GET_TASK*txt', 'id': 'GET_TASK {txt}', }, { 'r': '3-SEND_TASK*txt', 'id': 'SEND_TASK {txt}', }, { 'r': '2-GET_TASK*mhtml', 'id': 'GET_TASK {mhtml}', },
                         { 'r': '3-SEND_TASK*mhtml', 'id': 'SEND_TASK {mhtml}', }, { 'r': 'Guide_EN', 'id': 'Guide [EN]', }, { 'r': 'Guide_PT', 'id': 'Guide [PT]', },
@@ -127,7 +127,7 @@ async function tryRating(inf = {}) {
             targetAlert(platform, target, type); runStopwatch([`reset_2`,]); if (body && body.data) {
                 let json, tasksQtd = 0, judgesQtd = 0, judgesSec = 0, tasksBli = 0, tasksQtdHitApp = 0, judgesQtdHitApp = 0, judgesSecHitApp = 0, tasksBliHitApp = 0, judgesQtdHitAppLast = 0;
                 let judgesSecHitAppLast = 0, lastHour, judgesQtdMon = 0, judgesSecMon = 0, hitApp = body.data.templateTaskType.replace(/[^a-zA-Z0-9]/g, ''), judgeId = body.data.tasks[0].requestId;
-                let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND_${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
+                let pathJson = `./logs/${pathLogPlataform}`; retLog = await log({ e, 'folder': `${pathLogPlataform}`, 'path': `SEND-${hitApp}.txt`, 'text': body, }); pathNew = retLog.res;
                 pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, pathNew, });
                 for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (judgeId === value.judgeId) {

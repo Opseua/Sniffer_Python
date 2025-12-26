@@ -16,6 +16,7 @@ globalThis['tryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path':
 
 // FUNÇÕES
 globalThis['taskInfTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/taskInfTryRating.js`, inf, project, }); };
+globalThis['taskInfReduceTryRating'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/resources/taskInfReduceTryRating.js`, inf, project, }); };
 
 // FUNÇÕES/SCRIPTS [PAGES]
 globalThis['correiosServer'] = (inf) => { return importFun({ 'engOk': (!eng), 'path': `./src/pages/resources/correiosServer.js`, inf, project, }); };

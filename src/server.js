@@ -58,7 +58,7 @@ async function serverRun(inf = {}) {
         } // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* TESTES *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
         let hitApps = [ // [hitAppType] → blindNao blindNao[3] respNao respSim respSim_CLOSED_DNE 
-            // { 'platform': 'EWOQ', 'hitAppType': 'blindNao', 'hitApp': 'YouTube_Video_Inappropriateness_Evaluation', }, // YouTube_Video_Inappropriateness_Evaluation / AlpacaBrandSafetyBrandDelicate
+            // { 'platform': 'EWOQ', 'hitAppType': 'blindNao', 'hitApp': 'DSA_Page_Similarity', }, // YouTube_Video_Inappropriateness_Evaluation / AlpacaBrandSafetyBrandDelicate
             // { 'platform': 'TryRating', 'hitAppType': 'respSim', 'hitApp': 'POIEvaluation', }, // Search20 SearchAdsRelevance POIEvaluation
         ]; let plaOpt = {
             'EWOQ': [
@@ -79,7 +79,7 @@ async function serverRun(inf = {}) {
                 { 'url': 2, 'getSend': 'send', 'file': '3-SEND_TASK-${hitAppType}.txt', }, // [4] → ENVIA A RESPOSTA DA TASK
             ],
         }; let hX = [`{"content-type":"json"}`, `{"content-type":"OUTRO_TIPO"}`,]; if (hitApps.length === 0) { correiosServer(); /* SERVIDOR CORREIOS */ } for (let [index, v,] of hitApps.entries()) {
-            let p, l = v.platform, t = '_teste'; l = [l, `${l}${t}`,]; p = `${fileProjetos}/${gW.project}/logs/Plataformas/z${t}/${l[0]}/${v.hitApp}`; for (let [index, v1,] of plaOpt[l[0]].entries()) {
+            let p, l = v.platform, t = '_teste'; l = [l, `${l}${t}`,]; p = `${fileProjetos}/${gW.project}/logs/Plataformas/z_OUTROS/${l[0]}/${v.hitApp}`; for (let [index, v1,] of plaOpt[l[0]].entries()) {
                 let f = { e, 'action': 'read', 'path': `${p}/${v1.file.replace('${hitAppType}', v.hitAppType)}`, 'encoding': false, }, r = await file(f); if (!r.ret) { console.log(r.msg); break; }
                 await funGetSend({ 'getSend': v1.getSend, 'url': arrUrl[l[0]][v1.url], 'body': r.res, 'headers': !v1.midia ? hX[0] : hX[1], 'teste': t, }); await new Promise(r => { setTimeout(r, 2000); });
             } // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* ERROS SERVIDOR (ERROS QUE NÃO SEJAM DO DESLIGAMENTO DO SNIFFER) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -92,7 +92,8 @@ async function serverRun(inf = {}) {
                 } res.setHeader('Transfer-Encoding', 'chunked'); res.setHeader('x-action', `${action}`); if (buffers) { logConsole({ e, ee, 'txt': `${getSend} ${buffers}`, }); }
                 if (body) { body = Buffer.from(body, 'utf8'); let max = rCS.bufferSocket * 1024; for (let i = 0; i < body.length; i += max) { res.write(body.slice(i, i + max)); } } res.end();
             });
-        }); serSoc.listen((rCS.portSocket), () => { }).on('error', async (err) => { serverErr(err); });
+        }); if (hitApps.length === 0) { serSoc.listen((rCS.portSocket), () => { }).on('error', async (err) => { serverErr(err); }); }
+
     } catch (catchErr) {
         let retRegexE = await regexE({ inf, 'e': catchErr, }); ret['msg'] = retRegexE.res; ret['ret'] = false; delete ret['res'];
     }

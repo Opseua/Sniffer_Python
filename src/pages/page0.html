@@ -21,12 +21,12 @@
     <table id="result-table">
         <thead>
             <tr>
-                <th style="width: 3%; max-width: 3%">Nº</th>
-                <th style="width: 20%; max-width: 20%;">Endereços (0) | Total [0] | Estados {0}</th>
-                <th style="width: 20%; max-width: 20%;">Complemento</th>
-                <th style="width: 15%; max-width: 15%;">Bairro</th>
-                <th style="width: 10%; max-width: 10%">Município</th>
-                <th style="width: 5%; max-width: 5%">Estado</th>
+                <th style="width: 1%; max-width: 1%">Nº</th>
+                <th style="width: 5%; max-width: 5%;">Endereços (0) | Total [0] | UFs {0}</th>
+                <th style="width: 1%; max-width: 1%;">Complemento</th>
+                <th style="width: 1%; max-width: 1%;">Bairro</th>
+                <th style="width: 1%; max-width: 1%">Município</th>
+                <th style="width: 1%; max-width: 1%">UF</th>
                 <th style="width: 1%; max-width: 1%">CEP</th>
             </tr>
         </thead>
@@ -114,17 +114,17 @@
                             }); sortEventsBound = true;
                         }; let nd = `<td colspan="7">Nenhum endereço encontrado</td>`, col2 = dc.querySelector('#result-table th:nth-child(2)'); if (endQtd == 0) {
                             ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = nd; tbody.appendChild(row);
-                            col2.textContent = `Endereços (0) | Total [0] | Estados {${retFetchs.estados}}`; // alert(ret.msg);
+                            col2.textContent = `Qtd (0) | Total [0] | UFs {${retFetchs.estados}}`; // alert(ret.msg);
                         } else {
                             let retResultScore = resultScore({ objeto1: addressParseOk, objeto2: enderecos, }), enderecosOk = [], retScoreBest = scoreBest({ pontucaoIndice: retResultScore, objeto2: enderecos, });
                             enderecosOk = retScoreBest; if (addressParseOk.numero) { enderecosOk = sideStreet({ numero: addressParseOk.numero, 'obj': enderecosOk, }) };
                             if (addressParseOk.cep) { for (let [index, value] of enderecos.entries()) { if (addressParseOk.cep && addressParseOk.cep.replace('-', '') == value.cep) { enderecosOk.push(value); break } }; }
                             if (!addressParseOk.numero && !addressParseOk.cep) { enderecosOk = retScoreBest }; enderecos = enderecosOk; seen = new Set();
                             enderecos = enderecos.filter(i => { let dup = seen.has(i.cep); seen.add(i.cep); return !dup; }); // REMOVER ORDENAÇÃO APÓS NOVOS RESULTADOS
-                            col2.textContent = `Endereços (${enderecos.length}) | Total [${endQtd}] | Estados {${retFetchs.estados}}`;
+                            col2.textContent = `Qtd (${enderecos.length}) | Total [${endQtd}] | UFs {${retFetchs.estados}}`;
                             let headers = document.querySelectorAll('#result-table th'); headers.forEach(h => h.dataset.sort = ''); lastSortState = {}; if (enderecos.length == 0) {
                                 ret['msg'] = `GET ADDRESS: ERRO | CEP/ENDEREÇO NÃO ENCONTRADO`; let row = dc.createElement('tr'); row.innerHTML = nd;
-                                tbody.appendChild(row); col2.textContent = `Endereços (0) | Total [0] | Estados {${retFetchs.estados}}`;
+                                tbody.appendChild(row); col2.textContent = `Qtd (0) | Total [0] | UFs {${retFetchs.estados}}`;
                             } else {
                                 let i = 0; enderecos.forEach(end => {
                                     i++; let row = dc.createElement('tr'), html = '', clipboard = {

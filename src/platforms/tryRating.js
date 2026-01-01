@@ -5,7 +5,8 @@ async function tryRating(inf = {}) {
         let { platform = 'x', target, type, } = inf;
 
         let body; try { if (type === true) { body = JSON.parse(inf.body); } } catch { } let retConfigStorage, infNotification, retLog, pathNew, u = 'http://127.0.0.1:', functionLocal = false;
-        let time = dateHour().res, time1 = `MES_${time.mon}_${time.monNam}/DIA_${time.day}`, pathLogPlataform = `Plataformas/${platform}`, teste = '_teste', other = platforms[platform.replace(`${teste}`, '')];
+        let { yea, mon, day, hou, min, sec, tim, monNam, } = dateHour().res; let time0 = `ANO_${yea}/MES_${mon}_${monNam}`, time1 = `${time0}/DIA_${day}`;
+        let pathLogPlataform = `Plataformas/${platform}`, teste = '_teste', other = platforms[platform.replace(`${teste}`, '')];
 
         // CRIAR OBJETO DA PLATAFORMA (PARA EVITAR O ERRO AO ABRIR A TASK SEM PASSAR NA 'HOME')
         if (!gO.inf[platform]) { gO.inf[platform] = { 'log': [], }; } async function runStopwatch(c) { if (!platform.includes(teste)) { for (let a of c) { await fetch(`${u}${portStopwatch}/${a}`); } } }
@@ -29,7 +30,7 @@ async function tryRating(inf = {}) {
                         'createdBy': value.metadata?.createdBy, 'created': value.metadata?.created, 'storageType': value.metadata?.storageType,
                     });
                 } let addGet = { 'conceptId': body.conceptId, 'projectId': body.projectId, 'templateSchemaVersionId': body.templateSchemaVersionId, 'targetLocalIds': JSON.stringify(body.targetLocalIds), tasksInf, };
-                gO.inf[platform].log.push({ hitApp, 'tim': Number(time.tim), 'hou': `${time.hou}:${time.min}:${time.sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
+                gO.inf[platform].log.push({ hitApp, 'tim': Number(tim), 'hou': `${hou}:${min}:${sec}`, tasksQtd, tasksBlind, judgeId, 'judgesQtd': 1, tasksType, addGet, body, 'path': retLog.res, });
 
                 // CHECAR SE O HITAPP POSSUI [PASTA + ARQUIVOS NECESSÁRIOS]
                 let text = await file({ e, 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/z_OUTROS/TryRating/${hitApp}`, 'max': 100, }); text = text.res || false; if (text) {
@@ -131,31 +132,31 @@ async function tryRating(inf = {}) {
                 pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); pathNew = retLog.res.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': retLog.res, pathNew, });
                 for (let [index, value,] of gO.inf[platform].log.entries()) {
                     if (judgeId === value.judgeId) {
-                        pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `MES_${time.mon}_${time.monNam}/#_MES_#.json`;
+                        pathNew = value.path; pathNew = pathNew.substring(pathNew.lastIndexOf('/') + 1); let pathJson2 = `${time0}/#_MES_#.json`;
                         pathNew = value.path.replace(pathNew, `OK/${pathNew}`); await file({ e, 'action': 'change', 'path': value.path, pathNew, });
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'get', 'key': `*`, functionLocal, });
                         if (!retConfigStorage.ret) { json = { 'inf': { 'reg': { 'tasksQtd': 0, 'tasksBli': 0, 'judgesQtd': 0, 'judgesSec': 0, }, 'hitApp': {}, }, 'judges': [], }; } else { json = retConfigStorage.res; }
-                        let dif = Number(time.tim) - value.tim; json.judges.push({
-                            hitApp, 'tim': `${value.tim} | ${time.tim}`, 'hou': `${value.hou} | ${time.hou}:${time.min}:${time.sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
+                        let dif = Number(tim) - value.tim; json.judges.push({
+                            hitApp, 'tim': `${value.tim} | ${tim}`, 'hou': `${value.hou} | ${hou}:${min}:${sec}`, 'tasksQtd': value.tasksQtd, 'tasksBlind': value.tasksBlind,
                             'judgesSec': dif, 'judgesHou': dateHour(dif).res, 'judgeId': value.judgeId, 'judgesQtd': value.judgesQtd, 'tasksType': value.tasksType, 'addGet': value.addGet,
                         }); if (!other[hitApp]) { lastHour = other.default.lastHour; } else { lastHour = other[hitApp].lastHour; } for (let [index, value,] of json.judges.entries()) {
                             tasksQtd += value.tasksQtd; judgesQtd += value.judgesQtd; judgesSec += value.judgesSec; tasksBli += value.tasksBlind; if (value.hitApp === hitApp) {
                                 tasksQtdHitApp += value.tasksQtd; judgesQtdHitApp += value.judgesQtd; judgesSecHitApp += value.judgesSec; tasksBliHitApp += value.tasksBlind;
-                                if (Number(time.tim) < Number(value.tim.split(' | ')[0]) + lastHour) { judgesQtdHitAppLast += value.judgesQtd; judgesSecHitAppLast += value.judgesSec; }
+                                if (Number(tim) < Number(value.tim.split(' | ')[0]) + lastHour) { judgesQtdHitAppLast += value.judgesQtd; judgesSecHitAppLast += value.judgesSec; }
                             }
                         } json.inf.reg = { judgesQtd, judgesSec, 'judgesHou': dateHour(judgesSec).res, tasksQtd, tasksBli, };
                         json.inf.hitApp[hitApp] = { 'judgesQtd': judgesQtdHitApp, 'judgesSec': judgesSecHitApp, 'judgesHou': dateHour(judgesSecHitApp).res, 'tasksQtd': tasksQtdHitApp, 'tasksBli': tasksBliHitApp, };
                         retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${time1}/#_DIA_#.json`, 'action': 'set', 'key': `*`, 'value': json, functionLocal, });
-                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'action': 'set', 'key': `DIA_${time.day}`, 'value': json.inf, 'returnValueAll': true, functionLocal, });
+                        retConfigStorage = await configStorage({ e, 'path': `${pathJson}/${pathJson2}`, 'action': 'set', 'key': `DIA_${day}`, 'value': json.inf, 'returnValueAll': true, functionLocal, });
                         for (let nameKey in retConfigStorage.res) { judgesQtdMon += retConfigStorage.res[nameKey].reg.judgesQtd; judgesSecMon += retConfigStorage.res[nameKey].reg.judgesSec; }
 
                         // FILTRAR APENAS REGISTRO DA SEMANA ATUAL
                         function firstDayWeek(inf = {}) {
                             let { date, } = inf; let d = new Date(date), dW = d.getDay(), dif = dW, f = new Date(d); f.setDate(d.getDate() - dif); let day = String(f.getDate()).padStart(2, '0');
                             let mon = String(f.getMonth() + 1).padStart(2, '0'), yea = String(f.getFullYear()); return { day, mon, yea, };
-                        } let retFirstDayWeek = firstDayWeek({ 'date': `${time.yea}-${time.mon}-${time.day}T${time.hou}:${time.min}:${time.sec}`, }), staDay = retFirstDayWeek.day, staMon = retFirstDayWeek.mon;
+                        } let retFirstDayWeek = firstDayWeek({ 'date': `${yea}-${mon}-${day}T${hou}:${min}:${sec}`, }), staDay = retFirstDayWeek.day, staMon = retFirstDayWeek.mon;
 
-                        let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key,]) => key.substring(4) >= staDay || staMon !== time.mon)); filt = { 'res': filt, };
+                        let filt = Object.fromEntries(Object.entries(retConfigStorage.res).filter(([key,]) => key.substring(4) >= staDay || staMon !== mon)); filt = { 'res': filt, };
                         let judgesQtdWee = 0, judgesSecWee = 0; for (let nameKey in filt.res) { judgesQtdWee += filt.res[nameKey].reg.judgesQtd; judgesSecWee += filt.res[nameKey].reg.judgesSec; }
 
                         let notText = [

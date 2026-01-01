@@ -1,19 +1,5 @@
 /* eslint-disable max-len */
 
-// let pathTxt, body;
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/00.09.01.953-GET-Categorization.txt'; // BLIND + RESP
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_10_OUT/DIA_25/OK/13.17.39.840-GET-TimeSensitiveEmailCategorizationPortugueseLanguage.txt'; // BLIND + RESP
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_28/OK/08.12.18.436-GET-EmailCategorizationPortugueseLanguage.txt'; // NÃO
-// // ***
-// pathTxt = 'D:/ARQUIVOS/PROJETOS/Sniffer_Python/logs/Plataformas/TryRating/MES_09_SET/DIA_21/OK/12.59.14.688-GET-SearchAdsRelevance.txt'; // NÃO
-// // ###
-// body = await file({ 'action': 'read', 'path': pathTxt }); body = JSON.parse(body.res);
-// // ******************************************
-// let infTaskInfTryRating, retTaskInfTryRating;
-// infTaskInfTryRating = { e, 'plataform': `TryRating`, 'reg': true, 'excludes': ['qtdTaskA', 'blindNumA', 'clip', 'res',], 'includes': ['MES_', 'DIA_', '.',], }; // 'reg' TRUE salva no 'logs/Plataformas/z_OUTROS/regTryRating.txt'
-// infTaskInfTryRating = { e, 'body': body, 'reg': true, 'excludes': ['qtdTask', 'blindNum', 'clipA', 'resA',], };
-// retTaskInfTryRating = await taskInfTryRating(infTaskInfTryRating); console.log(JSON.stringify(retTaskInfTryRating), '\n');
-
 // BLIND [NÃO] → POIEvaluationEN
 // BLIND [SIM] → POIEvaluation
 
@@ -21,9 +7,9 @@ let e = currentFile(new Error()), ee = e;
 async function taskInfTryRating(inf = {}) {
     let ret = { 'ret': false, }; e = inf.e || e;
     try {
-        let { body, plataform, includes = [], reg, excludes = [], test = false, } = inf;
+        let { body, includes = ['.',], reg, excludes = [], test = false, } = inf;
 
-        let arrBody = [], arrPaths = [], arrRequestId = [], arrRes = {
+        let arrBody = [], arrPaths = [], arrRequestId = [], retFile, base = `logs/Plataformas`, arrRes = {
             ...(excludes.includes('qtdTask') ? {} : { 'qtdTask': 0, }), ...(excludes.includes('blindNum') ? {} : { 'blindNum': { '0': {}, '1': {}, '2': {}, '3': {}, }, }),
             ...(excludes.includes('clip') ? {} : { 'clip': {}, }), ...(excludes.includes('res') ? {} : { 'res': {}, }),
         };
@@ -220,29 +206,20 @@ async function taskInfTryRating(inf = {}) {
         if (body) {
             // JULGAMENTO (RECEBIDO): [ÚNICO]
             arrBody.push({ 'path': false, 'body': (typeof body === 'object' ? body : JSON.parse(body)), });
-        } else if (plataform) {
-            // JULGAMENTOS (RECEBIDOS): PEGAR [EM MASSA] POR PLATAFORMA
-            let retFile = await file({ 'action': 'list', 'path': `${fileProjetos}/${gW.project}/logs/Plataformas/${plataform}`, 'max': 24, }); if (!retFile.ret) { return retFile; }
-            for (let [index, value,] of retFile.res.entries()) {
-                if (value.isFolder && value.name.includes('MES_')) {
-                    let retFile1 = await file({ 'action': 'list', 'path': value.path, 'max': 32, }); if (!retFile1.ret) { return retFile1; } for (let [index1, value1,] of retFile1.res.entries()) {
-                        if (value1.isFolder && value1.path.includes('DIA_')) {
-                            let retFile2 = await file({ 'action': 'list', 'path': value1.path, 'max': 500, }); if (!retFile2.ret) { return retFile2; } for (let [index2, value2,] of retFile2.res.entries()) {
-                                if (value2.isFolder && value2.path.includes('OK')) {
-                                    let retFile3 = await file({ 'action': 'list', 'path': value2.path, 'max': 500, }); if (!retFile3.ret) { return retFile3; }
-                                    for (let [index3, value3,] of retFile3.res.entries()) {
-                                        if (!value3.isFolder && value3.path.includes('-GET-') && includes.every(i => value3.path.includes(i))) { arrPaths.push(value3.path); }
-                                    }
-                                } else if (!value2.isFolder && value2.path.includes('-GET-') && includes.every(i => value2.path.includes(i))) { arrPaths.push(value2.path); }
-                            }
-                        }
-                    }
+        } else {
+            // JULGAMENTOS (RECEBIDOS): PEGAR [EM MASSA]
+            let basePath = `${fileProjetos}/${gW.project}/${base}/TryRating`, queue = [basePath,]; while (queue.length) {
+                let currentPath = queue.shift(), r = await file({ 'action': 'list', 'path': currentPath, 'max': 500, }); if (!r.ret) { return r; } for (let v of r.res) {
+                    let boolean = false; if (v.isFolder) {
+                        if (v.name.startsWith(`ANO_`)) { boolean = true; } else if (v.name.startsWith(`MES_`)) { boolean = true; }
+                        else if (v.name.startsWith(`DIA_`)) { boolean = true; } else if (v.name === `OK`) { boolean = true; } if (boolean) { queue.push(v.path); }
+                    } else if (v.name.endsWith(`.txt`) && v.name.includes('-GET-') && includes.every(i => v.path.includes(i))) { arrPaths.push(v.path); }
                 }
             } for (let [index, value,] of arrPaths.entries()) {
-                let retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile; } retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
+                retFile = await file({ 'action': 'read', 'path': value, }); if (!retFile.ret) { return retFile; } retFile = JSON.parse(retFile.res); let requestId = retFile.requestId;
                 if (!arrRequestId.includes(requestId)) { arrRequestId.push(requestId); arrBody.push({ 'path': value, 'body': retFile, }); }
-            }
-        } let pathReg = `${fileProjetos}/${gW.project}/logs/Plataformas/z_OUTROS/regTryRating.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'content': 'x\n', }); }
+            } console.log(`TOTAL: ${arrPaths.length} | SEM ID DUPLICADO: ${arrBody.length}`);
+        } let pathReg = `${fileProjetos}/${gW.project}/${base}/z_OUTROS/regTryRating.txt`; if (reg) { await file({ e, 'action': 'write', 'path': pathReg, 'content': 'x\n', }); }
 
         // ******************************************************************************************************************************************************************************************************************
 
